@@ -1,0 +1,13 @@
+FROM gradle:6.0-jdk8
+
+COPY dim/pdns-output /pdns-output
+COPY jdnssec-dnsjava /jdnssec-dnsjava
+COPY jdnssec-tools /jdnssec-tools
+COPY gmp-rsa /gmp-rsa
+
+RUN cd /jdnssec-dnsjava && gradle build -x test && gradle publishToMavenLocal
+RUN cd /jdnssec-tools && gradle build -x test && gradle publishToMavenLocal
+RUN cd /gmp-rsa && gradle build -x test && gradle publishToMavenLocal
+RUN cd /pdns-output && gradle shadowJar -x test
+
+ENTRYPOINT ["java","-jar","/pdns-output/build/libs/pdns-output-0.1-SNAPSHOT-all.jar"]

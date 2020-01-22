@@ -1,0 +1,5 @@
+Pool {pool_name}
+days  {interval_1:>20} {interval_2:>20} {interval_3:>20}
+usage {usage_1:>20} {usage_2:>20} {usage_3:>20}
+{current_free} {objects} are still free
+{prediction}

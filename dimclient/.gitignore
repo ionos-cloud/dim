@@ -1,0 +1,12 @@
+*~
+*.pyc
+build/
+dimclient.egg-info/
+debian/ui-python-dimclient
+debian/debhelper.log
+debian/files
+debian/substvars
+debian/ui-python-dimclient.debhelper.log
+debian/ui-python-dimclient.substvars
+debian/ui-python-dimclient.postinst.debhelper
+debian/ui-python-dimclient.prerm.debhelper

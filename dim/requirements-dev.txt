@@ -1,0 +1,6 @@
+nose
+nose-ignore-docstring
+pytest
+pytest-cov
+ipython
+sphinx

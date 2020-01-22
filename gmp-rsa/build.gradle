@@ -1,0 +1,31 @@
+buildscript {
+    repositories { jcenter() }
+}
+
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+group = 'dim'
+version = '0.1'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    compile group: 'net.java.dev.jna', name: 'jna', version: '4.0.0'
+    compile group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.56'
+
+    testCompile 'junit:junit:4.12'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}

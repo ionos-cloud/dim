@@ -1,0 +1,82 @@
+#!/usr/bin/env python
+from __future__ import print_function
+
+import datetime
+import uuid
+
+import sqlalchemy
+from flask import current_app, g
+from flask_script import Manager, Shell
+
+import dim.autodns3
+import dim.commands
+import dim.ipaddr
+import dim.ldap_sync
+import dim.models
+
+
+manager = Manager(dim.create_app)
+manager.add_option('-t', '--test', dest='db_mode', action='store_const', const='TEST', required=False)
+
+
+@manager.command
+def rebuild_tree():
+    '''Rebuilds the IP tree parents'''
+    dim.commands.rebuild_tree()
+
+
+@manager.command
+def set_user(username, type):
+    '''Sets the user type (Admin or User)'''
+    try:
+        dim.commands.set_user(username, type)
+    except Exception as e:
+        print(str(e))
+
+
+@manager.command
+def update_validity():
+    '''Check for signed zones with less than half of the validity window left and increase the validity period'''
+    with current_app.test_request_context():
+        g.tid = uuid.uuid4().get_hex()[16:]
+        for zone in dim.models.Zone.query.all():
+            try:
+                if (len(zone.keys) > 0 and
+                        (zone.valid_end is None or zone.valid_begin is None or zone.valid_end <= zone.valid_begin or
+                         zone.valid_end <= datetime.datetime.utcnow() + (zone.valid_end - zone.valid_begin) / 2)):
+                    zone.set_validity()
+                    if zone.nsec3_algorithm:
+                        zone.set_nsec3params(1, zone.nsec3_iterations, zone.nsec3_salt)
+            except Exception as e:
+                print('Error updating the validity window for zone', zone.name)
+                raise
+        dim.models.db.session.commit()
+
+
+@manager.command
+def sync_ldap():
+    dim.ldap_sync.ldap_sync()
+
+
+@manager.command
+def ldap_sync():
+    dim.ldap_sync.ldap_sync()
+
+
+@manager.command
+def autodns3():
+    dim.autodns3.run()
+
+
+def _make_context():
+    context = dict(sqlalchemy.__dict__)
+    context.update(dim.__dict__)
+    context.update(dim.ipaddr.__dict__)
+    context.update(dim.models.__dict__)
+    return context
+
+
+manager.add_command("shell", Shell(make_context=_make_context))
+
+if __name__ == '__main__':
+    manager.run()

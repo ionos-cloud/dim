@@ -1,0 +1,1 @@
+complete -C ndcli ndcli

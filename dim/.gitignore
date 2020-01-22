@@ -1,0 +1,14 @@
+*~
+*.pyc
+etc/dim.cfg
+.tox
+.coverage
+MANIFEST
+htmlcov/
+build/
+libs/
+packages/
+doc/_build/
+dim.egg-info/
+out/
+.idea/

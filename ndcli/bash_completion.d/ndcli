@@ -1,0 +1,2 @@
+have ndcli &&
+complete -C ndcli ndcli

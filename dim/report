@@ -1,0 +1,110 @@
+#!/usr/bin/env python
+import re
+
+from flask.ext.script import Manager, Option, Command
+
+import dim.commands
+import dim.ipaddr
+
+
+class PoolReport(Command):
+    '''Prints a pool usage report'''
+
+    option_list = (
+        Option('pools',
+               help='''A list of comma-separated pool names. A suffix (ex: /56) can be added to pool
+                       names to show block counts instead of IP counts'''),
+        Option('--warning',
+               type=int,
+               help='''The minimum number of days which are required to fill the pool. Everything
+                       higher than this number will cause the respective pool to be omitted from the
+                       report. If not specified, data for all the pools will be printed.'''),
+        Option('--estimate',
+               type=int,
+               default=30,
+               help='''The number of days in the past used to estimate the rate of address
+                       usage. The default value is 30.'''),
+        Option('--template',
+               help='''The template file to be used for formatting the report. The default is
+                       /etc/dim/pool_report.template'''))
+
+    def run(self, pools, warning, estimate, template):
+        try:
+            pool_list = []
+            for pool_str in pools.split(','):
+                if not pool_str:
+                    continue
+                prefix = None
+                sp = pool_str.split('/')
+                if len(sp) == 1:
+                    pool_name = sp[0]
+                elif len(sp) == 2:
+                    pool_name, prefix = sp
+                    prefix = int(prefix)
+                else:
+                    raise Exception("Wrong format for pool: %r" % pool_str)
+                pool_list.append((pool_name, prefix))
+        except Exception as e:
+            print str(e)
+            return
+        for pool, prefix in pool_list:
+            pr = dim.commands.pool_report(pool,
+                                          prefix=prefix,
+                                          estimate=estimate,
+                                          warning_threshold=warning,
+                                          template=template)
+            if pr:
+                print pr
+
+
+class UsageReport(Command):
+    '''Prints IP usage reports'''
+
+    option_list = (
+        Option('--hosting_pools',
+               required=True,
+               help='A perl regular expression for matching hosting pool names.'),
+        Option('--arin',
+               required=True,
+               help='A comma-separated list of ARIN nets.'),
+        Option('--ripe',
+               required=True,
+               help='A comma-separated list of RIPE nets.'),
+        Option('--ignored',
+               help='''By default, a warning is issued for every subnet not included in either --arin
+                       or --ripe, but present in a pool. This option is a comma-separated list of nets
+                       which can be safely excluded from the report.'''))
+
+    def run(self, hosting_pools, arin, ripe, ignored):
+        def block_list(block_str_list):
+            return [dim.ipaddr.IP(b) for b in block_str_list]
+        try:
+            hosting_pools = re.compile(hosting_pools)
+            arin = block_list(arin.split(','))
+            ripe = block_list(ripe.split(','))
+            ignored = block_list(ignored.split(',')) if ignored else []
+        except Exception as e:
+            print str(e)
+            return
+        print "Global #####################"
+        print dim.commands.usage_report(hosting_pools, arin + ripe, ignored, warn=False)
+        print "\n\nUS #########################"
+        print dim.commands.usage_report(hosting_pools, arin, ignored, warn=False)
+        print "\n\nEU #########################"
+        print dim.commands.usage_report(hosting_pools, ripe, ignored, warn=False)
+
+
+manager = Manager(dim.create_app, with_default_commands=False)
+manager.add_option('-t', '--test', dest='db_mode', action='store_const', const='TEST', required=False)
+manager.add_command('pool', PoolReport())
+manager.add_command('usage', UsageReport())
+
+
+@manager.command
+def update_history():
+    '''Updates the allocationhistory table with pool usage data'''
+    dim.commands.update_history()
+
+
+if __name__ == '__main__':
+    manager.run()

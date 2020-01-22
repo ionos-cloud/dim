@@ -1,0 +1,24 @@
+This document contains information for developers working on ndcli.
+
+Setup
+=====
+
+1. Install the dependencies::
+
+    apt-get install python-simplejson python-dateutil
+
+2. Clone the dimclient repository and symlink dimclient.py into the current directory::
+
+    ln -s ../dimclient/dimclient.py .
+
+3. Edit ~/.ndclirc::
+
+    cat <<EOF > ~/.ndclirc
+    server = http://localhost:5000
+    username = admin
+    EOF
+
+4. Add ndcli to PATH and set up the bash completion (preferably in .bashrc)::
+
+    export PATH=<path_to_dcli>:$PATH
+    complete -C ndcli ndcli
