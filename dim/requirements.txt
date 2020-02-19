@@ -12,7 +12,7 @@ Flask-Script==0.5.3
 dnspython==1.15.0
 simplejson==2.6.1
 argparse==1.2.1
-requests==2.8.1
+requests==2.20.0
 pycrypto==2.6.1
 six==1.10.0
 
