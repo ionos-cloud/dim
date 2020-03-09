@@ -7,7 +7,7 @@ from hypothesis import given, settings, assume
 
 @given(st.text(alphabet=''.join(chr(a) for a in range(1, 128))),
        st.sampled_from(('', "'", '"')))
-@settings(max_examples=50000, timeout=120)
+@settings(max_examples=50000)
 def test(s, quote):
     assume(not s.startswith('-'))
     s = str(s)

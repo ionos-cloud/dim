@@ -8,11 +8,11 @@ import sys
 import textwrap
 from datetime import datetime
 from functools import wraps
-from itertools import izip
+
 from operator import itemgetter
 
-import zoneimport
-from cliparse import Command, Option, Group, Argument, Token
+from . import zoneimport
+from .cliparse import Command, Option, Group, Argument, Token
 
 
 __version__ = '2.4.0'
@@ -30,7 +30,7 @@ def _readconfig(config_file):
             if '=' in line:
                 key, value = line.split('=', 1)
                 config[key.strip()] = value.strip()
-    except Exception, e:
+    except Exception as e:
         logger.debug('Configuration file cannot be read: %s' % e)
     return config
 
@@ -41,7 +41,7 @@ def dim_client(args):
     from dimclient import DimClient
     server_url = args.server or config['server']
     logger.debug("Dim server URL: %s" % server_url)
-    return DimClient(server_url, cookie_file=os.path.expanduser('~/.ndcli.cookie'), cookie_umask=0077)
+    return DimClient(server_url, cookie_file=os.path.expanduser('~/.ndcli.cookie'), cookie_umask=0o077)
 
 
 def email2fqdn(string):
@@ -467,7 +467,7 @@ the start of the view list).'''},
                           Argument('property_value')]},
     }
 RR_FIELDS['aaaa'] = RR_FIELDS['a']
-rr_types = RR_FIELDS.keys() + ['soa']
+rr_types = list(RR_FIELDS.keys()) + ['soa']
 rr_type_arg = Group(Argument('type', choices=rr_types+[t.upper() for t in rr_types]), nargs='?')
 
 
@@ -630,7 +630,7 @@ def _make_show_ip(status):
 
 class OptionDict(dict):
     def set_if(self, **kwargs):
-        for key, value in kwargs.iteritems():
+        for key, value in kwargs.items():
             if value:
                 self[key] = value
 
@@ -640,7 +640,7 @@ class OptionDict(dict):
 
 
 def _get_soa_attributes(args):
-    soa_attributes = dict(zip(args['fields'], args['values']))
+    soa_attributes = dict(list(zip(args['fields'], args['values'])))
     if 'mail' in soa_attributes:
         soa_attributes['mail'] = email2fqdn(soa_attributes['mail'])
     return soa_attributes
@@ -723,8 +723,8 @@ def _convert_table_times(table, columns):
 
 def _print_attributes(data, script):
     _convert_attr_times(data)
-    sep = u'\t' if script else u'\n'
-    print sep.join(u'%s:%s' % (k, v) for k, v in sorted(data.iteritems()))
+    sep = '\t' if script else '\n'
+    print(sep.join('%s:%s' % (k, v) for k, v in sorted(data.items())))
 
 
 def get_terminal_size():
@@ -760,7 +760,7 @@ def _print_table(column_desc, rows, script, width=None):
 
     def twobytwo(l):
         i = iter(l)
-        return izip(i, i)
+        return zip(i, i)
 
     def data():
         if not script:
@@ -769,19 +769,19 @@ def _print_table(column_desc, rows, script, width=None):
             yield [row[c] if (c in row and row[c] is not None) else '' for c in columns]
     if script:
         for row in data():
-            print '\t'.join(unicode(c) for c in row)
+            print('\t'.join(str(c) for c in row))
     else:
         if width is None:
             if sys.stdout.isatty():
                 _, width = get_terminal_size()
             else:
-                width = sys.maxint
+                width = sys.maxsize
         min_width = [0] * len(columns)
         max_width = [0] * len(columns)
         for row in data():
             for i, val in enumerate(row):
-                min_width[i] = max(min_width[i], max(len(s) for s in (unicode(val).split() or [''])))
-                max_width[i] = max(max_width[i], len(unicode(val)))
+                min_width[i] = max(min_width[i], max(len(s) for s in (str(val).split() or [''])))
+                max_width[i] = max(max_width[i], len(str(val)))
         col_width = list(max_width)
         # compress the longest column if it would make the table fit
         min_table_width = sum(min_width) + len(columns) - 1
@@ -799,14 +799,14 @@ def _print_table(column_desc, rows, script, width=None):
                 # don't add spaces after the last column
                 fmt.append('%s')
             else:
-                fmt.append('%' + align_str + unicode(col_width[i]) + 's')
+                fmt.append('%' + align_str + str(col_width[i]) + 's')
         for row in data():
             # Using textwrap.wrap(break_on_hyphens=False) in order to avoid quadratic complexity
             # https://bugs.python.org/issue22687
-            cells = [textwrap.wrap(unicode(val), col_width[i], break_on_hyphens=False) for i, val in enumerate(row)]
+            cells = [textwrap.wrap(str(val), col_width[i], break_on_hyphens=False) for i, val in enumerate(row)]
             height = max(len(c) for c in cells)
             for line in range(height):
-                print ' '.join(fmt[i] % (cells[i][line] if line < len(cells[i]) else '') for i in range(len(columns)))
+                print(' '.join(fmt[i] % (cells[i][line] if line < len(cells[i]) else '') for i in range(len(columns))))
 
 
 def _print_messages(result):
@@ -862,7 +862,7 @@ class CLI(object):
                 cmd.print_help(parsed.subcommands)
                 return 0
             if args.version:
-                print "ndcli version", __version__
+                print("ndcli version", __version__)
                 return 0
             log_levels = 0
             if args.quiet:
@@ -893,8 +893,8 @@ class CLI(object):
                 return exitcode_warning()
             else:
                 return 0
-        except Exception, e:
-            logger.error(unicode(e))
+        except Exception as e:
+            logger.error(str(e))
             logger.debug('trace', exc_info=True)
             return exitcode_error()
 
@@ -909,7 +909,7 @@ class CLI(object):
         if delegations:
             for i, delegation in enumerate(delegations):
                 if not args.script and i > 0:
-                    print
+                    print()
                 _print_attributes(delegation, args.script)
         else:
             raise Exception("No suitable blocks found")
@@ -1027,7 +1027,7 @@ class CLI(object):
                       'comment', {}],
                      [{'name': l['name'],
                        'type': l['type'],
-                       'properties': ' '.join('%s:%s' % (k, v) for k, v in l['properties'].iteritems()),
+                       'properties': ' '.join('%s:%s' % (k, v) for k, v in l['properties'].items()),
                        'comment': l['comment']} for l in self.client.layer3domain_list()],
                      script=args.script)
 
@@ -1539,7 +1539,7 @@ class CLI(object):
         vlans = {}
         for pool in pools:
             vlans.setdefault(pool['vlan'] or '', []).append(pool['name'])
-        vlan_list = sorted(vlans.keys(), key=lambda x: x if x else 0)
+        vlan_list = sorted(list(vlans.keys()), key=lambda x: x if x else 0)
         table = [dict(vlan=v, pools=' '.join(vlans[v])) for v in vlan_list]
         _print_table(['vlan',  dict(align='r'),
                       'pools', dict()],
@@ -1556,8 +1556,8 @@ class CLI(object):
                 attributes = ['(%s)' % node['status']]
                 if 'pool' in node:
                     attributes.append('pool:%s' % node['pool'])
-                attributes.extend(['%s:%s' % (k, v) for k, v in sorted(node.get('attributes', {}).iteritems())])
-                print '  ' * level + '%s %s' % (node['ip'], ' '.join(attributes))
+                attributes.extend(['%s:%s' % (k, v) for k, v in sorted(node.get('attributes', {}).items())])
+                print('  ' * level + '%s %s' % (node['ip'], ' '.join(attributes)))
                 if 'children' in node:
                     print_tree(node['children'], level + 1)
         options = OptionDict(include_messages=True)
@@ -1730,7 +1730,7 @@ delegation).''')
             dict(desc='delete rr',
                  arguments=(zone_arg, zoneview_group),
                  extra=lambda args: [(args.zonename, args.view)])}
-    for right, prop in RIGHTS.iteritems():
+    for right, prop in RIGHTS.items():
         obj = prop.get('extra', None)
         args = prop.get('arguments', [])
         cmd.register('modify user-group grant ' + right, *args,
@@ -1944,7 +1944,7 @@ delegation).''')
         Deletes ZONENAME.
         '''
         if args.cleanup and not args.dryrun:
-            import zonedelete
+            from . import zonedelete
             zonedelete.delete_zone(self.client, args.zonename, profile=False, print_messages=_print_messages)
         else:
             options = OptionDict(profile=False)
@@ -1962,7 +1962,7 @@ delegation).''')
         if args.dryrun:
             self.client.zone_delete(args.profilename, profile=True, cleanup=True, dryrun=True)
         else:
-            import zonedelete
+            from . import zonedelete
             zonedelete.delete_zone(self.client, args.profilename, profile=True, print_messages=lambda _: None)
 
     def _set_zone_attrs(self, args, profile):
@@ -2043,7 +2043,7 @@ delegation).''')
         Delete VIEW from zone ZONENAME.
         '''
         if args.cleanup and not args.dryrun:
-            import zonedelete
+            from . import zonedelete
             zonedelete.delete_zone_view(self.client, args.zonename, args.view, print_messages=_print_messages)
         else:
             options = OptionDict()
@@ -2198,7 +2198,7 @@ delegation).''')
         result = self.client.zone_create_key(args.zonename, 'zsk', **options)
         _print_messages(result)
 
-    for rr, properties in RR_FIELDS.iteritems():
+    for rr, properties in RR_FIELDS.items():
         params = [arg.name for arg in properties['arguments']]
         create_rr_options = properties['arguments'] + [rr_view_group, rr_comment_option]
         create_profile_rr_options = create_rr_options + [
@@ -2260,7 +2260,7 @@ delegation).''')
                             rr_view_group,
                             layer3domain_group]
 
-    for rr, properties in RR_FIELDS.iteritems():
+    for rr, properties in RR_FIELDS.items():
         if rr in ('a', 'aaaa', 'ptr'):
             options = delete_rr_ip_options
         else:
@@ -2457,7 +2457,7 @@ delegation).''')
         '''
         options = OptionDict()
         options.set_if(view=args.view)
-        print self.client.zone_dump(args.zonename, **options)
+        print(self.client.zone_dump(args.zonename, **options))
 
     @cmd.register('list zone keys')
     def list_zone_keys(self, args):
@@ -2482,7 +2482,7 @@ delegation).''')
         if args.rr:
             for key in self.client.zone_list_keys(args.zonename):
                 key['zone'] = args.zonename
-                print '%(zone)s.\tIN\tDNSKEY %(flags)s 3 %(algorithm)s %(pubkey)s' % key
+                print('%(zone)s.\tIN\tDNSKEY %(flags)s 3 %(algorithm)s %(pubkey)s' % key)
         else:
             _print_table(['tag', {},
                           'flags', {},
@@ -2850,6 +2850,4 @@ register_history('layer3domain', arg_meta='LAYER3DOMAIN', cmd_args=(layer3domain
 
 
 def main():
-    import codecs
-    sys.stdout = codecs.getwriter('utf8')(sys.stdout)
     sys.exit(CLI().run(sys.argv))

@@ -2,7 +2,9 @@
 *.pyc
 .coverage
 .idea
+.vscode
 cover
+dist/
 doc/_build/*
 doc/gendoc.txt
 ndcli.egg-info/

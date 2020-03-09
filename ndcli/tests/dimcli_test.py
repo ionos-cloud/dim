@@ -1,7 +1,7 @@
 import sys
 import textwrap
 import unittest
-from cStringIO import StringIO
+from io import StringIO
 
 from . import ndcli, user, net, admin, assert_match_table
 from dimcli import _print_table
@@ -42,7 +42,7 @@ def test_list_vlans():
     vlans = {'': ['p_1', 'p_2', 'p_3'],
              '1': ['p1_1', 'p1_2'],
              '140': ['p140_1']}
-    for vlan in vlans.keys():
+    for vlan in list(vlans.keys()):
         for pool in vlans[vlan]:
             if vlan:
                 assert ndcli('create pool %s vlan %s' % (pool, vlan)).ok
@@ -51,7 +51,7 @@ def test_list_vlans():
     table = ndcli('list vlans -H').table
     for row in table:
         assert set(vlans[row[0]]) == set(row[1].split())
-    for vlan in vlans.keys():
+    for vlan in list(vlans.keys()):
         for pool in vlans[vlan]:
             assert ndcli('delete pool %s' % pool).ok
 
@@ -290,10 +290,10 @@ class RightsTest(unittest.TestCase):
     def test_allocate(self):
         assert admin('modify user-group networkgroup grant dns_admin').ok
         assert net('create container 12.0.0.0/8').ok
-        assert net('create pool pool').ok
-        assert net('modify pool pool add subnet 12.0.0.0/24').ok
-        assert net('modify pool pool get ip').ok
-        assert user('modify pool pool get ip').err
+        assert net('create pool test_pool').ok
+        assert net('modify pool test_pool subnet 12.0.0.0/24').ok
+        assert net('modify pool test_pool get ip').ok
+        assert user('modify pool test_pool get ip').err
 
         assert net('create user-group usergroup').ok
         assert net('modify user-group usergroup add user user').ok
@@ -301,14 +301,14 @@ class RightsTest(unittest.TestCase):
         assert user('list user-group usergroup rights -H').table == [['allocate', 'pool']]
 
         assert net('modify user-group usergroup revoke allocate pool').ok
-        assert user('modify pool pool get ip').err
+        assert user('modify pool test_pool get ip').err
         assert net('modify user-group usergroup grant allocate pool').ok
         assert net('modify user-group usergroup remove user user').ok
-        assert user('modify pool pool get ip').err
+        assert user('modify pool test_pool get ip').err
 
         assert net('delete user-group usergroup').ok
-        assert net('modify pool pool remove subnet 12.0.0.0/24 --force --cleanup').ok
-        assert net('delete pool pool -D').ok
+        assert net('modify pool test_pool remove subnet 12.0.0.0/24 --force --cleanup').ok
+        assert net('delete pool test_pool -D').ok
         assert net('delete container 12.0.0.0/8').ok
 
     def test_revoke_network_admin(self):
