@@ -4,7 +4,7 @@ setuptools<34.0.0
 mysqlclient==1.4.6
 SQLAlchemy==1.1.1
 pyldap==2.4.25.1
-Werkzeug==0.11.11
+Werkzeug==0.15.3
 Flask==0.10
 Flask-SQLAlchemy==2.1
 Jinja2==2.6
