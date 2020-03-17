@@ -1,8 +1,9 @@
 # What needs to be done next
 * explain/advertise what DNS and IP Management (DIM) does
-* rework internal Documentation and publish
+* rework internal documentation and publish
 * automate .rpm and .deb creation for dim-client, ndcli, pdns-output and dim
-* rework internal testcases and add them again
+* rework internal testcases and add/publish
+* port internal automated testing to travis or something else
 * rethink graphical interface of DIM
 * publish internal bugs and feature requests to github issue tracker
 * evaluate if there is interest for our DIM driven DHCP management
