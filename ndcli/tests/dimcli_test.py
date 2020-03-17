@@ -291,7 +291,7 @@ class RightsTest(unittest.TestCase):
         assert admin('modify user-group networkgroup grant dns_admin').ok
         assert net('create container 12.0.0.0/8').ok
         assert net('create pool test_pool').ok
-        assert net('modify pool test_pool subnet 12.0.0.0/24').ok
+        assert net('modify pool test_pool subnet add 12.0.0.0/24').ok
         assert net('modify pool test_pool get ip').ok
         assert user('modify pool test_pool get ip').err
 
