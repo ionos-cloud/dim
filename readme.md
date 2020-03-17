@@ -1,3 +1,12 @@
+# What needs to be done next
+* explain/advertise what DNS and IP Management (DIM) does
+* rework internal Documentation and publish
+* automate .rpm and .deb creation for dim-client, ndcli, pdns-output and dim
+* rework internal testcases and add them again
+* rethink graphical interface of DIM
+* publish internal bugs and feature requests to github issue tracker
+* evaluate if there is interest for our DIM driven DHCP management
+
 # Running dim & pdns-output in docker
 The setup needs a mysql database for dim.
 The pdns databases written by **pdns-output** must be initialized with the schema in `./dim/pdns.sql` (these databases are required when running `ndcli create output`)
