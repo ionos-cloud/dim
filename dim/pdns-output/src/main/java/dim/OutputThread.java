@@ -93,7 +93,7 @@ class OutputThread implements Runnable {
     /**
      * Process transaction and return true in case of success
      */
-    private boolean processTransaction(List<OutputUpdate> actions) {
+    public boolean processTransaction(List<OutputUpdate> actions) {
         if (actions == null || actions.size() == 0) {
             log.warn("Empty transaction");
             return true;

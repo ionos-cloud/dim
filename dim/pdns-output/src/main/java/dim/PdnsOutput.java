@@ -97,13 +97,15 @@ public class PdnsOutput {
             try (Connection conn = dimDataSource.getConnection()) {
                 DSLContext dim = using(conn, SQLDialect.MYSQL);
                 try (DatabaseNamedLock ignored = new DatabaseNamedLock(dim, "pdns_poller", lockTimeout)) {
-                    grabTransactions(dim).forEach(this::queueTransaction);
-                    Thread.sleep(pollDelay);
+                    while (true) {
+                        grabTransactions(dim).forEach(this::queueTransaction);
+                        Thread.sleep(pollDelay);
+                    }
+                } catch (LockTimeout e) {
                 }
             } catch (SQLException | DataAccessException e) {
                 log.error("SQL error", e);
                 Thread.sleep(10_000);
-            } catch (LockTimeout e) {
             }
         }
     }
@@ -171,10 +173,15 @@ public class PdnsOutput {
 
             OutputThread ret = new OutputThread(output_id, output.get("name", String.class),
                     output.get("db_uri", String.class), dimDataSource, retryInterval, printTxn, maxQuerySize);
-            executor.execute(ret);
             return ret;
         });
-        thread.offer(actions);
+        try {
+            while (!thread.processTransaction(actions)) {
+                Thread.sleep(retryInterval);
+            }
+        } catch (InterruptedException e) {
+            log.info("Thread for output interrupted");
+        }
     }
 
     public static HikariConfig dimDbConfig(Properties config) {
