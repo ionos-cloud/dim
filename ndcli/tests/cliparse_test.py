@@ -18,7 +18,7 @@ class T1(TestCase):
 
     def test1(self):
         p = self.c.parse(('set', '-D', 'mail', '1', 'export_file', '2'))
-        print p.errors
+        print(p.errors)
         assert not p.errors
         assert p.subcommands == ['set']
         assert p.values == {'detailed': True,

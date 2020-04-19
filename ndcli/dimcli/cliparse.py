@@ -79,7 +79,7 @@ class Parser(object):
                     [('values', Namespace(copy.deepcopy(self.values)))])
 
     def set_state(self, state):
-        for attr, val in state.iteritems():
+        for attr, val in state.items():
             setattr(self, attr, val)
 
     def add_options(self, options):
@@ -129,8 +129,8 @@ class Parser(object):
             else:
                 option.parse(self)
         if self._completing_option:
-            self._add_completions('-' + k for k in self.short.keys())
-            self._add_completions('--' + k for k in self.long.keys())
+            self._add_completions('-' + k for k in list(self.short.keys()))
+            self._add_completions('--' + k for k in list(self.long.keys()))
 
     def parse_arguments(self, arguments):
         for arg in arguments:
@@ -441,7 +441,7 @@ class Command(object):
     def handle_shell_completion(self):
         if 'COMP_LINE' in os.environ:
             for c in self.complete(os.environ['COMP_LINE'], int(os.environ['COMP_POINT'])):
-                print c
+                print(c)
             sys.exit()
 
     def usage(self):
@@ -457,7 +457,7 @@ class Command(object):
         for cmd_name in subcommands:
             last = last._get_subcommand(cmd_name)
             if last is None:
-                print "Unknown subcommand: %s" % cmd_name
+                print("Unknown subcommand: %s" % cmd_name)
                 return
             chain.append(last)
 
@@ -467,9 +467,9 @@ class Command(object):
                 usage += ' [<subcommand>]'
             else:
                 usage += ' <subcommand>'
-        print 'Usage:', usage
+        print(f"Usage: {usage}")
         if last.description or last.help:
-            print "\n", last.description or last.help
+            print("\n", last.description or last.help)
 
         def _cmd_chains(cmd, stop_on_args=False):
             '''Follows subcommand chains until an argument can be specified'''
@@ -478,26 +478,26 @@ class Command(object):
             else:
                 return dict(((s.name + ' ' + name).strip(), cmd)
                             for s in cmd.subcommands
-                            for name, cmd in _cmd_chains(s, True).iteritems())
+                            for name, cmd in _cmd_chains(s, True).items())
         if last.subcommands:
-            print "\nSubcommands:"
+            print("\nSubcommands:")
             if last.default_subcommand:
                 cmd = last._get_subcommand(last.default_subcommand)
-                print "  %-20s %s" % ('[%s]' % cmd.name, cmd.help or cmd.name)
-            for name, cmd in sorted(_cmd_chains(last).iteritems()):
+                print("  %-20s %s" % ('[%s]' % cmd.name, cmd.help or cmd.name))
+            for name, cmd in sorted(_cmd_chains(last).items()):
                 if not last.default_subcommand or last.default_subcommand != name:
-                    print "  %-20s %s" % (name, cmd.help or name)
+                    print("  %-20s %s" % (name, cmd.help or name))
 
         for i, cmd in enumerate(reversed(chain)):
             if cmd.options:
-                print "\nOptions for %s:" % ' '.join(c.name for c in chain[:len(chain) - i])
+                print("\nOptions for %s:" % ' '.join(c.name for c in chain[:len(chain) - i]))
                 wrapper = textwrap.TextWrapper(width=80,
                                                initial_indent=' ' * 26,
                                                subsequent_indent=' ' * 26)
                 for opt in sorted(cmd.options, key=lambda x: x.long or x.short):
-                    print "  %-2s %-20s %s" % ('-' + opt.short if opt.short else '',
+                    print("  %-2s %-20s %s" % ('-' + opt.short if opt.short else '',
                                                '--' + opt.long if opt.long else '',
-                                               wrapper.fill(opt.help or '').lstrip())
+                                               wrapper.fill(opt.help or '').lstrip()))
 
     def _get_subcommand(self, subcommand):
         for cmd in self.subcommands:
@@ -539,3 +539,6 @@ class Command(object):
                     cmd._parse_command(parser)
                 else:
                     parser.error("Invalid subcommand %s" % token)
+
+
+

@@ -59,27 +59,27 @@ class ParsedRR(object):
 
 
 rdata_params = {
-    'A': lambda(rdata): dict(ip=rdata.address),
-    'AAAA': lambda(rdata): dict(ip=rdata.address),
-    'PTR': lambda(rdata): dict(ptrdname=str(rdata.target)),
-    'CNAME': lambda(rdata): dict(cname=str(rdata.target)),
-    'MX': lambda(rdata): dict(preference=int(rdata.preference), exchange=str(rdata.exchange)),
-    'NS': lambda(rdata): dict(nsdname=str(rdata.target)),
-    'TXT': lambda(rdata): dict(strings=rdata.strings),
-    'SPF': lambda(rdata): dict(strings=rdata.strings),
-    'RP': lambda(rdata): dict(mbox=str(rdata.mbox), txtdname=str(rdata.txt)),
-    'HINFO': lambda(rdata): dict(cpu=rdata.cpu, os=rdata.os),
-    'SRV': lambda(rdata):
+    'A': lambda rdata: dict(ip=rdata.address),
+    'AAAA': lambda rdata: dict(ip=rdata.address),
+    'PTR': lambda rdata: dict(ptrdname=str(rdata.target)),
+    'CNAME': lambda rdata: dict(cname=str(rdata.target)),
+    'MX': lambda rdata: dict(preference=int(rdata.preference), exchange=str(rdata.exchange)),
+    'NS': lambda rdata: dict(nsdname=str(rdata.target)),
+    'TXT': lambda rdata: dict(strings=rdata.strings),
+    'SPF': lambda rdata: dict(strings=rdata.strings),
+    'RP': lambda rdata: dict(mbox=str(rdata.mbox), txtdname=str(rdata.txt)),
+    'HINFO': lambda rdata: dict(cpu=rdata.cpu, os=rdata.os),
+    'SRV': lambda rdata:
         dict(priority=int(rdata.priority),
              weight=int(rdata.weight),
              port=int(rdata.port),
              target=str(rdata.target)),
-    'CERT': lambda(rdata):
+    'CERT': lambda rdata:
         dict(certificate_type=int(rdata.certificate_type),
              key_tag=int(rdata.key_tag),
              algorithm=int(rdata.algorithm),
              certificate=rdata.certificate),
-    'NAPTR': lambda(rdata):
+    'NAPTR': lambda rdata:
         dict(order=int(rdata.order),
              preference=int(rdata.preference),
              flags=rdata.flags,
@@ -139,7 +139,7 @@ def get_first_soa(parsed_zone):
 
 def get_parsed_records(parsed_zone, default_ttl=None):
     records = []
-    for name, rdlist in parsed_zone.items():
+    for name, rdlist in list(parsed_zone.items()):
         for rdataset in rdlist.rdatasets:
             for rdata in rdataset.items:
                 rr_type = dns.rdatatype.to_text(rdata.rdtype)
@@ -230,6 +230,6 @@ def import_zone(server, content, zone_name='', view=None, revzone=False):
             if args['type'] == 'PTR':
                 args['create_revzone'] = True
             msg(server.rr_create(**args))
-        except Exception, e:
+        except Exception as e:
             logging.debug('Error importing %s' % parsed_record.src, exc_info=True)
             logging.error(str(e))

@@ -4,7 +4,7 @@ import os.path
 import shlex
 import sys
 import re
-from cStringIO import StringIO
+from io import StringIO
 from dimcli import CLI, logger
 
 cli = CLI()
@@ -15,7 +15,7 @@ def assertDictSubset(actual, expected, msg=None):
     """Checks whether actual is a superset of expected."""
     missing = []
     mismatched = []
-    for key, value in expected.iteritems():
+    for key, value in expected.items():
         if key not in actual:
             missing.append(key)
         elif value != actual[key]:

@@ -1,4 +1,4 @@
-from zoneimport import target_from_fields, toposort
+from .zoneimport import target_from_fields, toposort
 from dimcli import _print_messages
 
 
