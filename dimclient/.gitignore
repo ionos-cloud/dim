@@ -1,6 +1,7 @@
 *~
 *.pyc
 build/
+dist/
 dimclient.egg-info/
 debian/ui-python-dimclient
 debian/debhelper.log

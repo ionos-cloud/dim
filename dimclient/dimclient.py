@@ -3,9 +3,9 @@ Usage example::
 
     from dimclient import script_client
     client = script_client('http://localhost:5000')
-    print client.ip_list(pool='*', type='all', limit=2)
+    print(client.ip_list(pool='*', type='all', limit=2))
 '''
-from __future__ import print_function
+
 import six
 
 try:
@@ -18,9 +18,10 @@ if six.PY3:
     from urllib.error import HTTPError
     from urllib.request import urlopen, Request, build_opener, HTTPCookieProcessor
 else:
-    from cookielib import LWPCookieJar
-    from urllib import urlencode
-    from urllib2 import urlopen, Request, build_opener, HTTPCookieProcessor, HTTPError
+    from http.cookiejar import LWPCookieJar
+    from urllib.parse import urlencode
+    from urllib.request import urlopen, Request, build_opener, HTTPCookieProcessor
+    from urllib.error import HTTPError
 import logging
 import getpass
 import time
@@ -35,8 +36,8 @@ PROTOCOL_VERSION = 17
 
 def agnostic_input():
     if six.PY3:
-        return input()
-    return raw_input()
+        return eval(input())
+    return input()
 
 
 class DimError(Exception):
