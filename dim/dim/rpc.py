@@ -41,7 +41,7 @@ from dim.models import (Pool, FavoritePool, Ipblock, IpblockAttr, IpblockAttrNam
 from dim.models.history import HistorySelect, record_history
 from dim.rrtype import validate_mail, RRType
 from dim.transaction import TransactionProxy
-from dim.util import is_reverse_zone
+from dim.util import is_reverse_zone, make_fqdn
 
 RROrder = collections.namedtuple('RROrder', ['fn', 'rr_order_by', 'soa_order_by'])
 
@@ -3058,12 +3058,13 @@ class RPC(object):
             if reverse_zone:
                 view_name = kwargs['ip'].layer3domain.name
                 view_exists = ZoneView.query.filter_by(zone=reverse_zone, name=view_name).count()
+                forward = make_fqdn(forward_name, forward_zone)
                 print view_name, view_exists, zone
                 if view_exists:
                     dim.dns.create_single_rr(name=reverse_name,
                                              zone=reverse_zone,
                                              view=view_name,
-                                             ptrdname=forward_name,
+                                             ptrdname=forward,
                                              rr_type='PTR',
                                              overwrite=overwrite_ptr,
                                              user=self.user,
