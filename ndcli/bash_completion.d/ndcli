@@ -1,2 +1,2 @@
-have ndcli &&
+_have ndcli &&
 complete -C ndcli ndcli
