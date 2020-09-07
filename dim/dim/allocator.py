@@ -238,7 +238,7 @@ def substract_blocks(ranges, maxnr, prefix, version, strategy):
                        version)
             result.append(block)
             to_remove.setdefault(candidates[cid].range, []).append(block)
-        for i, blocks in to_remove.iteritems():
+        for i, blocks in to_remove.items():
             remove_blocks(ranges, i, blocks)
         return result
 

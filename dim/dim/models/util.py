@@ -63,7 +63,7 @@ class WithAttr(object):
         # Set the values
         old_values = {}
         name2attr = dict((attr.name.name, attr) for attr in current)
-        for name, value in attributes.iteritems():
+        for name, value in attributes.items():
             if name in name2attr:
                 old_values[name] = name2attr[name].value
                 name2attr[name].value = value
@@ -72,7 +72,7 @@ class WithAttr(object):
                                               value=value,
                                               **{self.attr_backref: self}))
         self.update_modified()
-        for k, v in attributes.iteritems():
+        for k, v in attributes.items():
             old_value = old_values.get(k, None)
             if v != old_value:
                 record_history(self, action='set_attr', attrname=k, newvalue=v, oldvalue=old_value)
