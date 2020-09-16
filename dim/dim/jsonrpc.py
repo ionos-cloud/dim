@@ -97,9 +97,11 @@ def login():
     tool = None
     if 'password' in request.form:
         authenticated = _check_credentials(username, request.form.get('password', None))
+        logging.debug("login for user %s %s", username, "ok" if authenticated else "failed")
     else:
         tool = request.form.get('tool')
         authenticated = _check_tool_login(username, tool, request.form.get('salt'), request.form.get('sign'))
+        logging.debug("login for user %s with tool %s %s", username, tool, "ok" if authenticated else "failed")
     return _do_login(authenticated, username, tool)
 
 
@@ -130,13 +132,18 @@ def old_login():
     tool = None
     if not frontend_login:
         authenticated = _check_credentials(username, request.form.get('credential_1'))
+        logging.debug("NetdotLogin for user %s %s", username, "ok" if authenticated else "failed")
     else:
         tool = 'dimfe'
         salt = request.form.get('credential_2')
         sign = request.form.get('credential_3')
         authenticated = _check_tool_login(username, tool, salt, sign)
+        logging.debug("NetdotLogin for user %s with tool dimfe %s", username, "ok" if authenticated else "failed")
     return _do_login(authenticated, username, tool=tool)
 
+def reject_request():
+    logging.info(u'Username not present in session: %s. Headers %s', session, repr(request.headers))
+    abort(403)
 
 @jsonrpc.route('/')
 @jsonrpc.route('/index.html')
@@ -144,13 +151,13 @@ def index():
     if 'username' in session:
         return 'Hi there'
     else:
-        abort(403)
+        reject_request()
 
 
 @jsonrpc.route('/jsonrpc', methods=['POST'])
 def jsonrpc_handler():
     if 'username' not in session:
-        abort(403)
+        reject_request()
     # logging.debug('jsonrpc request: %r', request.data)
     json_response = dict(jsonrpc='2.0', id=None)
     try:
