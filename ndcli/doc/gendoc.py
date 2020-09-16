@@ -15,7 +15,7 @@ def options(opt_list):
 
 def print_options(opt_list):
     for name, help in options(opt_list):
-        print '%-23s' % name, help
+        print('%-23s' % name, help)
 
 
 def command_leaves(cmd):
@@ -28,19 +28,19 @@ def command_leaves(cmd):
 
 
 def gendoc():
-    print "Global Options\n==============\n"
+    print("Global Options\n==============\n")
     print_options(cmd.options)
 
-    print "\nCommands\n========\n"
+    print("\nCommands\n========\n")
     for leaf, chain in command_leaves(cmd):
         usage = cmd.chain_usage(chain)
-        print usage
-        print '-' * len(usage)
+        print(usage)
+        print('-' * len(usage))
         if leaf.description or leaf.help:
-            print "\n", leaf.description or leaf.help
+            print("\n", leaf.description or leaf.help)
         options = sum([c.options for c in chain[1:]], [])
         if options:
-            print "\nOptions:\n"
+            print("\nOptions:\n")
             print_options(options)
         print
 
