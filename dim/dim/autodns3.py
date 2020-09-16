@@ -1,7 +1,7 @@
-import ConfigParser
+import configparser
 import datetime
 import logging
-import StringIO
+import io
 import time
 import xml.etree.ElementTree as et
 from contextlib import contextmanager
@@ -246,9 +246,9 @@ def read_config():
     global proxies
     try:
         CONFIG_FILE = '/etc/dim/dim-autodns3-plugin.cfg'
-        parser = ConfigParser.ConfigParser()
+        parser = configparser.ConfigParser()
         with open(CONFIG_FILE) as stream:
-            stream = StringIO.StringIO("[root]\n" + stream.read())
+            stream = io.StringIO("[root]\n" + stream.read())
             parser.readfp(stream)
             proxy = parser.get('root', 'proxy')
             if proxy:

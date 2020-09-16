@@ -21,5 +21,5 @@ error_types = dict(
     PermissionDeniedError=23,
     HasChildrenError=24,
 )
-for name, code in error_types.iteritems():
+for name, code in error_types.items():
     globals()[name] = type(name, (DimError,), {'code': code})

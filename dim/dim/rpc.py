@@ -104,7 +104,7 @@ class RPC(object):
     def server_info(self):
         d = {}
         prefix = 'SERVER_INFO_'
-        for k, v in app.config.iteritems():
+        for k, v in app.config.items():
             if k.startswith(prefix):
                 d[k[len(prefix):].lower()] = v
         u = os.uname()
@@ -3059,7 +3059,7 @@ class RPC(object):
                 view_name = kwargs['ip'].layer3domain.name
                 view_exists = ZoneView.query.filter_by(zone=reverse_zone, name=view_name).count()
                 forward = make_fqdn(forward_name, forward_zone)
-                print view_name, view_exists, zone
+                print(view_name, view_exists, zone)
                 if view_exists:
                     dim.dns.create_single_rr(name=reverse_name,
                                              zone=reverse_zone,
@@ -3153,7 +3153,7 @@ class RPC(object):
             kwargs['ip'] = dim.dns.get_ip_from_ptr_name(name)
         if rr_type in ('A', 'AAAA', 'PTR') and 'ip' in kwargs:
             ip = parse_ip(kwargs['ip'])
-            for type, version in dict(A=4, AAAA=6).iteritems():
+            for type, version in dict(A=4, AAAA=6).items():
                 if rr_type == type and ip.version != version:
                     raise InvalidParameterError('Invalid IPv%d: %s' % (version, kwargs['ip']))
 

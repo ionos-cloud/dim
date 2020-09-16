@@ -229,7 +229,7 @@ def validate_character_string(self, key, value):
     return '"%s"' % value
 
 
-class RRMeta(type):
+class RRMeta():
     _classes = {}
 
     def __init__(cls, name, bases, dct):

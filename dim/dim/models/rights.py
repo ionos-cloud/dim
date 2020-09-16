@@ -283,7 +283,7 @@ class User(db.Model):
         return perms
 
 
-for can, conf in UserRights.iteritems():
+for can, conf in UserRights.items():
     def can_func(self, tool_access=conf['tool_access'], access=conf['access']):
         if not tool_access and get_session_tool():
             return False

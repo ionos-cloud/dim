@@ -4,7 +4,7 @@ import datetime
 import hashlib
 import inspect
 import logging
-import urlparse
+import urllib
 import xml.etree.ElementTree as et
 
 import requests
@@ -26,18 +26,16 @@ _options_pos = dict(
 
 
 def _update_options_pos():
-    for name, func in inspect.getmembers(RPC, inspect.ismethod):
+    for name, func in inspect.getmembers(RPC, inspect.isfunction):
         if name.startswith('_'):
             continue
-        required_args = func.__func__.__code__.co_argcount
-        if func.__func__.__defaults__:
-            required_args -= len(func.__func__.__defaults__)
+        required_args = func.__code__.co_argcount
+        if func.__defaults__:
+            required_args -= len(func.__defaults__)
         if name not in _options_pos:
             _options_pos[name] = required_args
 
-
 _update_options_pos()
-
 
 def _check_credentials(username, password):
     method = current_app.config['AUTHENTICATION_METHOD']
@@ -113,7 +111,7 @@ def cas():
     '''
     service = request.args.get('service')
     ticket = request.args.get('ticket')
-    r = requests.get(urlparse.urljoin(current_app.config['CAS_URL'], 'p3/serviceValidate'),
+    r = requests.get(urllib.urljoin(current_app.config['CAS_URL'], 'p3/serviceValidate'),
                      params=dict(service=service, ticket=ticket))
     if r.status_code == 200:
         xml = et.fromstring(r.content)

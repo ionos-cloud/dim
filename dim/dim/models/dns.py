@@ -269,7 +269,7 @@ class ZoneView(db.Model, TrackChanges):
             rrs = RR.query.filter_by(view=self, ttl=None).all()
             for rr in rrs:
                 OutputUpdate.send_rr_action(rr, OutputUpdate.DELETE_RR)
-        for name, value in attributes.iteritems():
+        for name, value in attributes.items():
             setattr(self, name, value)
         if 'serial' not in attributes:
             self.update_serial()
@@ -357,15 +357,16 @@ class RR(db.Model, TrackChanges):
 
     @staticmethod
     def get_class(rr_type):
-        if rr_type not in RRMeta._classes:
-            raise InvalidParameterError('Invalid rr type: %s' % rr_type)
-        return RRMeta._classes[rr_type]
+        for c in RRType.__subclasses__():
+            if c.__name__ == rr_type:
+                return c
+        raise InvalidParameterError('Invalid rr type: %s' % rr_type)
 
     @staticmethod
     def validate_args(type, **kwargs):
         rr_class = RR.get_class(type)
         try:
-            for field, validate in rr_class.validate.iteritems():
+            for field, validate in rr_class.validate.items():
                 kwargs[field] = validate(None, field, kwargs[field])
         except ValueError as e:
             raise InvalidParameterError(text_type(e))

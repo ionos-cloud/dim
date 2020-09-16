@@ -32,12 +32,12 @@ def user_session(username, tool, ip):
 def time_function(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
+        start = time.time()
+        name = "%s(%s)" % (f.__name__, ', '.join([safe_repr(a) for a in args] +
+                ["%s=%s" % (k, safe_repr(v)) for k, v in kwargs.items()]))
         try:
             Messages.clear()
-            g.tid = uuid.uuid4().get_hex()[16:]
-            start = time.time()
-            name = "%s(%s)" % (f.__name__, ', '.join([safe_repr(a) for a in args] +
-                                                     ["%s=%s" % (k, safe_repr(v)) for k, v in kwargs.iteritems()]))
+            g.tid = uuid.uuid4().hex[16:]
             logging.info("%s called %s", get_session_username(), name)
             return f(*args, **kwargs)
         finally:
@@ -81,7 +81,7 @@ def retryable_transaction(f):
                 Messages.restore()
             try:
                 return f(*args, **kwargs)
-            except OperationalError, e:
+            except OperationalError as e:
                 if i == (attempts - 1) or all(msg not in e.message for msg in lock_messages_error):
                     raise
                 logging.info('Error processing transaction: %s. Retrying', e)
