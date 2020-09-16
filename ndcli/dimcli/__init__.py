@@ -14,11 +14,9 @@ from operator import itemgetter
 from . import zoneimport
 from .cliparse import Command, Option, Group, Argument, Token
 
-
-__version__ = '2.4.0'
+__version__ = '3.0.0'
 
 logger = logging.getLogger('ndcli')
-
 
 def _readconfig(config_file):
     config = {}
