@@ -257,7 +257,7 @@ class PdnsDatabase implements Storage {
     @Override
     public void removeAuthAndOrdernameForSubzone(Name domain, Name name) {
         sql.execute("UPDATE records JOIN domains ON domains.id=records.domain_id SET auth = 0, ordername = NULL WHERE "
-                        + subzoneCondition + " AND records.type != 'NS'",
+                        + subzoneCondition + " AND records.type NOT IN ('NS', 'DS')",
                 str(domain), str(name), reverseString(str(name)));
     }
 

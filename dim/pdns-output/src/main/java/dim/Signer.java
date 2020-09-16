@@ -80,6 +80,10 @@ public class Signer {
         return false;
     }
 
+    private boolean delegatedNeedsOrdername(int type) {
+        return type == Type.NS || type == Type.DS;
+    }
+
     /**
      * Check each row in rows if it needs non-empty terminals. Return the list ENTs rrs that need to be created.
      * When creating non-empty terminals for a name, look no further than stopAt. (This is fine when a delegation got
@@ -135,10 +139,10 @@ public class Signer {
         List<Row> rows = signed.stream().map(r -> {
             boolean needOrdername = true;
             // TODO complete the invariant computation
-            if (isGenerated(r.getType()) || (r.getType() != Type.NS && isDelegated.test(r.getName())))
+            if (isGenerated(r.getType()) || (!delegatedNeedsOrdername(r.getType()) && isDelegated.test(r.getName())))
                 needOrdername = false;
             return new Row(r, needOrdername ? computeNSECOrdername(domain, r.getName(), zsp) : null,
-                    r.getType() == Type.RRSIG || r.getType() == Type.NSEC || !isDelegated.test(r.getName()));
+                    r.getType() == Type.RRSIG || r.getType() == Type.NSEC || !isDelegated.test(r.getName()) || (isDelegated.test(r.getName()) && r.getType() == Type.DS));
         }).collect(Collectors.toList());
         double signingTime = signTimer.reset();
 
@@ -412,10 +416,10 @@ public class Signer {
         long soaMinimum = getSoaMinimum(domain);
         boolean isDelegated = isDelegated(domain, record.getName());
         String ordername = null;
-        if (!(record.getType() != Type.NS && isDelegated))
+        if (!isDelegated || delegatedNeedsOrdername(record.getType()))
             ordername = computeNSECOrdername(domain, record.getName(), zsp);
         boolean nonApexNS = record.getType() == Type.NS && !record.getName().equals(domain);
-        boolean auth = !(isDelegated || nonApexNS);
+        boolean auth = !((isDelegated && record.getType() != Type.DS) || nonApexNS);
 
         boolean createsDelegation = false;
         if (nonApexNS)
@@ -448,8 +452,8 @@ public class Signer {
                     if (row.record.getType() != Type.NS && row.ordername != null)
                         deleteNSEC3(domain, row.record.getName(), soaMinimum, zsp);
             }
-            // Delete all signatures
-            subzoneRows.stream().filter(row -> row.record.getType() == Type.RRSIG || row.record.getType() == Type.NSEC)
+            // Delete all signatures except for those of DS records
+            subzoneRows.stream().filter(row -> (row.record.getType() == Type.RRSIG && row.record.getRRsetType() != Type.value("DS")) || row.record.getType() == Type.NSEC)
                     .forEach(row -> storage.deleteRowById(domain, row.id));
             for (Row row : subzoneRows)
                 if (row.record.getType() == Type.NS)
