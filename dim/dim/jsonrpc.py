@@ -55,12 +55,13 @@ def _do_login(authenticated, username, tool):
             db.session.add(User(username))
             db.session.commit()
             logging.debug(u'Created user %s' % username)
+        session.clear()
         session.permanent = request.form.get('permanent_session', False)
         session['username'] = username
         if tool:
             session['tool'] = tool.lower()
     elif 'username' in session:
-        session.pop('username')
+        session.clear()
     if tool and tool.lower() == 'dimfe':
         return index()
     if authenticated:
@@ -141,9 +142,12 @@ def old_login():
         logging.debug("NetdotLogin for user %s with tool dimfe %s", username, "ok" if authenticated else "failed")
     return _do_login(authenticated, username, tool=tool)
 
-def reject_request():
+def reject_request(msg):
     logging.info(u'Username not present in session: %s. Headers %s', session, repr(request.headers))
-    abort(403)
+
+    json_response = dict(jsonrpc='2.0', id=None)
+    return jsonify(error=dict(code=-32700, message=msg, status_code=403),
+       **json_response)
 
 @jsonrpc.route('/')
 @jsonrpc.route('/index.html')
@@ -151,13 +155,13 @@ def index():
     if 'username' in session:
         return 'Hi there'
     else:
-        reject_request()
+        return reject_request('invalid session')
 
 
 @jsonrpc.route('/jsonrpc', methods=['POST'])
 def jsonrpc_handler():
     if 'username' not in session:
-        reject_request()
+        return reject_request('invalid session')
     # logging.debug('jsonrpc request: %r', request.data)
     json_response = dict(jsonrpc='2.0', id=None)
     try:

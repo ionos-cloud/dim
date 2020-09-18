@@ -33,15 +33,6 @@ class TransactionLoggingFormatter(logging.Formatter):
         return logging.Formatter.format(self, record)
 
 
-class ExpiringSessionInterface(SecureCookieSessionInterface):
-    def get_expiration_time(self, app, session):
-        if session.permanent:
-            seconds = app.config['PERMANENT_SESSION_LIFETIME']
-        else:
-            seconds = app.config['TEMPORARY_SESSION_LIFETIME']
-        return datetime.utcnow() + timedelta(seconds=seconds)
-
-
 def create_app(db_mode=None, testing=False):
     app = Flask(__name__)
 
@@ -63,8 +54,6 @@ def create_app(db_mode=None, testing=False):
         logging.error('Error parsing LAYER3DOMAIN_WHITELIST', exc_info=1)
         sys.exit(1)
     db.init_app(app)
-
-    app.session_interface = ExpiringSessionInterface()
 
     from .jsonrpc import jsonrpc
     app.register_blueprint(jsonrpc)
