@@ -202,7 +202,7 @@ def _parse_strings(value):
 
 
 def validate_strings(self, key, value):
-    if isinstance(value, basestring):
+    if isinstance(value, str):
         strings = _parse_strings(value)
     elif isinstance(value, list):
         strings = map(lambda v: _unescapify(v), value)
