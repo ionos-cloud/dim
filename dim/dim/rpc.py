@@ -3732,10 +3732,6 @@ def get_subnet_ips(version, start, end, ip_type, limit, full, attributes, layer3
                                    extra_columns=extra_columns,
                                    id_map_needed=custom_attrs_needed or ptr_needed)
     if custom_attrs_needed:
-        if custom_attrs:
-            join_cond = [and_(IpblockAttr.name_id == IpblockAttrName.id, IpblockAttrName.name.in_(custom_attrs))]
-        else:
-            join_cond = []
         attr_query = _filter_addresses(
             db.session.query(Ipblock.id,
                              IpblockAttrName.name.label('name'),
@@ -3743,10 +3739,16 @@ def get_subnet_ips(version, start, end, ip_type, limit, full, attributes, layer3
             version=version,
             layer3domain=layer3domain,
             start=start,
-            end=end).outerjoin(IpblockAttr).outerjoin(IpblockAttrName, *join_cond)
+            end=end) \
+            .outerjoin(IpblockAttr, IpblockAttr.ipblock_id == Ipblock.id) \
+            .join(IpblockAttrName, IpblockAttr.name_id == IpblockAttrName.id)
+        if custom_attrs:
+            attr_query = attr_query.filter(IpblockAttrName.name.in_(custom_attrs))
+
         for id, name, value in attr_query:
             if name is not None and id in id2ip_dict:
                 id2ip_dict[id][name] = value
+
     if ptr_needed:
         ptrs = _filter_addresses(db.session.query(Ipblock.id, RR.target).filter(RR.type == 'PTR'),
                                  version=version,
