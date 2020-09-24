@@ -271,7 +271,7 @@ def orphaned_references(rr, to_delete=None):
         .filter(RR.target == rr.name).filter(RR.type != 'PTR')\
         .join(same_name, and_(same_name.zoneview_id == rr.zoneview_id,
                               same_name.name == rr.name))\
-        .group_by(RR.id).having(func.count(same_name.id) == same_name_count)
+        .group_by(*RR.__table__.columns).having(func.count(same_name.id) == same_name_count)
     if rr.type in ('A', 'AAAA'):
         other_a_records = aliased(RR)
         # reverse records are only deleted when the last forward record is deleted
@@ -281,7 +281,7 @@ def orphaned_references(rr, to_delete=None):
             .join(other_a_records, and_(other_a_records.name == rr.name,
                                         other_a_records.ipblock_id == rr.ipblock_id,
                                         other_a_records.type.in_(('A', 'AAAA'))))
-            .group_by(RR.id).having(func.count(other_a_records.id) == 1))
+            .group_by(*RR.__table__.columns).having(func.count(other_a_records.id) == 1))
         # NS and MX targets must have A/AAAA records
         other_a_count = len([r for r in to_delete if r.name == rr.name and
                              r.zoneview_id == rr.zoneview_id and
@@ -293,7 +293,7 @@ def orphaned_references(rr, to_delete=None):
             .join(other_a_records, and_(other_a_records.zoneview_id == rr.zoneview_id,
                                         other_a_records.name == rr.name,
                                         other_a_records.type.in_(('A', 'AAAA'))))
-            .group_by(RR.id).having(func.count(other_a_records.id) == other_a_count))
+            .group_by(*RR.__table__.columns).having(func.count(other_a_records.id) == other_a_count))
     elif rr.type == 'PTR':
         # forward records
         refs = refs.union(RR.query
@@ -312,7 +312,7 @@ def orphaned_references(rr, to_delete=None):
                 .join(other_records, and_(other_records.zoneview_id == rr.zoneview_id,
                                           other_records.name == rr.name,
                                           other_records.type.in_(('A', 'AAAA', 'NS'))))
-                .group_by(RR.id).having(func.count(other_records.id) == other_a_and_ns_count))
+                .group_by(*RR.__table__.columns).having(func.count(other_records.id) == other_a_and_ns_count))
     return refs
 
 
@@ -382,7 +382,7 @@ def delete_with_references(query, free_ips, references, user):
 
 def free_ipblocks(ipblocks):
     freed_ipblocks = Ipblock.query.outerjoin(RR, Ipblock.id == RR.ipblock_id)\
-        .filter(Ipblock.id.in_(ipblocks)).group_by(Ipblock.id).having(func.count(RR.id) == 0)
+        .filter(Ipblock.id.in_(ipblocks)).group_by(*Ipblock.__table__.columns).having(func.count(RR.id) == 0)
     for ipblock in freed_ipblocks:
         Messages.info('Freeing IP %s from layer3domain %s' % (ipblock, ipblock.layer3domain.name))
         db.session.delete(ipblock)

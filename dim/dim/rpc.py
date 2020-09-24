@@ -1441,7 +1441,7 @@ class RPC(object):
             groups_stmt = db.session.query(Zone.id.label('zone_id'), ZoneView.id, func.count('*').label('zone_groups'))\
                 .join(ZoneView)\
                 .join(ZoneGroup, ZoneView.groups)\
-                .group_by(Zone.id).subquery()
+                .group_by(Zone.id, ZoneView.id).subquery()
             qfields.append(func.coalesce(groups_stmt.c.zone_groups, 0).label('zone_groups'))
             if self.user.is_super_admin:
                 qfields.extend([literal(True).label('can_create_rr'), literal(True).label('can_delete_rr')])
@@ -1479,12 +1479,12 @@ class RPC(object):
         pattern = make_wildcard(pattern)
         qfields = []
         if fields:
-            views_stmt = db.session.query(ZoneView.zone_id, func.count('*').label('views')).group_by(ZoneView.zone_id).subquery()
+            views_stmt = db.session.query(ZoneView.zone_id, func.count('*').label('views')).group_by(ZoneView.id).subquery()
             qfields.append(views_stmt.c.views)
             groups_stmt = db.session.query(Zone.id.label('zone_id'), ZoneView.id, func.count('*').label('zone_groups')) \
                 .join(ZoneView) \
                 .join(ZoneGroup, ZoneView.groups) \
-                .group_by(Zone.id).subquery()
+                .group_by(Zone.id, ZoneView.id).subquery()
             qfields.append(func.coalesce(groups_stmt.c.zone_groups, 0).label('zone_groups'))
             if self.user.is_super_admin:
                 qfields.extend([literal(True).label('can_create_rr'), literal(True).label('can_delete_rr')])
@@ -2569,7 +2569,7 @@ class RPC(object):
         result = []
         if include_status:
             outputs = db.session.query(Output, func.count(OutputUpdate.id).label('pending_records'))\
-                .outerjoin(Output.updates).group_by(Output.id)
+                .outerjoin(Output.updates).group_by(*Output.__table__.columns)
         else:
             outputs = db.session.query(Output, literal('0'))
         outputs = outputs.order_by(Output.name)
