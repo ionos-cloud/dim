@@ -1436,7 +1436,7 @@ class RPC(object):
         pattern = make_wildcard(pattern)
         qfields = []
         if fields:
-            views_stmt = db.session.query(ZoneView.zone_id, func.count('*').label('views')).group_by(ZoneView.zone_id).subquery()
+            views_stmt = db.session.query(ZoneView.zone_id, func.count('*').label('views')).group_by(ZoneView.id).subquery()
             qfields.append(views_stmt.c.views)
             groups_stmt = db.session.query(Zone.id.label('zone_id'), ZoneView.id, func.count('*').label('zone_groups'))\
                 .join(ZoneView)\
