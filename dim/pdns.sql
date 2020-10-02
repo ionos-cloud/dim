@@ -18,7 +18,7 @@ CREATE TABLE records (
   name                  VARCHAR(255) NOT NULL,
   type                  VARCHAR(10) DEFAULT NULL,
   content               VARCHAR(64000) DEFAULT NULL,
-  ttl                   MEDIUMINT UNSIGNED DEFAULT NULL,
+  ttl                   INTEGER DEFAULT NULL,
   prio                  SMALLINT UNSIGNED DEFAULT NULL,
   disabled              TINYINT(1) NOT NULL DEFAULT 0,
   ordername             VARCHAR(255) BINARY DEFAULT NULL,
