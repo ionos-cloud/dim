@@ -1,0 +1,8 @@
+# Remove NS to create 2 empty non-terminals, then delete the txt.subzone.a.web.de. to force the deletion of ents
+web.de.	40000	IN	SOA	ns-webde.ui-dns.de. dnsadmin.1und1.de. 2005095465 28800 7200 604800 600
+web.de. IN DNSKEY 256 3 8 AwEAAc+m0f5WAbpm/M8Oq3RTvqwkDiW57esPZb5cusvdZpJx3r8Ars+AXMGHuKmOhqZv41UZIR7UqnTc23Zoh35OItXSDq0rGYrkyDbdvV2YKNJ+fbfRC/fCiaaYTFcZ6dAwKVvA9hT+m4z2gfbVr4qJBPs/ImtediJsQNerQdubgoW1
+a.web.de.              IN      TXT     txt
+subzone.a.web.de.      IN      NS      a.
+txt.subzone.a.web.de.  IN      TXT     txt
+-subzone.a.web.de.      IN      NS      a.
+-txt.subzone.a.web.de.  IN      TXT     txt
