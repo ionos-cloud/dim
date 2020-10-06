@@ -1,0 +1,13 @@
+web.de.	40000	IN	SOA	ns-webde.ui-dns.de. dnsadmin.1und1.de. 2005095465 28800 7200 604800 600
+web.de. 40000   IN 	A	8.0.0.0
+web.de. 40000   IN 	TXT	8.0.0.0
+a.web.de. 100    IN	TXT	wat
+ns1.subzone.web.de.  IN      A       1.1.1.1
+txt.subzone.web.de.  IN      txt       sup
+subzone.web.de.      IN      TXT     text
+txt.subzone.web.de.      IN      txt      text
+uber.s.subzone.web.de.   IN      TXT      sup
+subzone2.web.de.      IN      TXT         "chilling here"
+sub.subzone2.web.de.      IN      NS      ns01.sub.subzone2.web.de.
+cname.sub.subzone2.web.de.      IN      cname      wat2.level3.sub.subzone2.web.de.
+txt.sub.subzone2.web.de.      IN      txt      text

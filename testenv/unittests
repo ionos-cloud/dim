@@ -1,0 +1,9 @@
+#!/bin/bash
+# use with docker run -v <path_to_dim_checkout>:/root/dim
+
+cp -r /root/dim /tmp
+cd /tmp/dim/tests
+. /opt/dim/bin/activate
+pip install nose
+nosetests --with-xunit
+cp nosetests.xml /root/dim/

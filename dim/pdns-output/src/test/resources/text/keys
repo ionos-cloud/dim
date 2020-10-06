@@ -1,0 +1,13 @@
+# Add or remove dnskey records
+web.de.	40000	IN	SOA	ns-webde.ui-dns.de. dnsadmin.1und1.de. 2005095465 28800 7200 604800 600
+web.de. IN DNSKEY 256 3 8 AwEAAc+m0f5WAbpm/M8Oq3RTvqwkDiW57esPZb5cusvdZpJx3r8Ars+AXMGHuKmOhqZv41UZIR7UqnTc23Zoh35OItXSDq0rGYrkyDbdvV2YKNJ+fbfRC/fCiaaYTFcZ6dAwKVvA9hT+m4z2gfbVr4qJBPs/ImtediJsQNerQdubgoW1
+web.de. IN DNSKEY 256 3 8 AwEAAcWI3ECH16axjTHmTWVUL+OlByYcYLyLrOrDYMxJnUz5cI8dtKYyRg0PNwP0SPldUO1xh/GscR1qgKoZk2sBiEfLi3S1dA45jUqrGGEWDhR9fwp/F6vtI1XXAcx6+L9lKk5ziEirHL+yENLPTPje6iQzIfvIbl70FCexU0AA2fF3
+a.web.de.              IN      TXT     txt
+-web.de. IN DNSKEY 256 3 8 AwEAAcWI3ECH16axjTHmTWVUL+OlByYcYLyLrOrDYMxJnUz5cI8dtKYyRg0PNwP0SPldUO1xh/GscR1qgKoZk2sBiEfLi3S1dA45jUqrGGEWDhR9fwp/F6vtI1XXAcx6+L9lKk5ziEirHL+yENLPTPje6iQzIfvIbl70FCexU0AA2fF3
+subzone.a.web.de.      IN      NS      a.
+web.de. IN DNSKEY 256 3 8 AwEAAcWI3ECH16axjTHmTWVUL+OlByYcYLyLrOrDYMxJnUz5cI8dtKYyRg0PNwP0SPldUO1xh/GscR1qgKoZk2sBiEfLi3S1dA45jUqrGGEWDhR9fwp/F6vtI1XXAcx6+L9lKk5ziEirHL+yENLPTPje6iQzIfvIbl70FCexU0AA2fF3
+txt.subzone.a.web.de.  IN      TXT     txt
+-subzone.a.web.de.      IN      NS      a.
+-web.de. IN DNSKEY 256 3 8 AwEAAc+m0f5WAbpm/M8Oq3RTvqwkDiW57esPZb5cusvdZpJx3r8Ars+AXMGHuKmOhqZv41UZIR7UqnTc23Zoh35OItXSDq0rGYrkyDbdvV2YKNJ+fbfRC/fCiaaYTFcZ6dAwKVvA9hT+m4z2gfbVr4qJBPs/ImtediJsQNerQdubgoW1
+web.de. IN DNSKEY 256 3 8 AwEAAc+m0f5WAbpm/M8Oq3RTvqwkDiW57esPZb5cusvdZpJx3r8Ars+AXMGHuKmOhqZv41UZIR7UqnTc23Zoh35OItXSDq0rGYrkyDbdvV2YKNJ+fbfRC/fCiaaYTFcZ6dAwKVvA9hT+m4z2gfbVr4qJBPs/ImtediJsQNerQdubgoW1
+-txt.subzone.a.web.de.  IN      TXT     txt

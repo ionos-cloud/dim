@@ -1,0 +1,9 @@
+[Unit]
+Description=dim-pdns1
+Requires=dim-mysql.service
+After=dim-mysql.service
+
+[Service]
+ExecStart=/usr/sbin/pdns_server --config-name=pdns1 --config-dir=/etc/pdns --daemon=no
+ExecStop=/usr/bin/pdns_control  --config-name=pdns1 --config-dir=/etc/pdns quit
+PrivateTmp=true

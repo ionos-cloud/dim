@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export PYTHONUNBUFFERED=1
+cp -r /root/dim /tmp
+exec /tmp/dim/runtest.py -d "$@"

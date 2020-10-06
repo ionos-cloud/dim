@@ -1,0 +1,20 @@
+$ ndcli create zone a.de
+WARNING - Creating zone a.de without profile
+WARNING - Primary NS for this Domain is now localhost.
+$ ndcli modify zone a.de dnssec enable 8 ksk 2048 zsk 1024 nsec3
+Created key a.de_ksk_20160705_114940 for zone a.de
+Created key a.de_zsk_20160705_114941 for zone a.de
+$ ndcli modify zone a.de dnssec disable
+$ ndcli history zone a.de -L 20
+timestamp           user  tool   originating_ip objclass  name                           action
+2016-09-20 15:08:25 admin native 127.0.0.1      zone      a.de                           created
+2016-09-20 15:08:25 admin native 127.0.0.1      zone      a.de                           set_attr default_algorithm=8
+2016-09-20 15:08:25 admin native 127.0.0.1      zone      a.de                           set_attr default_zsk_bits=1024
+2016-09-20 15:08:25 admin native 127.0.0.1      zone      a.de                           set_attr default_ksk_bits=2048
+2016-09-20 15:08:25 admin native 127.0.0.1      zone      a.de                           dnssec enabled
+2016-09-20 15:08:25 admin native 127.0.0.1      zone      a.de                           dnssec disabled
+2016-09-20 15:08:25 admin native 127.0.0.1      zone-view default                        created
+2016-09-20 15:55:03 admin native 127.0.0.1      key       a.de_ksk_20160920_125503624166 created
+2016-09-20 15:55:03 admin native 127.0.0.1      key       a.de_zsk_20160920_125503720709 created
+2016-09-20 15:55:03 admin native 127.0.0.1      key       a.de_ksk_20160920_125503624166 deleted
+2016-09-20 15:55:03 admin native 127.0.0.1      key       a.de_zsk_20160920_125503720709 deleted
