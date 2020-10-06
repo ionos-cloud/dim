@@ -1,0 +1,7 @@
+[Unit]
+Description=dim-mysql
+
+[Service]
+Type=forking
+ExecStart=/var/local/dim/dim-mysql.sh
+ExecStop=/usr/bin/mysqladmin --socket=/dev/shm/mysql/mysql.sock shutdown
