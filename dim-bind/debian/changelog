@@ -1,0 +1,11 @@
+dim-bind-file-agent (0.2~ui60+0) squeeze-ui-experimental; urgency=low
+
+  * New version.
+
+ -- Bogdan Benea <bogdan.benea@1and1.ro>  Mon, 29 Apr 2013 17:36:45 +0300
+
+dim-bind-file-agent (0.1~ui60+0) squeeze-ui-experimental; urgency=low
+
+  * Initial version.
+
+ -- Andrei Benea <andrei.benea@1and1.ro>  Wed, 27 Feb 2013 17:41:17 +0200

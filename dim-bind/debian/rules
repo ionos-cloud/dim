@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+DH_PYTHON2 := $(strip $(shell which dh_python2))
+ifdef DH_PYTHON2
+DH_OPTIONS=--with python2
+endif
+
+%:
+	dh $@ $(DH_OPTIONS)
+
+clean:
+	dh clean
+	rm -rf build/ dim_bind_file_agent.egg-info/

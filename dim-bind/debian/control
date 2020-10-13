@@ -1,0 +1,13 @@
+Source: dim-bind-file-agent
+Section: admin
+Priority: optional
+Maintainer: Andrei Benea <andrei.benea@1and1.ro>
+Build-Depends: debhelper (>= 7.0.0), python (>= 2.5), python-setuptools (>= 0.6b3)
+XS-Python-Version: >= 2.6, << 2.8
+Standards-Version: 3.9.2
+
+Package: dim-bind-file-agent
+Architecture: all
+Depends: ${python:Depends}, ${misc:Depends}, python-argparse, ui-python-dimclient (>= 0.2~)
+Description: dim bind file agent
+ This is an agent that creates bind zonefiles from dim outputs.
