@@ -6,22 +6,14 @@ Usage example::
     print(client.ip_list(pool='*', type='all', limit=2))
 '''
 
-import six
-
 try:
     import simplejson as json
 except:
     import json
-if six.PY3:
-    from http.cookiejar import LWPCookieJar
-    from urllib.parse import urlencode
-    from urllib.error import HTTPError
-    from urllib.request import urlopen, Request, build_opener, HTTPCookieProcessor
-else:
-    from http.cookiejar import LWPCookieJar
-    from urllib.parse import urlencode
-    from urllib.request import urlopen, Request, build_opener, HTTPCookieProcessor
-    from urllib.error import HTTPError
+from http.cookiejar import LWPCookieJar
+from urllib.parse import urlencode
+from urllib.error import HTTPError
+from urllib.request import urlopen, Request, build_opener, HTTPCookieProcessor
 import logging
 import getpass
 import time
@@ -35,9 +27,7 @@ PROTOCOL_VERSION = 17
 
 
 def agnostic_input():
-    if six.PY3:
-        return eval(input())
-    return input()
+    return eval(input())
 
 
 class DimError(Exception):
@@ -46,8 +36,8 @@ class DimError(Exception):
         self.code = code
 
     # Defined so that unicode(DimError) won't blow up
-    def __unicode__(self):
-        return six.text_type(self.args[0])
+    def __str__(self):
+        return self.args[0]
 
 
 class ProtocolError(DimError):
