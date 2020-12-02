@@ -64,7 +64,7 @@ jobs:
           name: dimclient-src-${{ github.event.inputs.dimclient_version }}.tar.gz
           path: dimclient-src-${{ github.event.inputs.dimclient_version }}.tar.gz
 
-  centos_rpm_build:
+  build_centos_dim:
     runs-on: ubuntu-latest
     needs: build
     container:
@@ -120,7 +120,7 @@ jobs:
           name: dim-${{ github.event.inputs.dim_version }}-1.x86_64.rpm
           path: ~/rpmbuild/RPMS/x86_64/dim-${{ github.event.inputs.dim_version }}-1.x86_64.rpm
 
-  centos_rpm_client_tools:
+  build_centos_packages:
     runs-on: ubuntu-latest
     needs: build
     container:
@@ -265,6 +265,7 @@ jobs:
         with:
           name: python3-ndcli_${{ github.event.inputs.ndcli_version }}_all.deb
           path: python3-ndcli_${{ github.event.inputs.ndcli_version }}_all.deb
+
   build_debian_dim:
     runs-on: ubuntu-latest
     needs: build
@@ -289,3 +290,123 @@ jobs:
         with:
           name: python3-dim_${{ github.event.inputs.dim_version }}_all.deb
           path: python3-dim_${{ github.event.inputs.dim_version }}_all.deb
+
+  # create the release on github in preparation to attach all files.
+  create_release:
+    runs-on: ubuntu-latest
+    needs:
+      - build_debian_dim
+      - build_debian_packages
+      - build_centos_packages
+      - build_centos_dim
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.event.inputs.dim_version }}
+          release_name: dim ${{ github.event.inputs.dim_version }}
+          draft: true
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: ndcli-src-${{ github.event.inputs.ndcli_version }}.tar.gz
+      - uses: actions/download-artifact@v2
+        with:
+          name: dimclient-src-${{ github.event.inputs.dimclient_version }}.tar.gz
+      - uses: actions/download-artifact@v2
+        with:
+          name: dim-src-${{ github.event.inputs.dim_version}}.tar.gz
+      - uses: actions/download-artifact@v2
+        with:
+          name: python3-ndcli-${{ github.event.inputs.ndcli_version }}-1.x86_64.rpm
+      - uses: actions/download-artifact@v2
+        with:
+          name: python3-ndcli_${{ github.event.inputs.ndcli_version }}_all.deb
+      - uses: actions/download-artifact@v2
+        with:
+          name: python3-dimclient-${{ github.event.inputs.dimclient_version }}-1.x86_64.rpm
+      - uses: actions/download-artifact@v2
+        with:
+          name: python3-dimclient_${{ github.event.inputs.dimclient_version }}_all.deb
+      - uses: actions/download-artifact@v2
+        with:
+          name: dim-${{ github.event.inputs.dim_version }}-1.x86_64.rpm
+      - uses: actions/download-artifact@v2
+        with:
+          name: python3-dim_${{ github.event.inputs.dim_version }}_all.deb
+
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ndcli-src-${{ github.event.inputs.ndcli_version }}.tar.gz
+          asset_name: ndcli-src-${{ github.event.inputs.ndcli_version }}.tar.gz
+          asset_content_type: application/zip
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dimclient-src-${{ github.event.inputs.dimclient_version }}.tar.gz
+          asset_name: dimclient-src-${{ github.event.inputs.dimclient_version }}.tar.gz
+          asset_content_type: application/zip
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dim-src-${{ github.event.inputs.dim_version }}.tar.gz
+          asset_name: dim-src-${{ github.event.inputs.dim_version }}.tar.gz
+          asset_content_type: application/zip
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: python3-ndcli_${{ github.event.inputs.ndcli_version }}_all.deb
+          asset_name: python3-ndcli_${{ github.event.inputs.ndcli_version }}_all.deb
+          asset_content_type: application/vnd.debian.binary-package
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: python3-dimclient_${{ github.event.inputs.dimclient_version }}_all.deb
+          asset_name: python3-dimclient_${{ github.event.inputs.dimclient_version }}_all.deb
+          asset_content_type: application/vnd.debian.binary-package
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: python3-dim_${{ github.event.inputs.dim_version }}_all.deb
+          asset_name: python3-dim_${{ github.event.inputs.dim_version }}_all.deb
+          asset_content_type: application/vnd.debian.binary-package
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dim-${{ github.event.inputs.dim_version }}-1.x86_64.rpm
+          asset_name: dim-${{ github.event.inputs.dim_version }}-1.x86_64.rpm
+          asset_content_type: application/octet-stream
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: python3-ndcli-${{ github.event.inputs.ndcli_version }}-1.x86_64.rpm
+          asset_name: python3-ndcli-${{ github.event.inputs.ndcli_version }}-1.x86_64.rpm
+          asset_content_type: application/octet-stream
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: python3-dimclient-${{ github.event.inputs.dimclient_version }}-1.x86_64.rpm
+          asset_name: python3-dimclient-${{ github.event.inputs.dimclient_version }}-1.x86_64.rpm
+          asset_content_type: application/octet-stream
