@@ -1,5 +1,10 @@
 from setuptools import setup
+import glob
+from cas import version
 
-setup(name='cas',
+setup(name='dim-web',
       packages=['cas'],
-      version='0.1')
+      data_files=[
+          ('share/dim-web', glob.glob('www/**.*', recursive=True)),
+          ],
+      version=version.VERSION)
