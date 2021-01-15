@@ -5,7 +5,7 @@ name: release_dim
 on:
   push:
     tags:
-      - 'dim-*'
+      - 'dim-[0-9]+*'
 
 jobs:
   build:
