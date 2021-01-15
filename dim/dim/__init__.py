@@ -14,15 +14,12 @@ from sqlalchemy import event, String
 from sqlalchemy.ext.declarative import declared_attr, declarative_base
 from sqlalchemy.orm import ColumnProperty
 
-from ._version import get_versions
 from .errors import InvalidParameterError
 from .ipaddr import IP
-
+from . import version
 
 __all__ = ['db', 'create_app', 'script_app']
-__version__ = get_versions()['version']
-del get_versions
-
+__version__ = version.VERSION
 
 class TransactionLoggingFormatter(logging.Formatter):
     def format(self, record):

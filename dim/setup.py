@@ -1,9 +1,8 @@
 from distutils.core import setup
-import versioneer
+from dim import version
 
 setup(name='dim',
-      version=versioneer.get_version(),
-      cmdclass=versioneer.get_cmdclass(),
+      version=version.VERSION,
       packages=['dim', 'dim.models'],
       package_data={'dim': ['sql/*.sql']},
       scripts=['report', 'manage_dim', 'manage_db'])

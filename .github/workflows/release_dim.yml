@@ -1,0 +1,228 @@
+# This release process looks for dim tags and produces releases
+# build on the version number.
+name: release_dim
+
+on:
+  push:
+    tags:
+      - 'dim-*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - run: echo "::set-output name=version::$(echo "$_REF" | cut -d'-' -f2-)"
+        id: version
+        shell: bash
+        env:
+          _REF: ${{ github.ref }}
+      - uses: actions/checkout@v2
+      - run: tar --transform="s,^dim/,dim-${_version}/," -czf "dim-src-${_version}.tar.gz" dim
+        env:
+          _version: ${{ steps.version.outputs.version }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: dim-src-${{ steps.version.outputs.version }}.tar.gz
+          path: dim-src-${{ steps.version.outputs.version }}.tar.gz
+
+  centos8:
+    runs-on: ubuntu-latest
+    needs: build
+    container:
+      image: centos:centos8
+      env:
+        _VERSION: ${{ needs.build.outputs.version }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: /bin/dnf install --assumeyes openldap-devel gcc python3-devel mariadb-devel git python3 rpm-build
+      - run: /bin/python3 -m venv /opt/dim/
+      - run: /opt/dim/bin/pip3 install -r dim/requirements.txt
+      - run: /opt/dim/bin/pip3 install dim
+      - run: /bin/tar --transform="s,^opt,dim-${_VERSION}/opt," -czf "/tmp/dim-bin.tar.gz" opt
+        working-directory: /
+      - run: pwd
+      - run: mkdir -p ${HOME}/rpmbuild/SPECS
+      - run: mkdir -p ${HOME}/rpmbuild/SOURCES
+      - shell: sh
+        run: |
+          cat <<EOF > ${HOME}/rpmbuild/SPECS/dim.spec
+          Name:    dim
+          Version: ${_VERSION}
+          Release: 1.el8
+          Summary: DNS and IP management
+
+          Group: application/system
+          License: MIT
+
+          Source0: dim-%{version}.tar.gz
+
+          # don't strip debug symbols, else it will all come crashing down
+          %define debug_package %{nil}
+          %define __strip /bin/true
+
+          %description
+          DNS and IP management
+
+          %prep
+          %setup -q #unpack tarball
+
+          %build
+
+          %install
+          cp -rfa * %{buildroot}
+
+          %files
+          /opt/*
+          EOF
+      - run: cp /tmp/dim-bin.tar.gz ${HOME}/rpmbuild/SOURCES/dim-${_VERSION}.tar.gz
+      - run: rpmbuild -ba ${HOME}/rpmbuild/SPECS/dim.spec
+      - uses: actions/upload-artifact@v2
+        with:
+          name: dim-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
+          path: ~/rpmbuild/RPMS/x86_64/dim-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
+
+  centos7:
+    runs-on: ubuntu-latest
+    needs: build
+    container:
+      image: centos:centos8
+      env:
+        _VERSION: ${{ needs.build.outputs.version }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: /bin/yum install --assumeyes openldap-devel gcc python36-devel mariadb-devel git python36 rpm-build
+      - run: /bin/python3.6 -m venv /opt/dim/
+      - run: /opt/dim/bin/pip3.6 install -r dim/requirements.txt
+      - run: /opt/dim/bin/pip3.6 install dim
+      - run: /bin/tar --transform="s,^opt,dim-${_VERSION}/opt," -czf "/tmp/dim-bin.tar.gz" opt
+        working-directory: /
+      - run: pwd
+      - run: mkdir -p ${HOME}/rpmbuild/SPECS
+      - run: mkdir -p ${HOME}/rpmbuild/SOURCES
+      - shell: sh
+        run: |
+          cat <<EOF > ${HOME}/rpmbuild/SPECS/dim.spec
+          Name:    dim
+          Version: ${_VERSION}
+          Release: 1.el7
+          Summary: DNS and IP management
+
+          Group: application/system
+          License: MIT
+
+          Source0: dim-%{version}.tar.gz
+
+          # don't strip debug symbols, else it will all come crashing down
+          %define debug_package %{nil}
+          %define __strip /bin/true
+
+          %description
+          DNS and IP management
+
+          %prep
+          %setup -q #unpack tarball
+
+          %build
+
+          %install
+          cp -rfa * %{buildroot}
+
+          %files
+          /opt/*
+          EOF
+      - run: cp /tmp/dim-bin.tar.gz ${HOME}/rpmbuild/SOURCES/dim-${_VERSION}.tar.gz
+      - run: rpmbuild -ba ${HOME}/rpmbuild/SPECS/dim.spec
+      - uses: actions/upload-artifact@v2
+        with:
+          name: dim-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
+          path: ~/rpmbuild/RPMS/x86_64/dim-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
+
+  debian:
+    runs-on: ubuntu-latest
+    needs: build
+    container:
+      image: debian:10
+      env:
+        _VERSION: ${{ needs.build.outputs.version }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: apt-get update
+      - run: apt-get install --yes build-essential python3 python3-dnspython dh-python python3-setuptools python3-all debhelper python3-flask-sqlalchemy devscripts
+      - run: cp -vr packaging/debian/dim/* dim/
+      - run: dch --create --package dim --newversion ${{ needs.build.outputs.version }} --distribution unstable 'release update'
+        working-directory: dim
+        env:
+          DEBMAIL: unknown <unknown@unknown>
+      - run: dpkg-buildpackage -us -uc -b
+        working-directory: dim
+      - uses: actions/upload-artifact@v2
+        with:
+          name: python3-dim_${{ needs.build.outputs.version }}_all.deb
+          path: python3-dim_${{ needs.build.outputs.version }}_all.deb
+
+  create_release:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+      - debian
+      - centos8
+      - centos7
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: true
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: dim-src-${{ needs.build.outputs.version }}.tar.gz
+      - uses: actions/download-artifact@v2
+        with:
+          name: dim-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
+      - uses: actions/download-artifact@v2
+        with:
+          name: dim-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
+      - uses: actions/download-artifact@v2
+        with:
+          name: python3-dim_${{ needs.build.outputs.version }}_all.deb
+
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dim-src-${{ needs.build.outputs.version }}.tar.gz
+          asset_name: dim-src-${{ needs.build.outputs.version }}.tar.gz
+          asset_content_type: application/zip
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: python3-dim_${{ needs.build.outputs.version }}_all.deb
+          asset_name: python3-dim_${{ needs.build.outputs.version }}_all.deb
+          asset_content_type: application/vnd.debian.binary-package
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dim-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
+          asset_name: dim-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
+          asset_content_type: application/octet-stream
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dim-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
+          asset_name: dim-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
+          asset_content_type: application/octet-stream

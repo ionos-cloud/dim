@@ -20,6 +20,9 @@ import time
 import os
 import os.path
 from pprint import pformat
+from . import version
+
+__version__ = version.VERSION
 
 logger = logging.getLogger('dimclient')
 
