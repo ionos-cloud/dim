@@ -98,8 +98,8 @@ jobs:
       - run: rpmbuild -ba ${HOME}/rpmbuild/SPECS/ndcli.spec
       - uses: actions/upload-artifact@v2
         with:
-          name: python3-ndcli-${{ needs.build.outputs.version }}-1.x86_64.rpm
-          path: ~/rpmbuild/RPMS/x86_64/python3-ndcli-${{ needs.build.outputs.version }}-1.x86_64.rpm
+          name: python3-ndcli-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
+          path: ~/rpmbuild/RPMS/x86_64/python3-ndcli-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
 
   fedora:
     runs-on: ubuntu-latest
@@ -111,6 +111,7 @@ jobs:
       image: fedora:${{ matrix.os }}
       env:
         _VERSION: ${{ needs.build.outputs.version }}
+        _DIMCLIENT: ${{ needs.build.outputs.dimclient }}
     steps:
       - uses: actions/checkout@v2
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
@@ -122,23 +123,25 @@ jobs:
         shell: sh
       - uses: actions/download-artifact@v2
         with:
-          name: dimclient-src-${{ needs.build.outputs.version }}.tar.gz
+          name: ndcli-src-${{ needs.build.outputs.version }}.tar.gz
           path: ~/rpmbuild/SOURCES/
       - shell: sh
         run: |
-          cat <<EOF > ${HOME}/rpmbuild/SPECS/dimclient.spec
-          Name:    python3-dimclient
+          cat <<EOF > ${HOME}/rpmbuild/SPECS/ndcli.spec
+          Name:    python3-ndcli
           Version: ${_VERSION}
           Release: 1.fedora${{ matrix.os }}
-          Summary: DNS and IP management python library
+          Summary: DNS and IP management
 
           Group: application/system
           License: MIT
 
-          Source0: dimclient-src-%{version}.tar.gz
+          Source0: ndcli-src-%{version}.tar.gz
           BuildRequires: python3-devel
-          BuildRequires: python3-simplejson
-          Requires: python3-simplejson
+          BuildRequires: python3-dimclient
+          BuildRequires: python3-dns
+          Requires: python3-dimclient
+          Requires: python3-dns
           Requires: python3
 
           # don't strip debug symbols, else it will all come crashing down
@@ -149,7 +152,7 @@ jobs:
           DNS and IP management
 
           %prep
-          %autosetup -p1 -n dimclient-%{version}
+          %autosetup -p1 -n ndcli-%{version}
 
           %build
           %py3_build
