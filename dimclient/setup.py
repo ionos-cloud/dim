@@ -1,6 +1,7 @@
 from setuptools import setup
+from dimclient import version
 
 setup(name='dimclient',
-      version='0.4.2',
-      install_requires=['simplejson', 'six'],
-      py_modules=['dimclient'])
+      version=version.VERSION,
+      install_requires=['simplejson'],
+      packages=['dimclient'])

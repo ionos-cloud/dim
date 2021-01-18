@@ -1,0 +1,12 @@
+Source: dim
+Maintainer: unknown <unknown@unknown>
+Section: python
+Priority: optional
+Build-Depends: dh-python, python3-all, debhelper (>= 9)
+Standards-Version: 3.9.6
+
+Package: python3-dim
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}
+Description: UNKNOWN
+

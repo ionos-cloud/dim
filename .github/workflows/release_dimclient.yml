@@ -1,0 +1,247 @@
+# This release process looks for dimclient tags and produces releases
+# build on the version number.
+name: release_dimclient
+
+on:
+  push:
+    tags:
+      - 'dimclient-*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - run: echo "::set-output name=version::$(echo "$_REF" | cut -d'-' -f2-)"
+        id: version
+        shell: bash
+        env:
+          _REF: ${{ github.ref }}
+      - uses: actions/checkout@v2
+      - run: tar --transform="s,^dimclient/,dimclient-${_version}/," -czf "dimclient-src-${_version}.tar.gz" dimclient
+        env:
+          _version: ${{ steps.version.outputs.version }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: dimclient-src-${{ steps.version.outputs.version }}.tar.gz
+          path: dimclient-src-${{ steps.version.outputs.version }}.tar.gz
+
+  centos:
+    runs-on: ubuntu-latest
+    needs: build
+    container:
+      image: centos:centos8
+      env:
+        _VERSION: ${{ needs.build.outputs.version }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: mkdir -p ${HOME}/rpmbuild/SPECS
+      - run: mkdir -p ${HOME}/rpmbuild/SOURCES
+      - run: /bin/dnf install --assumeyes epel-release
+      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns python3-simplejson
+      - uses: actions/download-artifact@v2
+        with:
+          name: dimclient-src-${{ needs.build.outputs.version }}.tar.gz
+          path: ~/rpmbuild/SOURCES/
+      - shell: sh
+        run: |
+          cat <<EOF > ${HOME}/rpmbuild/SPECS/dimclient.spec
+          Name:    python3-dimclient
+          Version: ${_VERSION}
+          Release: 1.el8
+          Summary: DNS and IP management python library
+
+          Group: application/system
+          License: MIT
+
+          Source0: dimclient-src-%{version}.tar.gz
+          BuildRequires: python3-devel
+          BuildRequires: python3-simplejson
+          Requires: python3-simplejson
+          Requires: python3
+
+          # don't strip debug symbols, else it will all come crashing down
+          %define debug_package %{nil}
+          %define __strip /bin/true
+
+          %description
+          DNS and IP management
+
+          %prep
+          %autosetup -p1 -n dimclient-%{version}
+
+          %build
+          %py3_build
+
+          %install
+          %py3_install
+
+          %files
+          %{python3_sitelib}/*
+          EOF
+      - run: rpmbuild -ba ${HOME}/rpmbuild/SPECS/dimclient.spec
+      - uses: actions/upload-artifact@v2
+        with:
+          name: python3-dimclient-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
+          path: ~/rpmbuild/RPMS/x86_64/python3-dimclient-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
+
+  fedora:
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      matrix:
+        os: [32,33]
+    container:
+      image: fedora:${{ matrix.os }}
+      env:
+        _VERSION: ${{ needs.build.outputs.version }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: mkdir -p ${HOME}/rpmbuild/SPECS
+      - run: mkdir -p ${HOME}/rpmbuild/SOURCES
+      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns python3-simplejson
+      - uses: actions/download-artifact@v2
+        with:
+          name: dimclient-src-${{ needs.build.outputs.version }}.tar.gz
+          path: ~/rpmbuild/SOURCES/
+      - shell: sh
+        run: |
+          cat <<EOF > ${HOME}/rpmbuild/SPECS/dimclient.spec
+          Name:    python3-dimclient
+          Version: ${_VERSION}
+          Release: 1.fedora${{ matrix.os }}
+          Summary: DNS and IP management python library
+
+          Group: application/system
+          License: MIT
+
+          Source0: dimclient-src-%{version}.tar.gz
+          BuildRequires: python3-devel
+          BuildRequires: python3-simplejson
+          Requires: python3-simplejson
+          Requires: python3
+
+          # don't strip debug symbols, else it will all come crashing down
+          %define debug_package %{nil}
+          %define __strip /bin/true
+
+          %description
+          DNS and IP management
+
+          %prep
+          %autosetup -p1 -n dimclient-%{version}
+
+          %build
+          %py3_build
+
+          %install
+          %py3_install
+
+          %files
+          %{python3_sitelib}/*
+          EOF
+      - run: rpmbuild -ba ${HOME}/rpmbuild/SPECS/dimclient.spec
+      - uses: actions/upload-artifact@v2
+        with:
+          name: python3-dimclient-${{ needs.build.outputs.version }}-1.fedora${{ matrix.os }}.x86_64.rpm
+          path: ~/rpmbuild/RPMS/x86_64/python3-dimclient-${{ needs.build.outputs.version }}-1.fedora${{ matrix.os }}.x86_64.rpm
+
+  debian:
+    runs-on: ubuntu-latest
+    needs: build
+    container:
+      image: debian:10
+      env:
+        _VERSION: ${{ needs.build.outputs.version }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: apt-get update
+      - run: apt-get install --yes build-essential python3 python3-dnspython bash-completion dh-python python3-setuptools python3-all debhelper devscripts
+      - run: cp -vr packaging/debian/dimclient/* dimclient/
+      - run: dch --create --package dimclient --newversion ${{ needs.build.outputs.version }} --distribution unstable 'release update'
+        working-directory: dimclient
+        env:
+          DEBMAIL: unknown <unknown@unknown>
+      - run: dpkg-buildpackage -us -uc -b
+        working-directory: dimclient
+      - uses: actions/upload-artifact@v2
+        with:
+          name: python3-dimclient_${{ needs.build.outputs.version }}_all.deb
+          path: python3-dimclient_${{ needs.build.outputs.version }}_all.deb
+
+  create_release:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+      - debian
+      - centos
+      - fedora
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: true
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: dimclient-src-${{ needs.build.outputs.version }}.tar.gz
+      - uses: actions/download-artifact@v2
+        with:
+          name: python3-dimclient-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
+      - uses: actions/download-artifact@v2
+        with:
+          name: python3-dimclient-${{ needs.build.outputs.version }}-1.fedora32.x86_64.rpm
+      - uses: actions/download-artifact@v2
+        with:
+          name: python3-dimclient-${{ needs.build.outputs.version }}-1.fedora33.x86_64.rpm
+      - uses: actions/download-artifact@v2
+        with:
+          name: python3-dimclient_${{ needs.build.outputs.version }}_all.deb
+
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dimclient-src-${{ needs.build.outputs.version }}.tar.gz
+          asset_name: dimclient-src-${{ needs.build.outputs.version }}.tar.gz
+          asset_content_type: application/zip
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: python3-dimclient_${{ needs.build.outputs.version }}_all.deb
+          asset_name: python3-dimclient_${{ needs.build.outputs.version }}_all.deb
+          asset_content_type: application/vnd.debian.binary-package
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: python3-dimclient-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
+          asset_name: python3-dimclient-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
+          asset_content_type: application/octet-stream
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: python3-dimclient-${{ needs.build.outputs.version }}-1.fedora32.x86_64.rpm
+          asset_name: python3-dimclient-${{ needs.build.outputs.version }}-1.fedora32.x86_64.rpm
+          asset_content_type: application/octet-stream
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: python3-dimclient-${{ needs.build.outputs.version }}-1.fedora33.x86_64.rpm
+          asset_name: python3-dimclient-${{ needs.build.outputs.version }}-1.fedora33.x86_64.rpm
+          asset_content_type: application/octet-stream

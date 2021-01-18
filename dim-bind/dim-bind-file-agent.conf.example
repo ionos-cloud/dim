@@ -1,0 +1,26 @@
+[default]
+# Set the username to login.
+username = dimexport
+# Set the password to login.
+password =
+# Set the address to the server.
+server = http://localhost:8080
+# The output is used to look up the updates to
+# apply. It must be configured as an output in DIM.
+output = dimoutputname
+# bind include config file
+includefile = include.conf
+# directory where zone files are written
+zonefiledir = zones
+# Path to the pid file.
+pidfile = /tmp/dim-bind-file-agent.pid
+# Set the facility to log as.
+facility = local0
+
+# for NSD
+# Enter a command that should be run when a new zone is being created.
+on_create = nsd-control addzone "{}" automated
+# Enter a command that should be run when a zone is updated.
+on_update = nsd-control reload "{}"
+# Enter a command that should be run when a zone is removed.
+on_delete = nsd-control delzone "{}"

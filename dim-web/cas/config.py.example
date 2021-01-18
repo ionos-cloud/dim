@@ -1,0 +1,14 @@
+# CAS configuration
+CAS_LOGIN_URL = 'https://example.com/sso/login?service={}'
+CAS_LOGOUT_URL = 'https://example.com/sso/logout'
+CAS_VALIDATE_URL = 'https://example.com/sso/serviceValidate?service={}&ticket={}'
+
+# Current service url. Used for CAS login callback path.
+CURRENT_SERVICE = 'https://test.example.com'
+
+# Frontend service url. Used for CORS Access-Control-Allow-Origin header and after-validation redirect.
+FRONTEND_SERVICE = 'https://test.example.com:8080'
+
+# Shared secret key between DIM and frontend
+SECRET_KEY = 'testKey'
+TOOL_NAME = 'dimfe'

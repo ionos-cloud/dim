@@ -13,8 +13,9 @@ from operator import itemgetter
 
 from . import zoneimport
 from .cliparse import Command, Option, Group, Argument, Token
+from . import version
 
-__version__ = '3.0.0'
+__version__ = version.VERSION
 
 logger = logging.getLogger('ndcli')
 
