@@ -10,8 +10,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: ubuntu:latest
     outputs:
       version: ${{ steps.version.outputs.version }}
+    env:
+      DEBIAN_FRONTEND: noninteractive
 
     steps:
       - run: echo "::set-output name=version::$(echo "$_REF" | cut -d'-' -f2-)"
@@ -19,7 +23,13 @@ jobs:
         shell: bash
         env:
           _REF: ${{ github.ref }}
+      - run: apt-get update
+      - run: apt-get install --yes python3-dnspython python3-sphinx make git
       - uses: actions/checkout@v2
+      - run: sphinx-build -b html doc doc/_build/html
+        working-directory: dim
+      - run: ls doc/_build/html
+        working-directory: dim
       - run: tar --transform="s,^dim/,dim-${_version}/," -czf "dim-src-${_version}.tar.gz" dim
         env:
           _version: ${{ steps.version.outputs.version }}
@@ -36,14 +46,21 @@ jobs:
       env:
         _VERSION: ${{ needs.build.outputs.version }}
     steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: dim-src-${{ needs.build.outputs.version }}.tar.gz
+          path: /tmp/
+      - run: tar -xzf dim-src-${{ needs.build.outputs.version }}.tar.gz
+        working-directory: /tmp
       - uses: actions/checkout@v2
       - run: /bin/dnf install --assumeyes openldap-devel gcc python3-devel mariadb-devel git python3 rpm-build
       - run: /bin/python3 -m venv /opt/dim/
       - run: /opt/dim/bin/pip3 install -r dim/requirements.txt
       - run: /opt/dim/bin/pip3 install dim
+      - run: mkdir /opt/dim/doc/
+      - run: cp -r /tmp/dim-${{ needs.build.outputs.version }}/doc/_build/html/* /opt/dim/doc/
       - run: /bin/tar --transform="s,^opt,dim-${_VERSION}/opt," -czf "/tmp/dim-bin.tar.gz" opt
         working-directory: /
-      - run: pwd
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
       - run: mkdir -p ${HOME}/rpmbuild/SOURCES
       - shell: sh
@@ -88,18 +105,25 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     container:
-      image: centos:centos8
+      image: centos:centos7
       env:
         _VERSION: ${{ needs.build.outputs.version }}
     steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: dim-src-${{ needs.build.outputs.version }}.tar.gz
+          path: /tmp/
+      - run: tar -xzf dim-src-${{ needs.build.outputs.version }}.tar.gz
+        working-directory: /tmp
       - uses: actions/checkout@v2
       - run: /bin/yum install --assumeyes openldap-devel gcc python36-devel mariadb-devel git python36 rpm-build
       - run: /bin/python3.6 -m venv /opt/dim/
       - run: /opt/dim/bin/pip3.6 install -r dim/requirements.txt
       - run: /opt/dim/bin/pip3.6 install dim
+      - run: mkdir /opt/dim/doc/
+      - run: cp -r /tmp/dim-${{ needs.build.outputs.version }}/doc/_build/html/* /opt/dim/doc/
       - run: /bin/tar --transform="s,^opt,dim-${_VERSION}/opt," -czf "/tmp/dim-bin.tar.gz" opt
         working-directory: /
-      - run: pwd
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
       - run: mkdir -p ${HOME}/rpmbuild/SOURCES
       - shell: sh
@@ -118,6 +142,18 @@ jobs:
           # don't strip debug symbols, else it will all come crashing down
           %define debug_package %{nil}
           %define __strip /bin/true
+          # stop trying to compile python files with old python version
+          %if 0%{?rhel}
+          %global __os_install_post    \
+              /usr/lib/rpm/redhat/brp-compress \
+              %{!?__debug_package:\
+              /usr/lib/rpm/redhat/brp-strip %{__strip} \
+              /usr/lib/rpm/redhat/brp-strip-comment-note %{__strip} %{__objdump} \
+              } \
+              /usr/lib/rpm/redhat/brp-strip-static-archive %{__strip} \
+              %{!?__jar_repack:/usr/lib/rpm/redhat/brp-java-repack-jars} \
+          %{nil}
+          %endif
 
           %description
           DNS and IP management
