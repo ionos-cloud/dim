@@ -1439,12 +1439,18 @@ class CLI(object):
     @cmd.register('list pools',
                   Argument('query', metavar='VLANID|CIDR|POOL', nargs='?'),
                   Option('o', 'can-allocate', help='limit results to pools where you can allocate'),
+                  Option('a', 'attributes',
+                         help='comma-separated list of attributes to display for each pool (default: name,vlan,subnets)',
+                         action='store',
+                         dest='attr_names',
+                         default='name,vlan,subnets'),
                   full_option,
                   script_option,
                   help='list of pools',
                   description='Displays the list of matching pools.\n\n' + query_description)
     def list_pools(self, args):
-        options = OptionDict(include_subnets=True)
+        attr_names = args.attr_names.split(',')
+        options = OptionDict(include_subnets=True,attributes=attr_names)
         options.set_if(full=args.full)
         options.set_if(can_allocate=args['can-allocate'])
         options.update(_parse_query(args.query))
@@ -1453,9 +1459,7 @@ class CLI(object):
             pool['subnets'] = ' '.join(pool['subnets'])
         if args.query:
             logger.info('Result for list pools %s', args.query)
-        _print_table(['name', {},
-                      'vlan', {'align': 'r'},
-                      'subnets', {}],
+        _print_table(sum(([a,{}] for a in attr_names), []),
                      sorted(pools, key=itemgetter('name')),
                      script=args.script)
 

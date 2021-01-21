@@ -33,7 +33,7 @@ from dim.errors import (DimError, InvalidPoolError, InvalidIPError,
                         HasChildrenError, MultipleViewsError)
 from dim.ipaddr import IP, valid_block
 from dim.messages import Messages
-from dim.models import (Pool, FavoritePool, Ipblock, IpblockAttr, IpblockAttrName,
+from dim.models import (Pool, PoolAttr, FavoritePool, Ipblock, IpblockAttr, IpblockAttrName,
                         IpblockStatus, Vlan, Group, User, AccessRight, GroupRight, Zone, ZoneView,
                         FavoriteZoneView, RR, ZoneGroup, Output, OutputUpdate, GroupMembership,
                         ZoneKey, Department, RegistrarAccount, RegistrarAction,
@@ -962,7 +962,8 @@ class RPC(object):
 
     @readonly
     def ippool_list(self, pool=None, vlan=None, cidr=None, full=False, include_subnets=True,
-                    can_allocate=None, owner=None, favorite_only=False, limit=None, offset=0, fields=False):
+                    can_allocate=None, owner=None, favorite_only=False, limit=None, offset=0,
+                    fields=False, attributes=None):
         ids = self._ippool_query(pool, vlan, cidr, can_allocate, owner)
         if favorite_only:
             ids = ids.join(FavoritePool).filter(FavoritePool.user_id == self.user.id)
@@ -973,6 +974,7 @@ class RPC(object):
         ids = select([ids.subquery().c.id])
         ids = select([ids.alias()])
 
+        custom_attr = set(attributes) - set(Pool.AttrNameClass.reserved)
         qfields = [Pool.name, Vlan.vid]
         if fields:
             if self.user.is_super_admin:
@@ -1004,6 +1006,15 @@ class RPC(object):
                     subnets.append(IP(int(row.address), row.prefix, row.version).label(expanded=full))
             if fields:
                 cpool['can_allocate'] = row.can_allocate
+
+        if custom_attr:
+            attrs = db.session.query(Pool.name, Pool.AttrNameClass.name, PoolAttr.value) \
+                   .join(PoolAttr, Pool.id == PoolAttr.ippool_id) \
+                   .join(Pool.AttrNameClass, PoolAttr.name_id == Pool.AttrNameClass.id) \
+                   .filter(Pool.AttrNameClass.name.in_(custom_attr))
+            for pool_name, attr_name, attr_val in attrs:
+                if pool_name in pools:
+                    pools[pool_name][attr_name] = attr_val
         return [pools[name] for name in sorted(pools.keys())]
 
     @readonly
