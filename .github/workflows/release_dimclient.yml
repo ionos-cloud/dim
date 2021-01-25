@@ -235,7 +235,8 @@ jobs:
     needs:
       - build
       - debian
-      - centos
+      - centos7
+      - centos8
       - fedora
     steps:
       - uses: actions/checkout@v2
@@ -251,6 +252,9 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: dimclient-src-${{ needs.build.outputs.version }}.tar.gz
+      - uses: actions/download-artifact@v2
+        with:
+          name: python36-dimclient-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
       - uses: actions/download-artifact@v2
         with:
           name: python3-dimclient-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
@@ -280,6 +284,14 @@ jobs:
           asset_path: python3-dimclient_${{ needs.build.outputs.version }}_all.deb
           asset_name: python3-dimclient_${{ needs.build.outputs.version }}_all.deb
           asset_content_type: application/vnd.debian.binary-package
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: python36-dimclient-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
+          asset_name: python36-dimclient-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
+          asset_content_type: application/octet-stream
       - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
