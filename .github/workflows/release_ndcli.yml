@@ -44,7 +44,81 @@ jobs:
         id: dimclient
         shell: bash
 
-  centos:
+  centos7:
+    runs-on: ubuntu-latest
+    needs: build
+    container:
+      image: centos:centos7
+      env:
+        _VERSION: ${{ needs.build.outputs.version }}
+        _DIMCLIENT: ${{ needs.build.outputs.dimclient }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: mkdir -p ${HOME}/rpmbuild/SPECS
+      - run: mkdir -p ${HOME}/rpmbuild/SOURCES
+      - run: /bin/yum install --assumeyes epel-release
+      - run: /bin/yum install --assumeyes python36-devel python36 rpm-build python36-dns python36-simplejson
+      - run: |
+          curl --location "https://github.com/${{ github.repository }}/releases/download/dimclient-${_DIMCLIENT}/python36-dimclient-${_DIMCLIENT}-1.el7.x86_64.rpm" > ./python3-dimclient-${_DIMCLIENT}-1.el8.x86_64.rpm
+          rpm -i ./python36-dimclient-${_DIMCLIENT}-1.el7.x86_64.rpm
+        shell: sh
+      - uses: actions/download-artifact@v2
+        with:
+          name: ndcli-src-${{ needs.build.outputs.version }}.tar.gz
+          path: ~/rpmbuild/SOURCES/
+      - shell: sh
+        run: |
+          cat <<EOF > ${HOME}/rpmbuild/SPECS/ndcli.spec
+          Name:    python36-ndcli
+          Version: ${_VERSION}
+          Release: 1.el7
+          Summary: DNS and IP management
+
+          Group: application/system
+          License: MIT
+
+          Source0: ndcli-src-%{version}.tar.gz
+          BuildRequires: python36-devel
+          BuildRequires: python36-dimclient
+          BuildRequires: python36-dns
+          Requires: python36-dimclient
+          Requires: python36-dns
+          Requires: python36
+
+          # don't strip debug symbols, else it will all come crashing down
+          %define debug_package %{nil}
+          %define __strip /bin/true
+
+          %description
+          DNS and IP management
+
+          %prep
+          %autosetup -p1 -n ndcli-%{version}
+
+          %build
+          %py3_build
+
+          %install
+          %py3_install
+          mkdir -p %{buildroot}%{_sysconfdir}/bash_completion.d
+          install -m 644 -T bash_completion.d/ndcli %{buildroot}%{_sysconfdir}/bash_completion.d/ndcli
+          mkdir -p %{buildroot}%{_mandir}/man1
+          gzip doc/_build/man/ndcli.1
+          install -m 644 -T doc/_build/man/ndcli.1.gz %{buildroot}%{_mandir}/man1/ndcli.1.gz
+
+          %files
+          %{python3_sitelib}/*
+          %{_bindir}/*
+          %{_sysconfdir}/bash_completion.d/*
+          %{_mandir}/man1/*
+          EOF
+      - run: rpmbuild -ba ${HOME}/rpmbuild/SPECS/ndcli.spec
+      - uses: actions/upload-artifact@v2
+        with:
+          name: python36-ndcli-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
+          path: ~/rpmbuild/RPMS/x86_64/python36-ndcli-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
+
+  centos8:
     runs-on: ubuntu-latest
     needs: build
     container:
@@ -227,7 +301,8 @@ jobs:
     needs:
       - build
       - debian
-      - centos
+      - centos7
+      - centos8
       - fedora
     steps:
       - uses: actions/checkout@v2
@@ -243,6 +318,9 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: ndcli-src-${{ needs.build.outputs.version }}.tar.gz
+      - uses: actions/download-artifact@v2
+        with:
+          name: python36-ndcli-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
       - uses: actions/download-artifact@v2
         with:
           name: python3-ndcli-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
@@ -272,6 +350,14 @@ jobs:
           asset_path: python3-ndcli_${{ needs.build.outputs.version }}_all.deb
           asset_name: python3-ndcli_${{ needs.build.outputs.version }}_all.deb
           asset_content_type: application/vnd.debian.binary-package
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: python36-ndcli-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
+          asset_name: python36-ndcli-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
+          asset_content_type: application/octet-stream
       - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
