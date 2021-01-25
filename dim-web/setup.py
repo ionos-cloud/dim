@@ -19,4 +19,5 @@ for dir in list(filter(lambda x: os.path.isdir(x), sorted(set(
 setup(name='dim-web',
       packages=['cas'],
       data_files = data_files,
-      version=version.VERSION)
+      version=version.VERSION,
+      install_requires=['xmltodict', 'flask'])
