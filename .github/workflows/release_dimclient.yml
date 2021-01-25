@@ -111,7 +111,7 @@ jobs:
           cat <<EOF > ${HOME}/rpmbuild/SPECS/dimclient.spec
           Name:    python3-dimclient
           Version: ${_VERSION}
-          Release: 1.fedora${{ matrix.os }}
+          Release: 1.fc${{ matrix.os }}
           Summary: DNS and IP management python library
 
           Group: application/system
@@ -145,8 +145,8 @@ jobs:
       - run: rpmbuild -ba ${HOME}/rpmbuild/SPECS/dimclient.spec
       - uses: actions/upload-artifact@v2
         with:
-          name: python3-dimclient-${{ needs.build.outputs.version }}-1.fedora${{ matrix.os }}.x86_64.rpm
-          path: ~/rpmbuild/RPMS/x86_64/python3-dimclient-${{ needs.build.outputs.version }}-1.fedora${{ matrix.os }}.x86_64.rpm
+          name: python3-dimclient-${{ needs.build.outputs.version }}-1.fc${{ matrix.os }}.x86_64.rpm
+          path: ~/rpmbuild/RPMS/x86_64/python3-dimclient-${{ needs.build.outputs.version }}-1.fc${{ matrix.os }}.x86_64.rpm
 
   debian:
     runs-on: ubuntu-latest
@@ -197,10 +197,10 @@ jobs:
           name: python3-dimclient-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
       - uses: actions/download-artifact@v2
         with:
-          name: python3-dimclient-${{ needs.build.outputs.version }}-1.fedora32.x86_64.rpm
+          name: python3-dimclient-${{ needs.build.outputs.version }}-1.fc32.x86_64.rpm
       - uses: actions/download-artifact@v2
         with:
-          name: python3-dimclient-${{ needs.build.outputs.version }}-1.fedora33.x86_64.rpm
+          name: python3-dimclient-${{ needs.build.outputs.version }}-1.fc33.x86_64.rpm
       - uses: actions/download-artifact@v2
         with:
           name: python3-dimclient_${{ needs.build.outputs.version }}_all.deb
@@ -234,14 +234,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: python3-dimclient-${{ needs.build.outputs.version }}-1.fedora32.x86_64.rpm
-          asset_name: python3-dimclient-${{ needs.build.outputs.version }}-1.fedora32.x86_64.rpm
+          asset_path: python3-dimclient-${{ needs.build.outputs.version }}-1.fc32.x86_64.rpm
+          asset_name: python3-dimclient-${{ needs.build.outputs.version }}-1.fc32.x86_64.rpm
           asset_content_type: application/octet-stream
       - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: python3-dimclient-${{ needs.build.outputs.version }}-1.fedora33.x86_64.rpm
-          asset_name: python3-dimclient-${{ needs.build.outputs.version }}-1.fedora33.x86_64.rpm
+          asset_path: python3-dimclient-${{ needs.build.outputs.version }}-1.fc33.x86_64.rpm
+          asset_name: python3-dimclient-${{ needs.build.outputs.version }}-1.fc33.x86_64.rpm
           asset_content_type: application/octet-stream
