@@ -20,4 +20,4 @@ setup(name='dim-web',
       packages=['cas'],
       data_files = data_files,
       version=version.VERSION,
-      install_requires=['xmltodict', 'flask'])
+      install_requires=['xmltodict', 'flask', 'requests'])

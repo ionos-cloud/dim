@@ -1,2 +1,4 @@
 import sys
-from login import app as application
+from cas import login
+
+application = login.app

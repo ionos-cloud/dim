@@ -51,7 +51,7 @@ jobs:
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
       - run: mkdir -p ${HOME}/rpmbuild/SOURCES
       - run: /bin/yum install --assumeyes epel-release
-      - run: /bin/yum install --assumeyes python36-devel python36 rpm-build python36-flask python36-xmltodict
+      - run: /bin/yum install --assumeyes python36-devel python36 rpm-build python36-flask python36-xmltodict python36-requests
       - uses: actions/download-artifact@v2
         with:
           name: dim-web-src-${{ needs.build.outputs.version }}.tar.gz
@@ -71,8 +71,10 @@ jobs:
           BuildRequires: python36-devel
           BuildRequires: python36-flask
           BuildRequires: python36-xmltodict
+          BuildRequires: python36-requests
           Requires: python36-flask
           Requires: python36-xmltodict
+          Requires: python36-requests
           Requires: python36
 
           # don't strip debug symbols, else it will all come crashing down
@@ -112,7 +114,7 @@ jobs:
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
       - run: mkdir -p ${HOME}/rpmbuild/SOURCES
       - run: /bin/dnf install --assumeyes epel-release
-      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-flask python3-xmltodict
+      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-flask python3-xmltodict python3-requests
       - uses: actions/download-artifact@v2
         with:
           name: dim-web-src-${{ needs.build.outputs.version }}.tar.gz
@@ -132,8 +134,10 @@ jobs:
           BuildRequires: python3-devel
           BuildRequires: python3-flask
           BuildRequires: python3-xmltodict
+          BuildRequires: python3-requests
           Requires: python3-flask
           Requires: python3-xmltodict
+          Requires: python3-requests
           Requires: python3
 
           # don't strip debug symbols, else it will all come crashing down
