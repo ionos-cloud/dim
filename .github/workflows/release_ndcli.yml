@@ -10,9 +10,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: ubuntu:latest
     outputs:
       version: ${{ steps.version.outputs.version }}
       dimclient: ${{ steps.dimclient.outputs.version }}
+    env:
+      DEBIAN_FRONTEND: noninteractive
 
     steps:
       - run: echo "::set-output name=version::$(echo "$_REF" | cut -d'-' -f2-)"
@@ -20,9 +24,15 @@ jobs:
         shell: bash
         env:
           _REF: ${{ github.ref }}
+      - run: apt-get update
+      - run: apt-get install --yes python3-dnspython python3-sphinx make git
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      - run: python3 gendoc.py > gendoc.txt
+        working-directory: ndcli/doc
+      - run: sphinx-build -b man doc doc/_build/man
+        working-directory: ndcli
       - run: tar --transform="s,^ndcli/,ndcli-${_version}/," -czf "ndcli-src-${_version}.tar.gz" ndcli
         env:
           _version: ${{ steps.version.outputs.version }}
@@ -90,10 +100,17 @@ jobs:
 
           %install
           %py3_install
+          mkdir -p %{buildroot}%{_sysconfdir}/bash_completion.d
+          install -m 644 -T bash_completion.d/ndcli %{buildroot}%{_sysconfdir}/bash_completion.d/ndcli
+          mkdir -p %{buildroot}%{_mandir}/man1
+          gzip doc/_build/man/ndcli.1
+          install -m 644 -T doc/_build/man/ndcli.1.gz %{buildroot}%{_mandir}/man1/ndcli.1.gz
 
           %files
           %{python3_sitelib}/*
           %{_bindir}/*
+          %{_sysconfdir}/bash_completion.d/*
+          %{_mandir}/man1/*
           EOF
       - run: rpmbuild -ba ${HOME}/rpmbuild/SPECS/ndcli.spec
       - uses: actions/upload-artifact@v2
@@ -159,10 +176,17 @@ jobs:
 
           %install
           %py3_install
+          mkdir -p %{buildroot}%{_sysconfdir}/bash_completion.d
+          install -m 644 -T bash_completion.d/ndcli %{buildroot}%{_sysconfdir}/bash_completion.d/ndcli
+          mkdir -p %{buildroot}%{_mandir}/man1
+          gzip doc/_build/man/ndcli.1
+          install -m 644 -T doc/_build/man/ndcli.1.gz %{buildroot}%{_mandir}/man1/ndcli.1.gz
 
           %files
           %{python3_sitelib}/*
           %{_bindir}/*
+          %{_sysconfdir}/bash_completion.d/*
+          %{_mandir}/man1/*
           EOF
       - run: rpmbuild -ba ${HOME}/rpmbuild/SPECS/ndcli.spec
       - uses: actions/upload-artifact@v2
