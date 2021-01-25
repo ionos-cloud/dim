@@ -7,7 +7,7 @@ from cas import version
 # So we have to split off every directory into its own data_files statement
 # with all its files just to make this work.
 data_files = []
-data_files.append(('share/dim-web', []))
+data_files.append(('share/dim-web', ['cas.wsgi', 'cas/config.py.example']))
 data_files.append(('share/dim-web/www', []))
 for dir in list(filter(lambda x: os.path.isdir(x), sorted(set(
         ['www'] + \
