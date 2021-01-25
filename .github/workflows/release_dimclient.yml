@@ -28,7 +28,66 @@ jobs:
           name: dimclient-src-${{ steps.version.outputs.version }}.tar.gz
           path: dimclient-src-${{ steps.version.outputs.version }}.tar.gz
 
-  centos:
+  centos7:
+    runs-on: ubuntu-latest
+    needs: build
+    container:
+      image: centos:centos7
+      env:
+        _VERSION: ${{ needs.build.outputs.version }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: mkdir -p ${HOME}/rpmbuild/SPECS
+      - run: mkdir -p ${HOME}/rpmbuild/SOURCES
+      - run: /bin/yum install --assumeyes epel-release
+      - run: /bin/yum install --assumeyes python36-devel python36 rpm-build python36-dns python36-simplejson
+      - uses: actions/download-artifact@v2
+        with:
+          name: dimclient-src-${{ needs.build.outputs.version }}.tar.gz
+          path: ~/rpmbuild/SOURCES/
+      - shell: sh
+        run: |
+          cat <<EOF > ${HOME}/rpmbuild/SPECS/dimclient.spec
+          Name:    python36-dimclient
+          Version: ${_VERSION}
+          Release: 1.el7
+          Summary: DNS and IP management python library
+
+          Group: application/system
+          License: MIT
+
+          Source0: dimclient-src-%{version}.tar.gz
+          BuildRequires: python36-devel
+          BuildRequires: python36-simplejson
+          Requires: python36-simplejson
+          Requires: python36
+
+          # don't strip debug symbols, else it will all come crashing down
+          %define debug_package %{nil}
+          %define __strip /bin/true
+
+          %description
+          DNS and IP management
+
+          %prep
+          %autosetup -p1 -n dimclient-%{version}
+
+          %build
+          %py3_build
+
+          %install
+          %py3_install
+
+          %files
+          %{python3_sitelib}/*
+          EOF
+      - run: rpmbuild -ba ${HOME}/rpmbuild/SPECS/dimclient.spec
+      - uses: actions/upload-artifact@v2
+        with:
+          name: python36-dimclient-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
+          path: ~/rpmbuild/RPMS/x86_64/python36-dimclient-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
+
+  centos8:
     runs-on: ubuntu-latest
     needs: build
     container:
