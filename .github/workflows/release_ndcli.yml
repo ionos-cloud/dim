@@ -59,7 +59,7 @@ jobs:
       - run: /bin/yum install --assumeyes epel-release
       - run: /bin/yum install --assumeyes python36-devel python36 rpm-build python36-dns python36-simplejson
       - run: |
-          curl --location "https://github.com/${{ github.repository }}/releases/download/dimclient-${_DIMCLIENT}/python36-dimclient-${_DIMCLIENT}-1.el7.x86_64.rpm" > ./python3-dimclient-${_DIMCLIENT}-1.el8.x86_64.rpm
+          curl --location "https://github.com/${{ github.repository }}/releases/download/dimclient-${_DIMCLIENT}/python36-dimclient-${_DIMCLIENT}-1.el7.x86_64.rpm" > ./python36-dimclient-${_DIMCLIENT}-1.el7.x86_64.rpm
           rpm -i ./python36-dimclient-${_DIMCLIENT}-1.el7.x86_64.rpm
         shell: sh
       - uses: actions/download-artifact@v2
