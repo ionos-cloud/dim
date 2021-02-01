@@ -32,8 +32,6 @@ jobs:
         working-directory: dim-web
       - run: mv dist www
         working-directory: dim-web
-      - run: ls www/**
-        working-directory: dim-web
       - run: tar --transform="s,^dim-web/,dim-web-${_version}/," -czvf "dim-web-src-${_version}.tar.gz" dim-web/setup.py dim-web/www dim-web/cas.wsgi dim-web/README.md dim-web/cas dim-web/test
         env:
           _version: ${{ steps.version.outputs.version }}
@@ -42,7 +40,70 @@ jobs:
           name: dim-web-src-${{ steps.version.outputs.version }}.tar.gz
           path: dim-web-src-${{ steps.version.outputs.version }}.tar.gz
 
-  centos:
+  centos7:
+    runs-on: ubuntu-latest
+    needs: build
+    container:
+      image: centos:centos7
+      env:
+        _VERSION: ${{ needs.build.outputs.version }}
+    steps:
+      - run: mkdir -p ${HOME}/rpmbuild/SPECS
+      - run: mkdir -p ${HOME}/rpmbuild/SOURCES
+      - run: /bin/yum install --assumeyes epel-release
+      - run: /bin/yum install --assumeyes python36-devel python36 rpm-build python36-flask python36-xmltodict python36-requests
+      - uses: actions/download-artifact@v2
+        with:
+          name: dim-web-src-${{ needs.build.outputs.version }}.tar.gz
+          path: ~/rpmbuild/SOURCES/
+      - shell: sh
+        run: |
+          cat <<EOF > ${HOME}/rpmbuild/SPECS/dim-web.spec
+          Name:    python36-dim-web
+          Version: ${_VERSION}
+          Release: 1.el7
+          Summary: DNS and IP management python library
+
+          Group: application/system
+          License: MIT
+
+          Source0: dim-web-src-%{version}.tar.gz
+          BuildRequires: python36-devel
+          BuildRequires: python36-flask
+          BuildRequires: python36-xmltodict
+          BuildRequires: python36-requests
+          Requires: python36-flask
+          Requires: python36-xmltodict
+          Requires: python36-requests
+          Requires: python36
+
+          # don't strip debug symbols, else it will all come crashing down
+          %define debug_package %{nil}
+          %define __strip /bin/true
+
+          %description
+          DNS and IP management
+
+          %prep
+          %autosetup -p1 -n dim-web-%{version}
+
+          %build
+          %py3_build
+
+          %install
+          %py3_install
+
+          %files
+          %{python3_sitelib}/*
+          %{_datadir}/*
+          EOF
+      - run: rpmbuild -ba ${HOME}/rpmbuild/SPECS/dim-web.spec
+      - uses: actions/upload-artifact@v2
+        with:
+          name: python36-dim-web-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
+          path: ~/rpmbuild/RPMS/x86_64/python36-dim-web-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
+
+  centos8:
     runs-on: ubuntu-latest
     needs: build
     container:
@@ -53,7 +114,7 @@ jobs:
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
       - run: mkdir -p ${HOME}/rpmbuild/SOURCES
       - run: /bin/dnf install --assumeyes epel-release
-      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-flask
+      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-flask python3-xmltodict python3-requests
       - uses: actions/download-artifact@v2
         with:
           name: dim-web-src-${{ needs.build.outputs.version }}.tar.gz
@@ -63,7 +124,7 @@ jobs:
           cat <<EOF > ${HOME}/rpmbuild/SPECS/dim-web.spec
           Name:    python3-dim-web
           Version: ${_VERSION}
-          Release: 1
+          Release: 1.el8
           Summary: DNS and IP management python library
 
           Group: application/system
@@ -72,7 +133,11 @@ jobs:
           Source0: dim-web-src-%{version}.tar.gz
           BuildRequires: python3-devel
           BuildRequires: python3-flask
+          BuildRequires: python3-xmltodict
+          BuildRequires: python3-requests
           Requires: python3-flask
+          Requires: python3-xmltodict
+          Requires: python3-requests
           Requires: python3
 
           # don't strip debug symbols, else it will all come crashing down
@@ -98,8 +163,8 @@ jobs:
       - run: rpmbuild -ba ${HOME}/rpmbuild/SPECS/dim-web.spec
       - uses: actions/upload-artifact@v2
         with:
-          name: python3-dim-web-${{ needs.build.outputs.version }}-1.x86_64.rpm
-          path: ~/rpmbuild/RPMS/x86_64/python3-dim-web-${{ needs.build.outputs.version }}-1.x86_64.rpm
+          name: python3-dim-web-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
+          path: ~/rpmbuild/RPMS/x86_64/python3-dim-web-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
 
   debian:
     runs-on: ubuntu-latest
@@ -114,7 +179,6 @@ jobs:
         with:
           name: dim-web-src-${{ needs.build.outputs.version }}.tar.gz
       - run: tar -xzf dim-web-src-${{ needs.build.outputs.version }}.tar.gz
-      - run: ls -la
       - run: apt-get update
       - run: apt-get install --yes build-essential python3 python3-flask python3-setuptools python3-all dh-python debhelper devscripts
       - run: cp -vr packaging/debian/dim-web/* dim-web-${{ needs.build.outputs.version }}/
@@ -134,7 +198,8 @@ jobs:
     needs:
       - build
       - debian
-      - centos
+      - centos7
+      - centos8
     steps:
       - uses: actions/checkout@v2
       - uses: actions/create-release@v1
@@ -151,7 +216,10 @@ jobs:
           name: dim-web-src-${{ needs.build.outputs.version }}.tar.gz
       - uses: actions/download-artifact@v2
         with:
-          name: python3-dim-web-${{ needs.build.outputs.version }}-1.x86_64.rpm
+          name: python36-dim-web-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
+      - uses: actions/download-artifact@v2
+        with:
+          name: python3-dim-web-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
       - uses: actions/download-artifact@v2
         with:
           name: python3-dim-web_${{ needs.build.outputs.version }}_all.deb
@@ -177,6 +245,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: python3-dim-web-${{ needs.build.outputs.version }}-1.x86_64.rpm
-          asset_name: python3-dim-web-${{ needs.build.outputs.version }}-1.x86_64.rpm
+          asset_path: python3-dim-web-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
+          asset_name: python3-dim-web-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
+          asset_content_type: application/octet-stream
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: python36-dim-web-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
+          asset_name: python36-dim-web-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
           asset_content_type: application/octet-stream

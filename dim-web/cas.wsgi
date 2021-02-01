@@ -1,4 +1,4 @@
 import sys
-sys.path.insert(0, '/var/lib/jenkins/dim-web/cas')
+from cas import login
 
-from login import app as application
+application = login.app
