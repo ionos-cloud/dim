@@ -8,49 +8,6 @@ import dimcli
 
 RECORD = 25
 
-last_comment = None
-rr_comments = {}
-
-
-def monkey_patch():
-    # keep the last comment
-    old_tok_get = dns.tokenizer.Tokenizer.get
-    def get(self, want_leading=False, want_comment=False):
-        while True:
-            token = old_tok_get(self, want_leading=want_leading, want_comment=True)
-            if token[0] == dns.tokenizer.COMMENT:
-                global last_comment
-                last_comment = token[1]
-                if want_comment:
-                    return token
-            else:
-                return token
-    dns.tokenizer.Tokenizer.get = get
-
-    # clear last_comment before parsing each line
-    old_rr_line = dns.zone._MasterReader._rr_line
-    def _rr_line(self):
-        global last_comment
-        last_comment = None
-        old_rr_line(self)
-    dns.zone._MasterReader._rr_line = _rr_line
-
-    # attach the last comment to rdata
-    old_add = dns.rdataset.Rdataset.add
-    def add(self, rd, ttl=None):
-        global last_comment
-        if last_comment:
-            rr_comments[rd] = last_comment.strip()
-        old_add(self, rd, ttl)
-    dns.rdataset.Rdataset.add = add
-
-    # don't change the relativity
-    def choose_relativity(self, origin=None, relativize=True):
-        return self
-    dns.name.Name.choose_relativity = choose_relativity
-monkey_patch()
-
-
 class ParsedRR(object):
     __slots__ = ('src', 'args')
     def __init__(self, src, args):
@@ -144,7 +101,6 @@ def get_parsed_records(parsed_zone, default_ttl=None):
             for rdata in rdataset.items:
                 rr_type = dns.rdatatype.to_text(rdata.rdtype)
                 rr_src = rdata_to_text(name, rdataset.ttl, rdata)
-                rr_comment = rr_comments.get(rdata, None)
                 if rr_type == 'SOA':
                     continue
                 if rr_type not in rdata_params:
@@ -154,9 +110,6 @@ def get_parsed_records(parsed_zone, default_ttl=None):
                                ttl=None if rdataset.ttl == default_ttl else rdataset.ttl,
                                type=rr_type,
                                **rdata_params[rr_type](rdata))
-                if rr_comment:
-                    rr_src = rr_src + ' ; ' + rr_comment
-                    rr_args['comment'] = rr_comment
                 records.append(ParsedRR(src=rr_src, args=rr_args))
     return records
 
@@ -204,8 +157,6 @@ def toposort_records(records):
 
 
 def import_zone(server, content, zone_name='', view=None, revzone=False):
-    global rr_comments
-    rr_comments = {}
     parsed_zone = dns.zone.from_text(str(content), origin=zone_name + '.', relativize=False, check_origin=False)
     soa_name, default_ttl, soa_rdata = get_first_soa(parsed_zone)
     if soa_rdata is None:
