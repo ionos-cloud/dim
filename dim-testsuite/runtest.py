@@ -14,6 +14,7 @@ If no tests are specified, all tests found in t/ will be run.
 '''
 
 
+import configparser
 import errno
 import logging
 import os.path
@@ -32,7 +33,7 @@ from tests.pdns_util import diff_files, test_pdns_output_process, setup_pdns_out
 
 topdir = os.path.dirname(os.path.abspath(__file__))
 T_DIR = os.path.join(topdir, 't')
-OUT_DIR = os.path.join(topdir, 'out')
+OUT_DIR = os.getenv('TEST_OUTPUT_DIR', os.path.join(topdir, 'out'))
 PDNS_ADDRESS = '127.1.1.1'
 PDNS_DB_URI = 'mysql://pdns:pdns@127.0.0.1:3307/pdns1'
 DIM_MYSQL_OPTIONS = '-h127.0.0.1 -P3307 -udim -pdim dim'
@@ -69,8 +70,8 @@ class PDNSOutputProcess(object):
                     os.read(self.proc.stdout.fileno(), 1024)
 
 
-def is_ignorable(line):
-    return len(line.strip()) == 0 or line.startswith('#')
+def is_ignorable(line: str):
+    return len(line.strip()) == 0 or str(line).startswith('#')
 
 
 def generates_table(line):
@@ -86,38 +87,21 @@ def is_pdns_query(line):
     return any(cmd in line for cmd in ('dig', 'drill'))
 
 
-def _ndcli(cmd, cmd_input=None):
-    root_logger = logging.getLogger()
-    for h in root_logger.handlers:
-        root_logger.removeHandler(h)
-    stderr = StringIO()
-    stderrHandler = logging.StreamHandler(stderr)
-    stderrHandler.setFormatter(logging.Formatter('%(levelname)s - %(message)s'))
-    stderrHandler.setLevel(logging.DEBUG)
-    root_logger.addHandler(stderrHandler)
-    old_stdout = sys.stdout
-    import codecs
-    sys.stdout = stdout = codecs.getwriter('utf8')(StringIO())
-    if cmd_input is not None:
-        old_stdin = sys.stdin
-        sys.stdin = StringIO(cmd_input)
-    CLI().run(['ndcli'] + cmd)
-    if cmd_input is not None:
-        sys.stdin = old_stdin
-    sys.stdout = old_stdout
-    root_logger.removeHandler(stderrHandler)
-    return stdout.getvalue(), stderr.getvalue()
+def _ndcli(cmd: str, cmd_input=None):
+    proc = Popen(['ndcli'] + cmd, stdout=PIPE, stderr=PIPE)
+    out, err = proc.communicate()
+    return out, err
 
 
 def clean_database():
     commands = [
         'echo "delete from domains; delete from records;" | mysql -h127.0.0.1 -P3307 -updns -ppdns pdns1',
         'echo "delete from domains; delete from records;" | mysql -h127.0.0.1 -P3307 -updns -ppdns pdns2']
-    clean_sql = os.path.join(topdir, 'clean.sql')
+    clean_sql = os.path.join(OUT_DIR, 'clean.sql')
     if not hasattr(clean_database, 'dumped'):
         commands.extend([
             "echo 'drop database dim; create database dim;' | " + DIM_MYSQL_COMMAND,
-            '/opt/dim/bin/manage_db clear -t',
+            'manage_db clear',
             'mysqldump ' + DIM_MYSQL_OPTIONS + ' >' + clean_sql])
         clean_database.dumped = True
     else:
@@ -172,19 +156,19 @@ def process_command(actual_output, expected_output, out, sort_before=False):
     return passed
 
 
-def table_from_lines(lines, cmd):
+def table_from_lines(lines: list[str], cmd: str) -> list[str]:
     if generates_map(cmd):
         result = []
         for line in lines:
             if not is_ignorable(line):
-                result.append(line.split(':', 1))
+                result.append(str(line).split(':', 1))
         return result
     elif ' -H' in cmd or 'dump zone' in cmd:
         result = []
         for line in lines:
             if is_ignorable(line):
                 continue
-            result.append(line.split('\t'))
+            result.append(str(line).split('\t'))
         return result
     else:
         result = []
@@ -273,7 +257,7 @@ def add_regex(table, cmd):
     return table
 
 
-def match_table(actual_table, expected_table, actual_raw, expected_raw):
+def match_table(actual_table, expected_table, actual_raw, expected_raw) -> list[str]:
     def match(row, info):
         if len(row) != len(info):
             return False
@@ -282,7 +266,7 @@ def match_table(actual_table, expected_table, actual_raw, expected_raw):
                 if info[i] != row[i]:
                     return False
             else:
-                if re.match(info[i], row[i]) is None:
+                if re.match(str(info[i]), str(row[i])) is None:
                     return False
         return True
     matched = {}
@@ -354,10 +338,10 @@ def run_test(testfile, outfile, stop_on_error=False, auto_pdns_check=False):
             server.output_create('pdns_output', 'pdns-db', db_uri=PDNS_DB_URI)
             server.zone_group_create('pdns_group')
             server.output_add_group('pdns_output', 'pdns_group')
-        with open(outfile, 'w') as out:
+        with open(outfile, 'wb') as out:
             while len(lines) > 0:
                 line = lines.pop(0)
-                out.write(line)
+                out.write(line.encode('utf-8'))
                 cmd_input = None
                 if line.startswith('$ cat <<EOF | ndcli'):
                     word, line = split_cat_command(line)
@@ -373,7 +357,7 @@ def run_test(testfile, outfile, stop_on_error=False, auto_pdns_check=False):
                         result = run_command(line, cmd_input)
 
                         if generates_table(line) or generates_map(line):
-                            actual_table = table_from_lines(result.split('\n'), line)
+                            actual_table = table_from_lines(result.split(b'\n'), line)
                             expected_table = table_from_lines([x.strip('\n') for x in expected_result], line)
                         else:
                             actual_table = [[x] for x in result.splitlines(True)]
@@ -383,7 +367,7 @@ def run_test(testfile, outfile, stop_on_error=False, auto_pdns_check=False):
                                              expected_table,
                                              result.splitlines(True),
                                              expected_result)
-                        out.writelines(output)
+                        out.writelines(list[str](output))
 
                         ok = output == expected_result
                         if auto_pdns_check and not check_pdns_output(line, out):

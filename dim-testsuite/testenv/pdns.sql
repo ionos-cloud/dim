@@ -1,1 +1,1 @@
-../dim/pdns.sql
+../../dim/pdns.sql
