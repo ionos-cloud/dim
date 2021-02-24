@@ -23,7 +23,7 @@ import shlex
 import sys
 from io import StringIO
 from itertools import zip_longest
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, DEVNULL
 
 from dimcli import CLI, config
 from dimclient import DimClient
@@ -293,7 +293,7 @@ def get_cat_input(lines, word, out):
     cat_input = ''
     while len(lines) > 0:
         line = lines.pop(0)
-        out.write(line)
+        out.write(line.encode('utf-8'))
         if line == word + '\n':
             break
         else:
@@ -384,6 +384,9 @@ def run_test(testfile, outfile, stop_on_error=False, auto_pdns_check=False):
 
 
 if __name__ == '__main__':
+    # start the server process
+    server = Popen(['manage_dim', 'runserver'], stderr=DEVNULL, stdout=DEVNULL)
+
     stop_on_error = False
     auto_pdns_check = False
     run_diff = False
@@ -407,6 +410,7 @@ if __name__ == '__main__':
         os.makedirs(OUT_DIR)
     except OSError as exc:
         if exc.errno != errno.EEXIST:
+            server.kill()
             raise
 
     for test in tests:
@@ -430,4 +434,5 @@ if __name__ == '__main__':
                 break
     if failed and run_diff:
         diff_files(diff_left, diff_right)
+    server.kill()
     sys.exit(1 if failed else 0)
