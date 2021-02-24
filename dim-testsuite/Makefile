@@ -4,7 +4,7 @@ ODIR          ?= out
 VPIP          ?= ${VDIR}/bin/pip3
 VPYTHON       ?= ${VDIR}/bin/python3
 
-all: install db run
+all: install db test
 	mkdir ${VDIR}
 	mkdir ${OUTDIR}
 
@@ -21,9 +21,9 @@ db:
 	mysql pdns2 < ./testenv/pdns.sql
 	${VDIR}/bin/manage_db clear
 
-run:
+test:
 	-mkdir ${ODIR}
 	${VDIR}/bin/manage_db clear
 	PATH="${VDIR}/bin:${PATH}" TEST_OUTPUT_DIR="${ODIR}" ${VPYTHON} runtest.py -d
 
-.PHONY: db run install clean
+.PHONY: db test install clean
