@@ -1447,7 +1447,7 @@ class RPC(object):
         pattern = make_wildcard(pattern)
         qfields = []
         if fields:
-            views_stmt = db.session.query(ZoneView.zone_id, func.count('*').label('views')).group_by(ZoneView.id).subquery()
+            views_stmt = db.session.query(ZoneView.zone_id, func.count('*').label('views')).group_by(ZoneView.zone_id).subquery()
             qfields.append(views_stmt.c.views)
             groups_stmt = db.session.query(Zone.id.label('zone_id'), ZoneView.id, func.count('*').label('zone_groups'))\
                 .join(ZoneView)\
@@ -1459,7 +1459,8 @@ class RPC(object):
             else:
                 qfields.append(and_(0 < self._changeable_views(can_create_rr=True, can_delete_rr=False)).label('can_create_rr'))
                 qfields.append(and_(0 < self._changeable_views(can_create_rr=False, can_delete_rr=True)).label('can_delete_rr'))
-        zones = db.session.query(Zone.name.label('name'), *qfields).filter(Zone.name.like(pattern)).filter_by(profile=profile)
+        zones = db.session.query(Zone.name.label('name'), *qfields).filter(Zone.name.like(pattern)).filter_by(profile=profile)\
+            .order_by(Zone.name)
         if owner is not None:
             zones = zones.join(Group).filter(Zone.owner == get_group(owner))
         if exclude_reverse:
