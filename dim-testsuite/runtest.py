@@ -88,8 +88,8 @@ def is_pdns_query(line):
 
 
 def _ndcli(cmd: str, cmd_input=None):
-    proc = Popen(['ndcli'] + cmd, stdout=PIPE, stderr=PIPE)
-    out, err = proc.communicate()
+    proc = Popen(['ndcli'] + cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    out, err = proc.communicate(input=cmd_input.encode('utf-8') if cmd_input != None else None)
     return out, err
 
 
@@ -147,10 +147,10 @@ def process_command(actual_output, expected_output, out, sort_before=False):
             if re.match(expected[:-3], actual):
                 out.write(expected + '\n')
             else:
-                out.write(actual + '\n')
+                out.write(actual + b'\n')
                 passed = False
         else:
-            out.write(actual + '\n')
+            out.write(actual + b'\n')
             if (actual != expected):
                 passed = False
     return passed
