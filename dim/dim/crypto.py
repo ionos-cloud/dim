@@ -21,7 +21,7 @@ Coefficient: %(u)s
 
 def _rsa2dnskey(key):
     """Get RSA public key in DNSKEY resource record format (RFC-3110)"""
-    octets = ''
+    octets = b''
     explen = int(math.ceil(math.log(key.e, 2)/8))
     if explen > 255:
         octets = "\x00"
