@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 
 import logging
 import re
@@ -243,9 +243,9 @@ def create_single_rr(name, rr_type, zone, view, user, overwrite=False, **kwargs)
             if same_name.filter(or_(RR.type == 'A', RR.type == 'AAAA')).count() == 0:
                 Messages.warn('No A or AAAA found for %s' % (new_rr.name,))
         check_new_rr(new_rr)
-        Messages.info(u"Creating RR {rr}{comment_msg} in {view_msg}".format(
+        Messages.info("Creating RR {rr}{comment_msg} in {view_msg}".format(
             rr=new_rr.bind_str(relative=True),
-            comment_msg=u' comment {0}'.format(kwargs['comment']) if kwargs.get('comment', None) else '',
+            comment_msg=' comment {0}'.format(kwargs['comment']) if kwargs.get('comment', None) else '',
             view_msg=new_rr.view))
         if new_rr.target and rr_type not in ['PTR', 'RP']:
             # Creating a PTR record also creates the A/AAAA record

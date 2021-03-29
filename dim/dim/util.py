@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 
 import logging
 import re
@@ -27,7 +27,7 @@ def safe_repr(obj, short=True):
 def timing(label):
     start = time.time()
     yield
-    print('Time for %s: %.3f' % (label, time.time() - start))
+    print(('Time for %s: %.3f' % (label, time.time() - start)))
 
 
 def defer_except(entity, cols, path=()):
@@ -46,11 +46,11 @@ def print_queries():
     finally:
         for q in get_debug_queries()[start_len:]:
             try:
-                print(">>> %.3f" % q.duration, q.statement % tuple(repr(p) for p in q.parameters))
+                print((">>> %.3f" % q.duration, q.statement % tuple(repr(p) for p in q.parameters)))
             except:
-                print(q.statement, q.parameters)
+                print((q.statement, q.parameters))
             print()
-        print(len(get_debug_queries()) - start_len, "queries")
+        print((len(get_debug_queries()) - start_len, "queries"))
 
 
 def printquery(statement, bind=None):
@@ -81,7 +81,7 @@ def printquery(statement, bind=None):
                 literal_binds=literal_binds, **kwargs)
 
     compiler = LiteralCompiler(dialect, statement)
-    print(compiler.process(statement))
+    print((compiler.process(statement)))
 
 
 def make_fqdn(target, zone_name):

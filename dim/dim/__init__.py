@@ -90,7 +90,7 @@ def syslog_workaround():
         def fixed_sysloghandler_emit(self, record):
             # Message is a string. Convert to bytes as required by RFC 5424
             msg_full = self.format(record)
-            if type(msg_full) is unicode:
+            if type(msg_full) is str:
                 msg_full = msg_full.encode('utf-8')
             CHUNK_SIZE = 980
             i = 0
@@ -129,7 +129,7 @@ class Model(object):
 
     def __repr__(self):
         def reprs():
-            for name in self.__mapper__.c.keys():
+            for name in list(self.__mapper__.c.keys()):
                 yield name, repr(getattr(self, name))
 
         def format(seq):

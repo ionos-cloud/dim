@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 
 import base64
 import datetime
@@ -269,7 +269,7 @@ class ZoneView(db.Model, TrackChanges):
             rrs = RR.query.filter_by(view=self, ttl=None).all()
             for rr in rrs:
                 OutputUpdate.send_rr_action(rr, OutputUpdate.DELETE_RR)
-        for name, value in attributes.items():
+        for name, value in list(attributes.items()):
             setattr(self, name, value)
         if 'serial' not in attributes:
             self.update_serial()
@@ -366,7 +366,7 @@ class RR(db.Model, TrackChanges):
     def validate_args(type, **kwargs):
         rr_class = RR.get_class(type)
         try:
-            for field, validate in rr_class.validate.items():
+            for field, validate in list(rr_class.validate.items()):
                 kwargs[field] = validate(None, field, kwargs[field])
         except ValueError as e:
             raise InvalidParameterError(text_type(e))
@@ -380,7 +380,7 @@ class RR(db.Model, TrackChanges):
                 raise InvalidParameterError('SRV records must start with two _ labels service and proto')
         kwargs = RR.validate_args(type, **kwargs)
         rr = RR(name=name, type=type, view=view, ttl=ttl, comment=comment)
-        for field in kwargs.keys():
+        for field in list(kwargs.keys()):
             if field == 'ip':
                 rr.ipblock = kwargs['ip']
             elif field in RRType.target_fields:

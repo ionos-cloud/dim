@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 
 import six
 from ipaddress import ip_address, IPv4Address, IPv6Address, ip_network

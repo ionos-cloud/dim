@@ -34,7 +34,7 @@ def time_function(f):
     def wrapper(*args, **kwargs):
         start = time.time()
         name = "%s(%s)" % (f.__name__, ', '.join([safe_repr(a) for a in args] +
-                ["%s=%s" % (k, safe_repr(v)) for k, v in kwargs.items()]))
+                ["%s=%s" % (k, safe_repr(v)) for k, v in list(kwargs.items())]))
         try:
             Messages.clear()
             g.tid = uuid.uuid4().hex[16:]

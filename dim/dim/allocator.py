@@ -53,9 +53,9 @@ def allocate(parent_query, version, prefix, maxsplit, strategy, allow_hosts):
     `strategy` can be ``first`` or ``random``.
     '''
     total_bits = 32 if version == 4 else 128
-    if not isinstance(prefix, (int, long)) or prefix > total_bits or prefix <= 0:
+    if not isinstance(prefix, int) or prefix > total_bits or prefix <= 0:
         raise Exception("Invalid prefix %r" % prefix)
-    if not isinstance(maxsplit, (int, long)) or maxsplit < 0:
+    if not isinstance(maxsplit, int) or maxsplit < 0:
         raise Exception("Invalid maxsplit: %r" % maxsplit)
 
     free = free_ranges(parent_query)
@@ -238,7 +238,7 @@ def substract_blocks(ranges, maxnr, prefix, version, strategy):
                        version)
             result.append(block)
             to_remove.setdefault(candidates[cid].range, []).append(block)
-        for i, blocks in to_remove.items():
+        for i, blocks in list(to_remove.items()):
             remove_blocks(ranges, i, blocks)
         return result
 

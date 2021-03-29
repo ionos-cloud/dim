@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 
 import re
 
@@ -108,7 +108,7 @@ def validate_enum(enum, reserved=None):
         if type(value) == int:
             if reserved and value in reserved:
                 raise InvalidParameterError("Invalid %s: %s" % (key, value))
-            if value not in enum.values():
+            if value not in list(enum.values()):
                 Messages.warn('%s value %s is unassigned' % (key, value))
             return validate_uint8(self, key, value)
         else:
@@ -205,7 +205,7 @@ def validate_strings(self, key, value):
     if isinstance(value, str):
         strings = _parse_strings(value)
     elif isinstance(value, list):
-        strings = map(lambda v: _unescapify(v), value)
+        strings = [_unescapify(v) for v in value]
     else:
         raise ValueError('%s must be either a string or a list of strings' % key)
     # Split strings longer than 255
@@ -230,16 +230,9 @@ def validate_character_string(self, key, value):
 
 
 class RRMeta():
-    _classes = {}
+    pass
 
-    def __init__(cls, name, bases, dct):
-        RRMeta._classes[name] = cls
-        super(RRMeta, cls).__init__(name, bases, dct)
-
-
-class RRType(object):
-    __metaclass__ = RRMeta
-
+class RRType(RRMeta):
     target_fields = ('ptrdname', 'cname', 'exchange', 'nsdname', 'target', 'txtdname')
     mbox_fields = ('mbox', )
     string_fields = ('cpu', 'os', 'flags', 'service', 'regexp', 'property_value')
@@ -252,7 +245,7 @@ class RRType(object):
 
     @classmethod
     def fields_from_value(cls, value):
-        fields = dict(zip(cls.fields, value.split()))
+        fields = dict(list(zip(cls.fields, value.split())))
         string_fields = set(cls.fields) & set(RRType.string_fields)
         if string_fields:
             for field in string_fields:

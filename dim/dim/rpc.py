@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 
 import datetime
 import collections
@@ -104,7 +104,7 @@ class RPC(object):
     def server_info(self):
         d = {}
         prefix = 'SERVER_INFO_'
-        for k, v in app.config.items():
+        for k, v in list(app.config.items()):
             if k.startswith(prefix):
                 d[k[len(prefix):].lower()] = v
         u = os.uname()
@@ -304,7 +304,7 @@ class RPC(object):
         if Layer3Domain.query.filter_by(name=name).count():
             raise AlreadyExistsError("A layer3domain named '%s' already exists" % name)
         if type not in Layer3Domain.TYPES:
-            raise InvalidParameterError('Type must be one of: %s' % ' '.join(Layer3Domain.TYPES.keys()))
+            raise InvalidParameterError('Type must be one of: %s' % ' '.join(list(Layer3Domain.TYPES.keys())))
         for attr_name in Layer3Domain.TYPES[type]:
             if options.get(attr_name) is None:
                 raise InvalidParameterError('Type %s requires a %s' % (type, attr_name))
@@ -911,7 +911,7 @@ class RPC(object):
                 result = add_children(ipblock, blocks, depth)
         if id2dict:
             ptrs = db.session.query(Ipblock.id, RR.target).filter(RR.type == 'PTR') \
-                .filter(Ipblock.id.in_(id2dict.keys())).join(RR).all()
+                .filter(Ipblock.id.in_(list(id2dict.keys()))).join(RR).all()
             for id, target in ptrs:
                 if id in id2dict and target:
                     id2dict[id].setdefault('attributes', {})['ptr_target'] = target
@@ -1066,7 +1066,7 @@ class RPC(object):
             if fields:
                 cpool['can_allocate'] = row.can_allocate
         reverse = order == 'desc'
-        return {'count': total_count, 'data': [pools[name] for name in sorted(pools.keys(), reverse=reverse)]}
+        return {'count': total_count, 'data': [pools[name] for name in sorted(list(pools.keys()), reverse=reverse)]}
 
     @updating
     def ippool_add_subnet(self, pool, cidr,
@@ -1240,7 +1240,7 @@ class RPC(object):
         if subnet.pool is None:
             raise NotInPoolError("%s from layer3domain %s is not part of any pool" % (subnet, subnet.layer3domain.name))
         try:
-            if not isinstance(priority, (int, long)):
+            if not isinstance(priority, int):
                 priority = int(priority)
         except:
             raise InvalidPriorityError("Invalid priority: %r" % priority)
@@ -1459,7 +1459,7 @@ class RPC(object):
             else:
                 qfields.append(and_(0 < self._changeable_views(can_create_rr=True, can_delete_rr=False)).label('can_create_rr'))
                 qfields.append(and_(0 < self._changeable_views(can_create_rr=False, can_delete_rr=True)).label('can_delete_rr'))
-        zones = db.session.query(Zone.name.label('name'), *qfields).filter(Zone.name.like(pattern)).filter_by(profile=profile)\
+        zones = db.session.query(Zone.name.label('name'), *qfields).filter(Zone.name.like(pattern)).filter(Zone.profile==profile)\
             .order_by(Zone.name)
         if owner is not None:
             zones = zones.join(Group).filter(Zone.owner == get_group(owner))
@@ -2206,10 +2206,10 @@ class RPC(object):
                 rrs.append(rr)
 
         if reverse_zone_sorting:
-            result = filter(lambda x: x['type'] == 'SOA', rrs)
-            result += sorted(filter(lambda x: x['record'].startswith('_'), rrs))
-            result += sorted(filter(lambda x: (x['record'].startswith('@') and x['type'] != 'SOA'), rrs))
-            result += sorted(filter(lambda x: x['record'].startswith('*'), rrs))
+            result = [x for x in rrs if x['type'] == 'SOA']
+            result += [x for x in rrs if x['record'].startswith('_')]
+            result += [x for x in rrs if (x['record'].startswith('@') and x['type'] != 'SOA')]
+            result += [x for x in rrs if x['record'].startswith('*')]
 
             def split_by_ip(dict_list):
                 """
@@ -2228,7 +2228,7 @@ class RPC(object):
                         invalid_ip.append(d)
                 return valid_ip, invalid_ip
 
-            remaining_rrs = filter(lambda x: (not x['record'].startswith(('_', '@', '*')) and x['type'] != 'SOA'), rrs)
+            remaining_rrs = [x for x in rrs if (not x['record'].startswith(('_', '@', '*')) and x['type'] != 'SOA')]
             valid_ips, invalid_ips = split_by_ip(remaining_rrs)
             result += sorted(valid_ips, key=lambda x: (IP(dim.dns.get_ip_from_ptr_name(x['name'], strict=False)).address, x['record']))
             result += sorted(invalid_ips)
@@ -2391,10 +2391,10 @@ class RPC(object):
                 rrs.append(v)
 
         if reverse_zone_sorting:
-            result = filter(lambda x: x['type'] == 'SOA', rrs)
-            result += sorted(filter(lambda x: x['record'].startswith('_'), rrs))
-            result += sorted(filter(lambda x: (x['record'].startswith('@') and x['type'] != 'SOA'), rrs))
-            result += sorted(filter(lambda x: x['record'].startswith('*'), rrs))
+            result = [x for x in rrs if x['type'] == 'SOA']
+            result += sorted([x for x in rrs if x['record'].startswith('_')])
+            result += sorted([x for x in rrs if (x['record'].startswith('@') and x['type'] != 'SOA')])
+            result += sorted([x for x in rrs if x['record'].startswith('*')])
 
             def split_by_ip(dict_list):
                 """
@@ -2413,7 +2413,7 @@ class RPC(object):
                         invalid_ip.append(d)
                 return valid_ip, invalid_ip
 
-            remaining_rrs = filter(lambda x: (not x['record'].startswith(('_', '@', '*')) and x['type'] != 'SOA'), rrs)
+            remaining_rrs = [x for x in rrs if (not x['record'].startswith(('_', '@', '*')) and x['type'] != 'SOA')]
             valid_ips, invalid_ips = split_by_ip(remaining_rrs)
             result += sorted(valid_ips, key=lambda x: (IP(dim.dns.get_ip_from_ptr_name(x['name'], strict=False)).address, x['record']))
             result += sorted(invalid_ips)
@@ -2601,7 +2601,7 @@ class RPC(object):
         if Output.query.filter_by(name=name).count():
             raise AlreadyExistsError("An output named '%s' already exists" % name)
         if plugin not in Output.PLUGINS:
-            raise InvalidParameterError('Plugin must be one of: %s' % ' '.join(Output.PLUGINS.keys()))
+            raise InvalidParameterError('Plugin must be one of: %s' % ' '.join(list(Output.PLUGINS.keys())))
         for attr_name in Output.PLUGINS[plugin]:
             if options.get(attr_name) is None:
                 raise InvalidParameterError('Plugin %s requires a %s' % (plugin, attr_name))
@@ -2693,7 +2693,7 @@ class RPC(object):
             OutputUpdate.content).join(Output).order_by(OutputUpdate.id)
         if output:
             query = query.filter(Output.name == output)
-        return [dict(zip(row.keys(), row)) for row in query]
+        return [dict(list(zip(list(row.keys()), row))) for row in query]
 
     @updating
     def output_update_delete(self, update_ids):
@@ -2987,7 +2987,7 @@ class RPC(object):
         return view
 
     def _zone_delete_view(self, view, cleanup, also_deleting_zone):
-        view_query = RR.query.filter_by(view=view)
+        view_query = RR.query.filter_by(view=view).order_by(RR.name)
         view_rrs = view_query.all()
         if cleanup:
             delete_with_references(view_query, free_ips=True, references='warn', user=self.user)
@@ -3071,7 +3071,7 @@ class RPC(object):
                 view_name = kwargs['ip'].layer3domain.name
                 view_exists = ZoneView.query.filter_by(zone=reverse_zone, name=view_name).count()
                 forward = make_fqdn(forward_name, forward_zone)
-                print(view_name, view_exists, zone)
+                print((view_name, view_exists, zone))
                 if view_exists:
                     dim.dns.create_single_rr(name=reverse_name,
                                              zone=reverse_zone,
@@ -3165,7 +3165,7 @@ class RPC(object):
             kwargs['ip'] = dim.dns.get_ip_from_ptr_name(name)
         if rr_type in ('A', 'AAAA', 'PTR') and 'ip' in kwargs:
             ip = parse_ip(kwargs['ip'])
-            for type, version in dict(A=4, AAAA=6).items():
+            for type, version in list(dict(A=4, AAAA=6).items()):
                 if rr_type == type and ip.version != version:
                     raise InvalidParameterError('Invalid IPv%d: %s' % (version, kwargs['ip']))
 
@@ -3189,7 +3189,7 @@ class RPC(object):
                     kwargs['ip'] = self._ip_mark(check_ip(ip, layer3domain, {'host': True}), layer3domain=layer3domain,
                                                  attributes=None, parse_rr=True, allow_overlap=allow_overlap)
                 else:
-                    raise InvalidParameterError(u'Invalid IP %s: %s' % (kwargs['ip'], text_type(e)))
+                    raise InvalidParameterError('Invalid IP %s: %s' % (kwargs['ip'], text_type(e)))
         if rr_type == 'PTR' and ('ip' in kwargs) and ('name' not in kwargs):
             kwargs['name'] = dim.dns.get_ptr_name(kwargs['ip'])
 
@@ -3440,7 +3440,7 @@ def check_block(block, layer3domain, options, ip=None):
 
 def check_options(options):
     if options:
-        raise InvalidParameterError("Unknown options: " + ' '.join(options.keys()))
+        raise InvalidParameterError("Unknown options: " + ' '.join(list(options.keys())))
 
 
 def get_pool(pool_name):
@@ -3527,12 +3527,12 @@ def get_subnet(ip_or_block, layer3domain):
 
 def validate_vlan(vid):
     try:
-        if not isinstance(vid, (int, long)):
+        if not isinstance(vid, int):
             vid = int(vid)
     except:
-        raise InvalidVLANError("VLAN id %r is invalid" % vid)
+        raise InvalidVLANError("VLAN id %r is invalid, can't be converted to integer" % vid)
     if vid < 1 or vid > 4094:
-        raise InvalidVLANError("VLAN id %r is invalid" % vid)
+        raise InvalidVLANError("VLAN id %r is invalid, must be between 1 and 4094" % vid)
     return vid
 
 

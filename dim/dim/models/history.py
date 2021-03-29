@@ -66,7 +66,7 @@ for collection in [ZoneGroup.views, Output.groups]:
 def update_listener(mapper, connection, target):
     if hasattr(target, '_changed_attrs'):
         changes = target._changed_attrs
-        for change in changes.values():
+        for change in list(changes.values()):
             if change.name == 'name':
                 make_history(target, 'renamed', {'name': change.old_value}, changed_attr=change)
             else:

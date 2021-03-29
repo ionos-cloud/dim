@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 
 import re
 import subprocess
@@ -14,7 +14,7 @@ def migrate():
     if start_version == SCHEMA_VERSION:
         print('Nothing to do')
         return
-    print('From', start_version, 'to', SCHEMA_VERSION)
+    print(('From', start_version, 'to', SCHEMA_VERSION))
     graph = gather_graph()
     q = deque([start_version])
     prev = {start_version: None}
@@ -47,8 +47,8 @@ def gather_graph():
 
 
 def run_script(new_version, script):
-    print("Changing schema version %s to %s: %s"
-          % (SchemaInfo.current_version(), new_version, script))
+    print(("Changing schema version %s to %s: %s"
+          % (SchemaInfo.current_version(), new_version, script)))
     url = db.engine.url
     cmd = ['mysql',
            '-h%s' % url.host,

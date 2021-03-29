@@ -41,7 +41,7 @@ class WithAttr(object):
         if not isinstance(attributes, dict):
             raise Exception("Attributes must be a map")
         # Reject reserved attributes
-        keys = attributes.keys()
+        keys = list(attributes.keys())
         for name in keys:
             if name in self.AttrNameClass.reserved:
                 raise Exception("The attribute name '%s' is reserved" % name)
@@ -54,7 +54,7 @@ class WithAttr(object):
             .filter_by(**{self.attr_backref: self})\
             .join(self.AttrNameClass)\
             .options(contains_eager(self.AttrClass.name))\
-            .filter(self.AttrNameClass.name.in_(attributes.keys())).all()
+            .filter(self.AttrNameClass.name.in_(list(attributes.keys()))).all()
         names = dict((name.name, name) for name in existing_names)
         # Create missing AttrNames
         for name in set(keys) - set(names.keys()):
@@ -63,7 +63,7 @@ class WithAttr(object):
         # Set the values
         old_values = {}
         name2attr = dict((attr.name.name, attr) for attr in current)
-        for name, value in attributes.items():
+        for name, value in list(attributes.items()):
             if name in name2attr:
                 old_values[name] = name2attr[name].value
                 name2attr[name].value = value
@@ -72,7 +72,7 @@ class WithAttr(object):
                                               value=value,
                                               **{self.attr_backref: self}))
         self.update_modified()
-        for k, v in attributes.items():
+        for k, v in list(attributes.items()):
             old_value = old_values.get(k, None)
             if v != old_value:
                 record_history(self, action='set_attr', attrname=k, newvalue=v, oldvalue=old_value)

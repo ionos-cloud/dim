@@ -269,7 +269,7 @@ class User(db.Model):
                                         ('network_admin', None)])
 
     def get_rights(self):
-        available = UserRights.keys()
+        available = list(UserRights.keys())
         if self.is_super_admin:
             return available
         perms = []
@@ -283,7 +283,7 @@ class User(db.Model):
         return perms
 
 
-for can, conf in UserRights.items():
+for can, conf in list(UserRights.items()):
     def can_func(self, tool_access=conf['tool_access'], access=conf['access']):
         if not tool_access and get_session_tool():
             return False
