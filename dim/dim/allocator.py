@@ -1,3 +1,4 @@
+import logging
 import random
 from collections import namedtuple
 from itertools import islice, groupby
@@ -190,13 +191,15 @@ def substract_blocks(ranges, maxnr, prefix, version, strategy):
 
     def substract_first():
         ret = []
-        still_needed = maxnr
+        still_needed = int(maxnr)
         for i in range(len(ranges)):
             blocks = list(islice(blocks_in_range(ranges[i], prefix, total_bits, version), still_needed))
             remove_blocks(ranges, i, blocks)
             ret.extend(blocks)
             still_needed -= len(blocks)
             assert still_needed >= 0
+            if still_needed < 0:
+                still_needed = 0
             if still_needed == 0:
                 break
         ranges.sort()
