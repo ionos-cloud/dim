@@ -2738,7 +2738,7 @@ class RPC(object):
         return hs.execute(limit, begin, end, incl=['layer3domain'])
 
     @readonly
-    def history_rr(self, name=None, limit=None, begin=None, end=None):
+    def history_rr(self, name, limit=None, begin=None, end=None):
         hs = HistorySelect()
         query = hs.add_select(RR)
         if name is not None:
@@ -2746,7 +2746,7 @@ class RPC(object):
         return hs.execute(limit, begin, end, incl=['zone', 'view', 'layer3domain'])
 
     @readonly
-    def history_zone_group(self, zone_group=None, limit=None, begin=None, end=None):
+    def history_zone_group(self, zone_group, limit=None, begin=None, end=None):
         hs = HistorySelect()
         query = hs.add_select(ZoneGroup)
         if zone_group is not None:
@@ -2754,7 +2754,7 @@ class RPC(object):
         return hs.execute(limit, begin, end)
 
     @readonly
-    def history_output(self, output=None, limit=None, begin=None, end=None):
+    def history_output(self, output, limit=None, begin=None, end=None):
         hs = HistorySelect()
         query = hs.add_select(Output)
         if output is not None:
@@ -2762,7 +2762,7 @@ class RPC(object):
         return hs.execute(limit, begin, end)
 
     @readonly
-    def history_group(self, group=None, limit=None, begin=None, end=None):
+    def history_group(self, group, limit=None, begin=None, end=None):
         hs = HistorySelect()
         query = hs.add_select(Group)
         if group is not None:
@@ -2770,7 +2770,7 @@ class RPC(object):
         query = hs.add_select(GroupRight)
         if group is not None:
             query.where(hs.c.group == group)
-        return hs.execute(limit, begin, end)
+        return hs.execute(limit=limit, begin=begin, end=end)
 
     @readonly
     def history_ippool(self, name, limit=None, begin=None, end=None):
