@@ -542,7 +542,7 @@ def dnskey_rdata(flags, protocol, algorithm, pubkey):
 def dnskey_tag(rdata):
     ac = 0
     for i, c in enumerate(rdata):
-        ac += ord(c) if i & 1 else ord(c) << 8
+        ac += c if i & 1 else c << 8
     ac += (ac >> 16) & 0xFFFF
     return ac & 0xFFFF
 
