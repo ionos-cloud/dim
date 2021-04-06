@@ -54,3 +54,11 @@ make VDIR=/tmp/venv ODIR=/tmp/test_output
 
 If you want to skip the database initialization or installing of dependencies,
 let *make* run the tests directly by using `make test`.
+
+where is the log?
+-----------------
+
+Currently dim is started via the runtest.py in a background process. If this is
+not enough for your use case, you can start dim yourself with the same config
+file.
+runtest.py will still work and all tests will still be done.
