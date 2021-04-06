@@ -551,10 +551,10 @@ def ds_hash(owner, rdata, digest_function):
     parts = owner.lower().split('.')
     canon = []
     for p in parts:
-        canon.append(chr(len(p)))
-        canon.append(str(p))
+        canon.append(bytes([len(p)]))
+        canon.append(p)
     canon.append(chr(0))
-    return digest_function(''.join(canon) + rdata).hexdigest().upper()
+    return digest_function(b''.join(canon) + rdata).hexdigest().upper()
 
 
 class Output(db.Model, TrackChanges):
