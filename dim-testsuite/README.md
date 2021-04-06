@@ -31,6 +31,7 @@ The following programs need to be installed:
 
 * python3
 * colordiff
+* make
 
 how to run the test suite?
 --------------------------
@@ -52,4 +53,4 @@ make VDIR=/tmp/venv ODIR=/tmp/test_output
 ```
 
 If you want to skip the database initialization or installing of dependencies,
-let make run the tests directly by using `make test`.
+let *make* run the tests directly by using `make test`.
