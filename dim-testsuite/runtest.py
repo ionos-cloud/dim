@@ -23,7 +23,7 @@ import shlex
 import sys
 from io import StringIO
 from itertools import zip_longest
-from subprocess import Popen, PIPE, DEVNULL
+from subprocess import Popen, PIPE, DEVNULL, STDOUT
 
 from dimcli import CLI, config
 from dimclient import DimClient
@@ -71,26 +71,26 @@ class PDNSOutputProcess(object):
 
 
 def is_ignorable(line: str):
-    return len(line.strip()) == 0 or str(line).startswith('#')
+    return len(line.strip()) == 0 or line.startswith(b'#')
 
 
 def generates_table(line):
-    return line.startswith('$ ndcli list') or line.startswith('$ ndcli dump zone') or line.startswith('$ ndcli history')
+    return line.startswith(b'$ ndcli list') or line.startswith(b'$ ndcli dump zone') or line.startswith(b'$ ndcli history')
 
 
 def generates_map(line):
-    return line.startswith('$ ndcli show') or line.startswith('$ ndcli modify rr') \
-        or re.search('(get|mark) (ip|delegation)', line) or re.search('ndcli create rr .* from', line)
+    return line.startswith(b'$ ndcli show') or line.startswith(b'$ ndcli modify rr') \
+        or re.search(b'(get|mark) (ip|delegation)', line) or re.search(b'ndcli create rr .* from', line)
 
 
 def is_pdns_query(line):
-    return any(cmd in line for cmd in ('dig', 'drill'))
+    return any(cmd in line for cmd in (b'dig', b'drill'))
 
 
 def _ndcli(cmd: str, cmd_input=None):
-    proc = Popen(['ndcli'] + cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    proc = Popen(['ndcli'] + cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
     out, err = proc.communicate(input=cmd_input.encode('utf-8') if cmd_input != None else None)
-    return out, err
+    return out
 
 
 def clean_database():
@@ -111,19 +111,9 @@ def clean_database():
 
 
 def run_command(line, cmd_input=None):
-    cmd = shlex.split(line[7:])
-    # HACK shell-style redirection
-    redir_out = None
-    if '>' in cmd:
-        idx = cmd.index('>')
-        redir_out = cmd[idx + 1]
-        cmd = cmd[:idx]
-    out, err = _ndcli(cmd, cmd_input)
-    if redir_out:
-        with open(redir_out, 'w') as f:
-            f.write(out)
-        out = ''
-    return out + err
+    cmd = shlex.split(line[7:].decode('utf-8'))
+    out = _ndcli(cmd, cmd_input)
+    return out
 
 
 def run_system_command(*args, **kwargs):
@@ -161,14 +151,14 @@ def table_from_lines(lines: list[str], cmd: str) -> list[str]:
         result = []
         for line in lines:
             if not is_ignorable(line):
-                result.append(str(line).split(':', 1))
+                result.append(str(line).split(b':', 1))
         return result
-    elif ' -H' in cmd or 'dump zone' in cmd:
+    elif b' -H' in cmd or b'dump zone' in cmd:
         result = []
         for line in lines:
             if is_ignorable(line):
                 continue
-            result.append(str(line).split('\t'))
+            result.append(str(line).split(b'\t'))
         return result
     else:
         result = []
@@ -212,48 +202,48 @@ def add_regex(table, cmd):
             elif row[0] in ['created_by', 'modified_by']:
                 table[no][1] = re.compile('.*')
     elif generates_table(cmd):
-        if re.search('list zone .* keys', cmd):
+        if re.search(b'list zone .* keys', cmd):
             for row in table:
-                row[0] = re.compile('.*_[zk]sk_.*')
-                row[2] = re.compile('\d*')
-                row[5] = re.compile('.*')
-        if re.search('list zone .* dnskeys', cmd):
+                row[0] = re.compile(b'.*_[zk]sk_.*')
+                row[2] = re.compile(b'\d*')
+                row[5] = re.compile(b'.*')
+        if re.search(b'list zone .* dnskeys', cmd):
             for row in table:
-                row[0] = re.compile('\d*')
-                row[1] = re.compile('\d*')
-                row[3] = re.compile('.*')
-        if re.search('list zone .* keys', cmd):
+                row[0] = re.compile(b'\d*')
+                row[1] = re.compile(b'\d*')
+                row[3] = re.compile(b'.*')
+        if re.search(b'list zone .* keys', cmd):
             for row in table:
-                row[0] = re.compile('.*')
-                row[2] = re.compile('\d*')
-                row[5] = re.compile('.*')
-        if re.search('list zone .* ds', cmd):
+                row[0] = re.compile(b'.*')
+                row[2] = re.compile(b'\d*')
+                row[5] = re.compile(b'.*')
+        if re.search(b'list zone .* ds', cmd):
             for row in table[1:]:
-                row[0] = re.compile('\d*')
-                row[2] = re.compile('\d')
-                row[3] = re.compile('.*')
-        if 'dcli list zone' in cmd or 'dcli dump zone' in cmd or 'dcli list rrs' in cmd:
+                row[0] = re.compile(b'\d*')
+                row[2] = re.compile(b'\d')
+                row[3] = re.compile(b'.*')
+        if b'dcli list zone' in cmd or b'dcli dump zone' in cmd or b'dcli list rrs' in cmd:
             for rr_row in table:
                 for rr_col in [2, 3, 4]:
                     if (rr_col + 1) < len(rr_row):
-                        if rr_row[rr_col] == 'SOA':
+                        if rr_row[rr_col] == b'SOA':
                             stuff = rr_row[rr_col + 1].split()
-                            rr_row[rr_col + 1] = re.compile('%s %s \d+ \d+ \d+ \d+ \d+' % (stuff[0], stuff[1]))
-                        elif rr_row[rr_col] == 'DS':
-                            rr_row[rr_col + 1] = re.compile('\d+ 8 2 .*')
-        elif 'dcli history' in cmd:
+                            rr_row[rr_col + 1] = re.compile(b'%s %s \d+ \d+ \d+ \d+ \d+' % (stuff[0], stuff[1]))
+                        elif rr_row[rr_col] == b'DS':
+                            rr_row[rr_col + 1] = re.compile(b'\d+ 8 2 .*')
+        elif b'dcli history' in cmd:
             for row in table:
-                if row[0] != 'timestamp':
-                    row[0] = re.compile('.*')
-                if row[-1].startswith('set_attr serial='):
-                    row[-1] = re.compile('set_attr serial=\d+')
-                if row[4] == 'key':
+                if row[0] != b'timestamp':
+                    row[0] = re.compile(b'.*')
+                if row[-1].startswith(b'set_attr serial='):
+                    row[-1] = re.compile(b'set_attr serial=\d+')
+                if row[4] == b'key':
                     row[5] = re.compile('.*')
-    elif 'dnssec enable' in cmd or 'dnssec new' in cmd:
-        check_regexes(table, ['.*Created key .*_[zk]sk_.* for zone (.*)',
-                              '.*Creating RR .* DS \d+ 8 2 .* in zone .*'])
-    elif 'dnssec disable' in cmd or 'dnssec delete' in cmd or 'delete zone' in cmd:
-        check_regexes(table, ['.*Deleting RR .* DS \d+ 8 2 .* from zone .*'])
+    elif b'dnssec enable' in cmd or b'dnssec new' in cmd:
+        check_regexes(table, [b'.*Created key .*_[zk]sk_.* for zone (.*)',
+                              b'.*Creating RR .* DS \d+ 8 2 .* in zone .*'])
+    elif b'dnssec disable' in cmd or b'dnssec delete' in cmd or b'delete zone' in cmd:
+        check_regexes(table, [b'.*Deleting RR .* DS \d+ 8 2 .* from zone .*'])
     return table
 
 
@@ -293,7 +283,7 @@ def get_cat_input(lines, word, out):
     cat_input = ''
     while len(lines) > 0:
         line = lines.pop(0)
-        out.write(line.encode('utf-8'))
+        out.write(line)
         if line == word + '\n':
             break
         else:
@@ -316,14 +306,14 @@ def check_pdns_output(line, out):
 
 
 def run_test(testfile, outfile, stop_on_error=False, auto_pdns_check=False):
-    with open(testfile, 'r') as f:
+    with open(testfile, 'rb') as f:
         lines = f.readlines()
     # ignore auto_pdns_check if zone-groups or outputs are involved
     pdns_needed = False
     for line in lines:
-        if 'create zone-group' in line or 'create output' in line:
+        if b'create zone-group' in line or b'create output' in line:
             auto_pdns_check = False
-        if 'drill' in line or 'dig' in line:
+        if b'drill' in line or b'dig' in line:
             pdns_needed = True
     if auto_pdns_check:
         pdns_needed = True
@@ -331,34 +321,35 @@ def run_test(testfile, outfile, stop_on_error=False, auto_pdns_check=False):
     global pdns_output_proc
     with PDNSOutputProcess(pdns_needed) as pdns_output_proc:
         clean_database()
-        run_command('$ ndcli login -u admin -p p')
+        run_command(b'$ ndcli login -u admin -p p')
         if auto_pdns_check:
             global server
             server = DimClient(config['server'], cookie_file=os.path.expanduser('~/.ndcli.cookie'))
             server.output_create('pdns_output', 'pdns-db', db_uri=PDNS_DB_URI)
             server.zone_group_create('pdns_group')
             server.output_add_group('pdns_output', 'pdns_group')
+
         with open(outfile, 'wb') as out:
             while len(lines) > 0:
                 line = lines.pop(0)
-                out.write(line.encode('utf-8'))
+                out.write(line)
                 cmd_input = None
-                if line.startswith('$ cat <<EOF | ndcli'):
+                if line.startswith(b'$ cat <<EOF | ndcli'):
                     word, line = split_cat_command(line)
                     cmd_input = get_cat_input(lines, word, out)
 
-                if line.startswith('$ '):
+                if line.startswith(b'$ '):
                     expected_result = []
-                    while len(lines) > 0 and not lines[0].startswith('$ '):
+                    while len(lines) > 0 and not lines[0].startswith(b'$ '):
                         expected_result.append(lines.pop(0))
                     while len(expected_result) > 0 and is_ignorable(expected_result[-1]):
-                        lines[0:0] = expected_result.pop()
-                    if line.startswith('$ ndcli'):
+                        lines.insert(0, expected_result.pop())
+                    if line.startswith(b'$ ndcli'):
                         result = run_command(line, cmd_input)
 
                         if generates_table(line) or generates_map(line):
                             actual_table = table_from_lines(result.split(b'\n'), line)
-                            expected_table = table_from_lines([x.strip('\n') for x in expected_result], line)
+                            expected_table = table_from_lines([x.strip(b'\n') for x in expected_result], line)
                         else:
                             actual_table = [[x] for x in result.splitlines(True)]
                             expected_table = [[x] for x in expected_result]
