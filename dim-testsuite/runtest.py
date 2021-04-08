@@ -268,7 +268,7 @@ def match_table(actual_table, expected_table, actual_raw, expected_raw) -> list[
 
 
 def split_cat_command(line):
-    return 'EOF', '$' + line.split('|')[1]
+    return b'EOF', b'$' + line.split(b'|')[1]
 
 
 def get_cat_input(lines, word, out):
@@ -356,7 +356,7 @@ def run_test(testfile, outfile, stop_on_error=False, auto_pdns_check=False):
                         if auto_pdns_check and not check_pdns_output(line, out):
                             ok = False
                     else:
-                        line = line.strip('\n')
+                        line = line.strip(b'\n')
                         if is_pdns_query(line):
                             pdns_output_proc.wait_updates()
                         result = run_system_command(line[2:])
