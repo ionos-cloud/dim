@@ -162,7 +162,7 @@ class RPC(object):
 
     @readonly
     def group_list(self):
-        return [group.name for group in Group.query]
+        return [group.name for group in Group.query.order_by(Group.name)]
 
     @updating
     def group_add_user(self, group, user):
@@ -271,7 +271,7 @@ class RPC(object):
                                     AccessRight.object_class == 'ZoneView',
                                     AccessRight.object_id == ZoneView.id))\
             .join(GroupRight).filter(GroupRight.group == group)\
-            .order_by(Zone.name)
+            .order_by(AccessRight.access, Zone.name, ZoneView.name)
         zones = db.session.query(Zone.name)\
             .join(AccessRight, and_(AccessRight.access == 'zone_admin',
                                     AccessRight.object_class == 'Zone',
