@@ -1,9 +1,9 @@
 # The real migration will be done by
 # - importing reverse Zones (no forward entries will be created)
 # - if reverse zone does not exist, create it
-# - importing forward Zones 
+# - importing forward Zones
 # - if no reverse entry exists, reverse entry is created
-# - if reverse zone for reverse entry does not exist, do not create reverse zone, just warn 
+# - if reverse zone for reverse entry does not exist, do not create reverse zone, just warn
 #
 # As you may notice, i'm using two distinct keywords
 # - import <some.zone> for importing zone in a newly created zone
