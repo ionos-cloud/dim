@@ -151,14 +151,14 @@ def table_from_lines(lines: list[str], cmd: str) -> list[str]:
         result = []
         for line in lines:
             if not is_ignorable(line):
-                result.append(str(line).split(b':', 1))
+                result.append(line.split(b':', 1))
         return result
     elif b' -H' in cmd or b'dump zone' in cmd:
         result = []
         for line in lines:
             if is_ignorable(line):
                 continue
-            result.append(str(line).split(b'\t'))
+            result.append(line.split(b'\t'))
         return result
     else:
         result = []
@@ -181,7 +181,7 @@ def table_from_lines(lines: list[str], cmd: str) -> list[str]:
                     next_offset = len(line)
                     if col < len(offsets) - 1:
                         next_offset = min(offsets[col + 1], len(line))
-                    row[col] = line[offset:next_offset].strip()
+                    row[col] = re.escape(line[offset:next_offset].strip())
             result.append(row)
         return result
 
@@ -256,7 +256,7 @@ def match_table(actual_table, expected_table, actual_raw, expected_raw) -> list[
                 if info[i] != row[i]:
                     return False
             else:
-                if re.match(str(info[i]), str(row[i])) is None:
+                if re.match(info[i], row[i]) is None:
                     return False
         return True
     matched = {}
