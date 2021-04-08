@@ -1782,7 +1782,7 @@ delegation).''')
         if not args.ldap:
             users = [{'username': u} for u in users]
         _print_table(column_desc,
-                     users,
+                     sorted(users, key=itemgetter('username')),
                      script=args.script)
 
     @cmd.register('list user-group rights',
