@@ -181,7 +181,7 @@ def table_from_lines(lines: list[str], cmd: str) -> list[str]:
                     next_offset = len(line)
                     if col < len(offsets) - 1:
                         next_offset = min(offsets[col + 1], len(line))
-                    row[col] = re.escape(line[offset:next_offset].strip())
+                    row[col] = line[offset:next_offset].strip()
             result.append(row)
         return result
 
@@ -251,27 +251,19 @@ def match_table(actual_table, expected_table, actual_raw, expected_raw) -> list[
     def match(row, info):
         if len(row) != len(info):
             return False
-        for i in range(len(row)):
-            if type(info[i]) == str:
-                if info[i] != row[i]:
-                    return False
-            else:
-                if re.match(info[i], row[i]) is None:
-                    return False
+        for i, should in enumerate(info):
+            if type(should) == bytes and should != row[i]:
+                return False
+            elif type(should) != bytes and re.match(should, row[i]) is None:
+                return False
         return True
-    matched = {}
-    for no, row in enumerate(actual_table):
-        for expected_no, expected_row in enumerate(expected_table):
-            if expected_no not in list(matched.values()) and match(row, expected_row):
-                matched[no] = expected_no
-                break
+
     result = []
-    expected_matched = [expected_raw[i] for i in sorted(matched.values())]
-    for no, row in enumerate(actual_raw):
-        if no in matched:
-            result.append(expected_matched.pop(0))
+    for no, row in enumerate(actual_table):
+        if match(row, expected_table[no]):
+            result.append(expected_raw[no])
         else:
-            result.append(row)
+            result.append(actual_raw[no])
     return result
 
 
