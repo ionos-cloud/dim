@@ -197,10 +197,10 @@ def add_regex(table, cmd):
 
     if generates_map(cmd):
         for (no, row) in enumerate(table):
-            if row[0] in ['created', 'modified']:
-                table[no][1] = re.compile('.*')
-            elif row[0] in ['created_by', 'modified_by']:
-                table[no][1] = re.compile('.*')
+            if row[0] in [b'created', b'modified']:
+                table[no][1] = re.compile(b'.*')
+            elif row[0] in [b'created_by', b'modified_by']:
+                table[no][1] = re.compile(b'.*')
     elif generates_table(cmd):
         if re.search(b'list zone .* keys', cmd):
             for row in table:
@@ -238,7 +238,7 @@ def add_regex(table, cmd):
                 if row[-1].startswith(b'set_attr serial='):
                     row[-1] = re.compile(b'set_attr serial=\d+')
                 if row[4] == b'key':
-                    row[5] = re.compile('.*')
+                    row[5] = re.compile(b'.*')
     elif b'dnssec enable' in cmd or b'dnssec new' in cmd:
         check_regexes(table, [b'.*Created key .*_[zk]sk_.* for zone (.*)',
                               b'.*Creating RR .* DS \d+ 8 2 .* in zone .*'])
