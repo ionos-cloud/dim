@@ -66,7 +66,7 @@ subnet:1.2.3.0/24
 created:2013-03-29 15:38:13
 gateway:1.2.3.1
 ip:1.2.3.192/27
-ip:1.2.3.192/27
+layer3domain:default
 mask:255.255.255.0
 modified:2013-03-29 15:38:13
 modified_by:admin
@@ -177,8 +177,8 @@ timestamp                  user  tool   originating_ip objclass name action
 2019-01-15 10:29:26.206617 admin native 127.0.0.1      ippool   p    set_attr version=4
 2019-01-15 10:29:26.107584 admin native 127.0.0.1      ippool   p    del_attr key2
 2019-01-15 10:29:26.107090 admin native 127.0.0.1      ippool   p    del_attr key
-2019-01-15 10:29:26.095311 admin native 127.0.0.1      ippool   p    set_attr key=value
 2019-01-15 10:29:26.094807 admin native 127.0.0.1      ippool   p    set_attr key2=value2
+2019-01-15 10:29:26.095311 admin native 127.0.0.1      ippool   p    set_attr key=value
 2019-01-15 10:29:26.080957 admin native 127.0.0.1      ippool   p    set_attr vlan=123
 2019-01-15 10:29:26.069508 admin native 127.0.0.1      ippool   p    set_attr vlan=None
 
