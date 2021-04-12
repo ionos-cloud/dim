@@ -259,11 +259,20 @@ def match_table(actual_table, expected_table, actual_raw, expected_raw) -> list[
         return True
 
     result = []
-    for no, row in enumerate(actual_table):
-        if match(row, expected_table[no]):
+    if len(actual_table) != len(expected_table):
+        print("number of lines between output and expected output differs")
+        return actual_raw
+    offset = 0
+    for no, row in enumerate(actual_raw):
+        if row.strip() == b'' and expected_raw[no].strip() == b'':
+            offset += 1
+            result.append(row)
+            continue
+        matched = match(actual_table[no - offset], expected_table[no - offset])
+        if matched:
             result.append(expected_raw[no])
         else:
-            result.append(actual_raw[no])
+            result.append(row)
     return result
 
 
@@ -353,6 +362,8 @@ def run_test(testfile, outfile, stop_on_error=False, auto_pdns_check=False):
                         out.writelines(list[str](output))
 
                         ok = output == expected_result
+                        if not ok:
+                            print(f"results didn't match:\nexpected: {expected_result}\nbut got: {output}")
                         if auto_pdns_check and not check_pdns_output(line, out):
                             ok = False
                     else:
