@@ -4,7 +4,7 @@ import re
 
 from sqlalchemy import Column, BigInteger, Integer, String, Numeric, TIMESTAMP, ForeignKey, UniqueConstraint
 from sqlalchemy.ext.compiler import compiles
-from sqlalchemy.orm import relationship, backref, validates
+from sqlalchemy.orm import relationship, backref, validates, synonym
 from sqlalchemy.sql import bindparam, or_, between, func, expression, text
 from sqlalchemy.types import DateTime
 
@@ -120,6 +120,8 @@ class Pool(db.Model, WithAttr):
     vlan = relationship(Vlan)
     owner = relationship('Group')
     layer3domain = relationship(Layer3Domain)
+    ipblocks = relationship("Ipblock", backref="pool")
+    subnets = synonym('ipblocks')
 
     @property
     def display_name(self):
@@ -248,7 +250,6 @@ class Ipblock(db.Model, WithAttr, TrackChanges):
     parent = relationship('Ipblock', remote_side=[id],
                           backref=backref('children', lazy='dynamic', order_by='Ipblock.address'))
     status = relationship(IpblockStatus)
-    pool = relationship(Pool, backref=backref('subnets', order_by='Ipblock.priority'))
     vlan = relationship(Vlan)
     layer3domain = relationship(Layer3Domain)
 
