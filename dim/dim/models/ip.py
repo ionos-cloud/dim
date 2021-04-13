@@ -178,7 +178,7 @@ class PoolAttrName(db.Model):
     id = Column(BigInteger, primary_key=True, nullable=False)
     name = Column(String(128), nullable=False, unique=True)
 
-    reserved = ['name', 'vlan', 'description', 'version', 'created', 'modified', 'modified_by', 'subnets']
+    reserved = ['name', 'vlan', 'description', 'version', 'created', 'modified', 'modified_by', 'layer3domain']
 
 
 class PoolAttr(db.Model):

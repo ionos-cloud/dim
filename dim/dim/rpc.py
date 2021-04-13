@@ -975,7 +975,7 @@ class RPC(object):
         ids = select([ids.alias()])
 
         custom_attr = set(attributes) - set(Pool.AttrNameClass.reserved)
-        qfields = [Pool.name, Vlan.vid]
+        qfields = [Pool.name, Pool.created, Pool.modified, Pool.modified_by, Vlan.vid, Layer3Domain.name.label('layer3domain')]
         if fields:
             if self.user.is_super_admin:
                 qfields.append(literal(True).label('can_allocate'))
@@ -994,12 +994,22 @@ class RPC(object):
         if include_subnets:
             q = q.outerjoin(Pool.subnets)
         q = q.outerjoin(Pool.vlan).filter(Pool.id.in_(ids))
+        q = q.join(Pool.layer3domain)
 
         pools = {}
         for row in q:
             cpool = pools.setdefault(row.name, {})
             cpool['name'] = row.name
-            cpool['vlan'] = row.vid
+            if 'vlan' in attributes:
+                cpool['vlan'] = row.vid
+            if 'layer3domain' in attributes:
+                cpool['layer3domain'] = row.layer3domain
+            if 'created' in attributes:
+                cpool['created'] = row.created
+            if 'modified' in attributes:
+                cpool['modified'] = row.modified
+            if 'modified_by' in attributes:
+                cpool['modified_by'] = row.modified_by
             if include_subnets:
                 subnets = cpool.setdefault('subnets', [])
                 if row.address is not None:
