@@ -38,18 +38,18 @@ $ ndcli rename output nsia-de.kae.bs to real_output
 
 $ ndcli history outputs
 timestamp           user  tool   originating_ip objclass name           action
-2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs added zone-group zg2
-2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs removed zone-group zg2
 2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs renamed to real_output
-2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs created
-2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs set_attr comment=second_comment
-2014-03-05 16:36:11 admin native 127.0.0.1      output   fake           created
+2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs removed zone-group zg2
+2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs added zone-group zg2
 2014-03-05 16:36:11 admin native 127.0.0.1      output   fake           deleted
+2014-03-05 16:36:11 admin native 127.0.0.1      output   fake           created
+2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs set_attr comment=second_comment
+2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs created
 
 $ ndcli history output nsia-de.kae.bs
 timestamp           user  tool   originating_ip objclass name           action
 2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs renamed to real_output
-2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs created
-2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs set_attr comment=second_comment
-2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs added zone-group zg2
 2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs removed zone-group zg2
+2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs added zone-group zg2
+2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs set_attr comment=second_comment
+2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs created
