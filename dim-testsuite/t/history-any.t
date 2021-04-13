@@ -42,8 +42,8 @@ timestamp                  user     tool   originating_ip objclass     name     
 2019-01-15 11:13:05.453250 dnsadmin native 127.0.0.1      ippool       p2                                set_attr team=IT Operations Dataservices Infrastructure
 2019-01-15 11:13:05.450882 dnsadmin native 127.0.0.1      ippool       p2                                created in layer3domain default
 2019-01-15 11:13:05.431649 dnsadmin native 127.0.0.1      ipblock      1.0.0.0/8                         created in layer3domain default
+2019-01-15 11:13:05.425168 dnsadmin native 127.0.0.1      zone-view    default                           set_attr serial=2019011503 in zone profile
 2019-01-15 11:13:05.415700 dnsadmin native 127.0.0.1      zone-view    default                           set_attr ttl=1002 in zone profile
-2019-01-15 11:13:05.415168 dnsadmin native 127.0.0.1      zone-view    default                           set_attr serial=2019011503 in zone profile
 2019-01-15 11:13:05.390432 dnsadmin native 127.0.0.1      rr           profile. TXT "profile txt record" set_attr comment=new profile comment in zone profile view default
 2019-01-15 11:13:05.370664 dnsadmin native 127.0.0.1      rr           profile. TXT "profile txt record" created in zone profile view default
 2019-01-15 11:13:05.369773 dnsadmin native 127.0.0.1      zone-view    default                           set_attr serial=2019011502 in zone profile
@@ -65,8 +65,8 @@ timestamp                  user     tool   originating_ip objclass     name     
 2019-01-15 11:13:05.453250 dnsadmin native 127.0.0.1      ippool       p2                                set_attr team=IT Operations Dataservices Infrastructure
 2019-01-15 11:13:05.450882 dnsadmin native 127.0.0.1      ippool       p2                                created in layer3domain default
 2019-01-15 11:13:05.431649 dnsadmin native 127.0.0.1      ipblock      1.0.0.0/8                         created in layer3domain default
+2019-01-15 11:13:05.425168 dnsadmin native 127.0.0.1      zone-view    default                           set_attr serial=2019011503 in zone profile
 2019-01-15 11:13:05.415700 dnsadmin native 127.0.0.1      zone-view    default                           set_attr ttl=1002 in zone profile
-2019-01-15 11:13:05.415168 dnsadmin native 127.0.0.1      zone-view    default                           set_attr serial=2019011503 in zone profile
 2019-01-15 11:13:05.390432 dnsadmin native 127.0.0.1      rr           profile. TXT "profile txt record" set_attr comment=new profile comment in zone profile view default
 2019-01-15 11:13:05.370664 dnsadmin native 127.0.0.1      rr           profile. TXT "profile txt record" created in zone profile view default
 2019-01-15 11:13:05.369773 dnsadmin native 127.0.0.1      zone-view    default                           set_attr serial=2019011502 in zone profile

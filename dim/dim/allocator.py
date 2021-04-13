@@ -1,3 +1,5 @@
+import logging
+import math
 import random
 from collections import namedtuple
 from itertools import islice, groupby
@@ -53,9 +55,9 @@ def allocate(parent_query, version, prefix, maxsplit, strategy, allow_hosts):
     `strategy` can be ``first`` or ``random``.
     '''
     total_bits = 32 if version == 4 else 128
-    if not isinstance(prefix, (int, long)) or prefix > total_bits or prefix <= 0:
+    if not isinstance(prefix, int) or prefix > total_bits or prefix <= 0:
         raise Exception("Invalid prefix %r" % prefix)
-    if not isinstance(maxsplit, (int, long)) or maxsplit < 0:
+    if not isinstance(maxsplit, int) or maxsplit < 0:
         raise Exception("Invalid maxsplit: %r" % maxsplit)
 
     free = free_ranges(parent_query)
@@ -114,7 +116,7 @@ def free_ranges(parent_query):
                 # We need to split the range if we had no children, otherwise we
                 # could try to allocate a child with the same prefix, which is not
                 # possible
-                mid = (range_end + 1 + range_start) / 2
+                mid = math.floor((range_end + 1 + range_start) / 2)
                 ranges.append([range_start, mid - 1])
                 ranges.append([mid, range_end])
             else:
@@ -190,13 +192,15 @@ def substract_blocks(ranges, maxnr, prefix, version, strategy):
 
     def substract_first():
         ret = []
-        still_needed = maxnr
+        still_needed = int(maxnr)
         for i in range(len(ranges)):
             blocks = list(islice(blocks_in_range(ranges[i], prefix, total_bits, version), still_needed))
             remove_blocks(ranges, i, blocks)
             ret.extend(blocks)
             still_needed -= len(blocks)
             assert still_needed >= 0
+            if still_needed < 0:
+                still_needed = 0
             if still_needed == 0:
                 break
         ranges.sort()
@@ -238,7 +242,7 @@ def substract_blocks(ranges, maxnr, prefix, version, strategy):
                        version)
             result.append(block)
             to_remove.setdefault(candidates[cid].range, []).append(block)
-        for i, blocks in to_remove.items():
+        for i, blocks in list(to_remove.items()):
             remove_blocks(ranges, i, blocks)
         return result
 

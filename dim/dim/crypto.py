@@ -21,7 +21,7 @@ Coefficient: %(u)s
 
 def _rsa2dnskey(key):
     """Get RSA public key in DNSKEY resource record format (RFC-3110)"""
-    octets = ''
+    octets = b''
     explen = int(math.ceil(math.log(key.e, 2)/8))
     if explen > 255:
         octets = "\x00"
@@ -37,7 +37,7 @@ def generate_RSASHA256_key_pair(bits):
     RSASHA256 = 8
     keydata = dict(alg=RSASHA256,
                    algtxt='RSASHA256')
-    for field in key.keydata:
+    for field in ['n', 'e', 'd', 'p', 'q', 'u']:
         f = getattr(key, field)
         f = Crypto.Util.number.long_to_bytes(f)
         keydata[field] = base64.b64encode(f)

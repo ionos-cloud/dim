@@ -1782,7 +1782,7 @@ delegation).''')
         if not args.ldap:
             users = [{'username': u} for u in users]
         _print_table(column_desc,
-                     users,
+                     sorted(users, key=itemgetter('username')),
                      script=args.script)
 
     @cmd.register('list user-group rights',
@@ -2829,19 +2829,19 @@ register_history('zone-profile', arg_meta='ZONEPROFILE', cmd_args=(zoneprofile_a
 register_history('rr', arg_meta='resource records named NAME', cmd_args=(Argument('name'), ),
                  f='history_rr', fargs=lambda args: [args.name])
 register_history('rrs', arg_meta='resource records', cmd_args=(),
-                 f='history_rr', fargs=lambda args: [])
+                 f='history_rr', fargs=lambda args: [None])
 register_history('zone-group', arg_meta='ZONEGROUP', cmd_args=(zone_group_arg, ),
                  f='history_zone_group', fargs=lambda args: [args.zonegroup])
 register_history('zone-groups', arg_meta='zone-groups', cmd_args=(),
-                 f='history_zone_group', fargs=lambda args: [])
+                 f='history_zone_group', fargs=lambda args: [None])
 register_history('output', arg_meta='OUTPUT', cmd_args=(output_arg, ),
                  f='history_output', fargs=lambda args: [args.output])
 register_history('outputs', arg_meta='outputs', cmd_args=(),
-                 f='history_output', fargs=lambda args: [])
+                 f='history_output', fargs=lambda args: [None])
 register_history('user-group', arg_meta='USERGROUP', cmd_args=(group_arg, ),
                  f='history_group', fargs=lambda args: [args.group])
 register_history('user-groups', arg_meta='groups', cmd_args=(),
-                 f='history_group', fargs=lambda args: [])
+                 f='history_group', fargs=lambda args: [None])
 register_history('pool', arg_meta='POOL', cmd_args=(Argument('poolname', completions=complete_allocate_poolname), ),
                  f='history_ippool', fargs=lambda args: [args.poolname])
 register_history('ipblock', arg_meta='IPBLOCK', cmd_args=(Argument('ipblock'), ),

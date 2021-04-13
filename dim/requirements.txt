@@ -13,8 +13,5 @@ dnspython>=1.15.0
 simplejson>=2.6.1
 argparse>=1.2.1
 requests>=2.20.0
-pycrypto>=2.6.1
+pycryptodome>=3.10.1
 six>=1.0
-
-# Python2
-#ipaddress==1.0.17;python_version<'3.0'

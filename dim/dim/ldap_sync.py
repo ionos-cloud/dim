@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 
 import logging
 import sys
@@ -69,7 +69,7 @@ def sync_departments(ldap):
                 ddep.name = ldep.name
             del ldap_departments[ddep.department_number]
     # handle new departments
-    for ldep in ldap_departments.values():
+    for ldep in list(ldap_departments.values()):
         db.session.add(ldep)
 
 

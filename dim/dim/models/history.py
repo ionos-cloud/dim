@@ -66,9 +66,11 @@ for collection in [ZoneGroup.views, Output.groups]:
 def update_listener(mapper, connection, target):
     if hasattr(target, '_changed_attrs'):
         changes = target._changed_attrs
-        for change in changes.values():
+        for change in list(changes.values()):
             if change.name == 'name':
                 make_history(target, 'renamed', {'name': change.old_value}, changed_attr=change)
+            elif change.name == 'ippool_id':
+                make_history(target, 'set_attr', changed_attr=AttrChange('pool', target.pool.display_name, change.old_value))
             else:
                 make_history(target, 'set_attr', changed_attr=change)
         del target._changed_attrs
@@ -251,7 +253,7 @@ generate_history_table(
      Column('vlan', Integer, info={'filler': default_filler('vlan')})] +
     generate_attr_change_columns(),
     [Ipblock.version, Ipblock.address, Ipblock.prefix, Ipblock.priority, Ipblock.gateway,
-     Ipblock.status, Ipblock.pool, Ipblock.vlan],
+     Ipblock.status, Ipblock.ippool_id, Ipblock.vlan],
     suppress_events=[Ipblock.version, Ipblock.address, Ipblock.prefix],
     indexes=[Index('ix_address_prefix_version', 'address', 'prefix', 'version')])
 

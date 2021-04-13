@@ -1,10 +1,10 @@
-from __future__ import absolute_import
+
 
 import datetime
 import hashlib
 import inspect
 import logging
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import xml.etree.ElementTree as et
 
 import requests
@@ -44,7 +44,7 @@ def _check_credentials(username, password):
     elif method is None:
         return True
     else:
-        logging.error(u"Invalid AUTHENTICATION_METHOD: %r" % method)
+        logging.error("Invalid AUTHENTICATION_METHOD: %r" % method)
     return False
 
 
@@ -54,7 +54,7 @@ def _do_login(authenticated, username, tool):
         if User.query.filter_by(username=username).count() == 0:
             db.session.add(User(username))
             db.session.commit()
-            logging.debug(u'Created user %s' % username)
+            logging.debug('Created user %s' % username)
         session.clear()
         session.permanent = request.form.get('permanent_session', False)
         session['username'] = username
@@ -79,10 +79,10 @@ def _check_tool_login(username, tool, salt, sign):
     if secret_key:
         authenticated = sign == _compute_sign(username, salt, secret_key)
     else:
-        logging.info(u'Invalid tool %s tried to login user %s', tool, username)
+        logging.info('Invalid tool %s tried to login user %s', tool, username)
         return False
     if not authenticated:
-        logging.info(u'Tool %s login for user %s failed', tool, username)
+        logging.info('Tool %s login for user %s failed', tool, username)
     return authenticated
 
 
@@ -143,7 +143,7 @@ def old_login():
     return _do_login(authenticated, username, tool=tool)
 
 def reject_request(msg):
-    logging.info(u'Username not present in session: %s. Headers %s', session, repr(request.headers))
+    logging.info('Username not present in session: %s. Headers %s', session, repr(request.headers))
 
     json_response = dict(jsonrpc='2.0', id=None)
     return jsonify(error=dict(code=-32700, message=msg, status_code=403),
@@ -189,7 +189,7 @@ def jsonrpc_handler():
                           default=default_for_json,
                           bigint_as_string=bigint_as_string)
     except DimError as e:
-        logging.info(u'DimError: %s', e)
+        logging.info('DimError: %s', e)
         return jsonify(error=dict(code=e.code, message=text_type(e)), **json_response)
     except Exception as e:
         logging.exception(e)
