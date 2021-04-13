@@ -37,19 +37,19 @@ $ ndcli modify output nsia-de.kae.bs remove zone-group zg2
 $ ndcli rename output nsia-de.kae.bs to real_output
 
 $ ndcli history outputs
-timestamp           user  tool   originating_ip objclass name           action
-2014-03-05 16:36:12 admin native 127.0.0.1      output   nsia-de.kae.bs renamed to real_output
-2014-03-05 16:36:11 admin native 127.0.0.1      output   fake           deleted
-2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs added zone-group zg2
-2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs removed zone-group zg2
-2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs created
-2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs set_attr comment=second_comment
-2014-03-05 16:36:11 admin native 127.0.0.1      output   fake           created
+timestamp                  user  tool   originating_ip objclass name           action
+2021-04-13 11:06:55.707851 admin native 127.0.0.1      output   nsia-de.kae.bs renamed to real_output
+2021-04-13 11:06:55.600728 admin native 127.0.0.1      output   nsia-de.kae.bs removed zone-group zg2
+2021-04-13 11:06:55.492692 admin native 127.0.0.1      output   nsia-de.kae.bs added zone-group zg2
+2021-04-13 11:06:55.367204 admin native 127.0.0.1      output   fake           deleted
+2021-04-13 11:06:55.258243 admin native 127.0.0.1      output   fake           created
+2021-04-13 11:06:55.148242 admin native 127.0.0.1      output   nsia-de.kae.bs set_attr comment=second_comment
+2021-04-13 11:06:55.040687 admin native 127.0.0.1      output   nsia-de.kae.bs created
 
 $ ndcli history output nsia-de.kae.bs
-timestamp           user  tool   originating_ip objclass name           action
-2014-03-05 16:36:12 admin native 127.0.0.1      output   nsia-de.kae.bs renamed to real_output
-2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs removed zone-group zg2
-2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs created
-2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs set_attr comment=second_comment
-2014-03-05 16:36:11 admin native 127.0.0.1      output   nsia-de.kae.bs added zone-group zg2
+timestamp                  user  tool   originating_ip objclass name           action
+2021-04-13 11:12:21.610879 admin native 127.0.0.1      output   nsia-de.kae.bs renamed to real_output
+2021-04-13 11:12:21.472252 admin native 127.0.0.1      output   nsia-de.kae.bs removed zone-group zg2
+2021-04-13 11:12:21.330870 admin native 127.0.0.1      output   nsia-de.kae.bs added zone-group zg2
+2021-04-13 11:12:20.995497 admin native 127.0.0.1      output   nsia-de.kae.bs set_attr comment=second_comment
+2021-04-13 11:12:20.887146 admin native 127.0.0.1      output   nsia-de.kae.bs created
