@@ -89,7 +89,7 @@ def is_pdns_query(line):
 
 def _ndcli(cmd: str, cmd_input=None):
     proc = Popen(['ndcli'] + cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
-    out, err = proc.communicate(input=cmd_input.encode('utf-8') if cmd_input != None else None)
+    out, err = proc.communicate(input=cmd_input if cmd_input != None else None)
     return out
 
 
@@ -283,11 +283,11 @@ def split_cat_command(line):
 
 
 def get_cat_input(lines, word, out):
-    cat_input = ''
+    cat_input = b''
     while len(lines) > 0:
         line = lines.pop(0)
         out.write(line)
-        if line == word + '\n':
+        if line == word + b'\n':
             break
         else:
             cat_input += line
