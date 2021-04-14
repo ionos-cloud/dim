@@ -24,9 +24,9 @@ $ ndcli create rr b.b.de. cname a.de.
 INFO - Creating RR b CNAME a.de. in zone b.de
 
 $ ndcli modify pool p free ip 1.1.1.1
+INFO - Deleting RR @ A 1.1.1.1 from zone a.de
 INFO - Deleting RR b CNAME a.de. from zone b.de
 INFO - Deleting RR 1 PTR a.de. from zone 1.1.1.in-addr.arpa
-INFO - Deleting RR @ A 1.1.1.1 from zone a.de
 INFO - Freeing IP 1.1.1.1 from layer3domain default
 
 $ ndcli delete container 1.0.0.0/8
