@@ -70,6 +70,9 @@ $ ndcli create zone a.de
 WARNING - Creating zone a.de without profile
 WARNING - Primary NS for this Domain is now localhost.
 $ ndcli create rr a.de. from p
+INFO - Marked IP 10.0.0.2 from layer3domain default as static
+INFO - Creating RR @ A 10.0.0.2 in zone a.de
+INFO - Creating RR 2 PTR a.de. in zone 0.0.10.in-addr.arpa view default
 created:2017-10-10 16:48:37.413313
 ip:10.0.0.2
 layer3domain:default
@@ -81,6 +84,3 @@ ptr_target:a.de.
 reverse_zone:0.0.10.in-addr.arpa
 status:Static
 subnet:10.0.0.0/24
-INFO - Marked IP 10.0.0.2 from layer3domain default as static
-INFO - Creating RR @ A 10.0.0.2 in zone a.de
-INFO - Creating RR 2 PTR a.de. in zone 0.0.10.in-addr.arpa view default

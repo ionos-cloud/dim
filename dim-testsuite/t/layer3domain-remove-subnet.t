@@ -52,8 +52,8 @@ ERROR - Subnet 10.0.0.0/23 from layer3domain default still contains objects
 $ ndcli modify pool p remove subnet 10.0.0.0/23 -f -c
 INFO - Deleting RR @ A 10.0.0.1 from zone a.de
 INFO - Deleting RR @ A 10.0.0.128 from zone a.de
-INFO - Deleting RR 128 PTR a.de. from zone 0.0.10.in-addr.arpa view default
 INFO - Deleting RR 1 PTR a.de. from zone 0.0.10.in-addr.arpa view default
+INFO - Deleting RR 128 PTR a.de. from zone 0.0.10.in-addr.arpa view default
 INFO - Freeing IP 10.0.0.1 from layer3domain default
 INFO - Freeing IP 10.0.0.128 from layer3domain default
 WARNING - Zone 0.0.10.in-addr.arpa view default was not deleted: The view default of the zone 0.0.10.in-addr.arpa is not empty.
