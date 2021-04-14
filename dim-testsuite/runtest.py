@@ -146,7 +146,7 @@ def process_command(actual_output, expected_output, out, sort_before=False):
     return passed
 
 
-def table_from_lines(lines: list[str], cmd: str) -> list[str]:
+def table_from_lines(lines: list[bytes], cmd: str) -> list[bytes]:
     if generates_map(cmd):
         result = []
         for line in lines:
@@ -166,6 +166,8 @@ def table_from_lines(lines: list[str], cmd: str) -> list[str]:
             lines.pop(0)
         if not lines:
             return result
+        while lines and re.match(b'^(INFO|WARNING)', lines[0]):
+            result.append([lines.pop(0)])
         headers = lines[0].split()
         offsets = []
         for header in headers:
@@ -175,7 +177,7 @@ def table_from_lines(lines: list[str], cmd: str) -> list[str]:
         for line in lines:
             if is_ignorable(line):
                 continue
-            row = [''] * len(offsets)
+            row = [b''] * len(offsets)
             for col, offset in enumerate(offsets):
                 if offset < len(line):
                     next_offset = len(line)

@@ -12,19 +12,19 @@ INFO - Created subnet 10.120.31.0/24 in layer3domain default
 WARNING - Creating zone 31.120.10.in-addr.arpa without profile
 WARNING - Primary NS for this Domain is now localhost.
 $ ndcli list ips 35
-ip          status    ptr_target comment
-10.120.31.0 Reserved         
-10.120.31.1 Available        
-10.120.31.2 Available        
-10.120.31.3 Available        
-10.120.31.4 Available        
-10.120.31.5 Available        
-10.120.31.6 Available        
-10.120.31.7 Available        
-10.120.31.8 Available        
-10.120.31.9 Available        
 INFO - Result for list ips 35
 WARNING - More results available
+ip          status    ptr_target comment
+10.120.31.0 Reserved
+10.120.31.1 Available
+10.120.31.2 Available
+10.120.31.3 Available
+10.120.31.4 Available
+10.120.31.5 Available
+10.120.31.6 Available
+10.120.31.7 Available
+10.120.31.8 Available
+10.120.31.9 Available
 
 $ ndcli create pool xxl1_public vlan 35
 $ ndcli modify pool xxl1_public add subnet 217.72.199.0/24 gw 217.72.199.1
