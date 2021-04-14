@@ -20,8 +20,8 @@ ip:1.0.0.0/8
 layer3domain:default
 modified:2013-01-10 11:16:02
 modified_by:user
-status:Container
 reverse_dns_profile:public-rev-dns
+status:Container
 
 $ ndcli show ipblock 2.0.0.0/24
 ERROR - Ipblock 2.0.0.0/24 does not exist in layer3domain default
