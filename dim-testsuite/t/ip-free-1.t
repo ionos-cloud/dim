@@ -36,8 +36,8 @@ WARNING - Deleting RR 1 PTR a.de. from zone 1.1.1.in-addr.arpa
 INFO - Creating RR 1 PTR a.b.de. in zone 1.1.1.in-addr.arpa
 
 $ ndcli modify pool p free ip 1.1.1.1
-INFO - Deleting RR @ A 1.1.1.1 from zone a.de
 INFO - Deleting RR a A 1.1.1.1 from zone b.de
+INFO - Deleting RR @ A 1.1.1.1 from zone a.de
 INFO - Deleting RR 1 PTR a.b.de. from zone 1.1.1.in-addr.arpa
 INFO - Freeing IP 1.1.1.1 from layer3domain default
 
