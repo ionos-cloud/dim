@@ -46,7 +46,7 @@ $ ndcli delete rr a.de. a 10.0.0.1
 ERROR - a.de. is referenced by other records
 
 $ ndcli delete rr a.de. a 10.0.0.1 -R
-INFO - Deleting RR 1 PTR a.de. from zone 0.0.10.in-addr.arpa view two
 INFO - Deleting RR @ A 10.0.0.1 from zone a.de
 INFO - Deleting RR b CNAME a.de. from zone b.de
+INFO - Deleting RR 1 PTR a.de. from zone 0.0.10.in-addr.arpa view two
 INFO - Freeing IP 10.0.0.1 from layer3domain two
