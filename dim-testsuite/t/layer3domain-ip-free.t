@@ -38,8 +38,8 @@ INFO - Creating RR @ A 10.0.0.1 in zone a.de
 INFO - Creating RR 1 PTR a.de. in zone 0.0.10.in-addr.arpa view two
 
 $ ndcli modify pool p free ip 10.0.0.1
-INFO - Deleting RR 1 PTR a.de. from zone 0.0.10.in-addr.arpa view default
 INFO - Deleting RR @ A 10.0.0.1 from zone a.de
+INFO - Deleting RR 1 PTR a.de. from zone 0.0.10.in-addr.arpa view default
 INFO - Freeing IP 10.0.0.1 from layer3domain default
 
 $ ndcli delete rr a.de. a 10.0.0.1

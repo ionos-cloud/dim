@@ -38,8 +38,8 @@ WARNING - The name a.de. already existed, creating round robin record
 INFO - Creating RR @ A 10.0.0.1 in zone a.de
 INFO - Creating RR 1 PTR a.de. in zone 0.0.10.in-addr.arpa
 $ ndcli delete rr a.de. a 10.0.0.1 layer3domain two
-INFO - Deleting RR @ A 10.0.0.1 from zone a.de
 INFO - Deleting RR 1 PTR a.de. from zone 0.0.10.in-addr.arpa
+INFO - Deleting RR @ A 10.0.0.1 from zone a.de
 INFO - Freeing IP 10.0.0.1 from layer3domain two
 $ ndcli create rr 1.0.0.10.in-addr.arpa. ptr a.de.
 INFO - Marked IP 10.0.0.1 from layer3domain two as static
@@ -49,8 +49,8 @@ INFO - Creating RR @ A 10.0.0.1 in zone a.de
 
 $ ndcli delete pool p2 -f
 $ ndcli delete rr a.de. a 10.0.0.1 layer3domain two
-INFO - Deleting RR @ A 10.0.0.1 from zone a.de
 INFO - Deleting RR 1 PTR a.de. from zone 0.0.10.in-addr.arpa
+INFO - Deleting RR @ A 10.0.0.1 from zone a.de
 INFO - Freeing IP 10.0.0.1 from layer3domain two
 $ ndcli create rr 1.0.0.10.in-addr.arpa. ptr a.de.
 ERROR - 10.0.0.1 in layer3domain two would overlap with 10.0.0.1 in layer3domain default

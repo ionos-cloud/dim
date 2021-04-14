@@ -23,28 +23,29 @@ record zone ttl   type value                                                    
 @      a.de       A    10.0.0.1                                                        default
 @      a.de       A    10.0.0.1                                                        two
 @      a.de       TXT  "text here"
-$ ndcli list zone a.de -H
-@	a.de	86400	SOA	localhost. hostmaster.a.de. 2017101204 14400 3600 605000 86400	
-@	a.de		A	10.0.0.1	default
-@	a.de		A	10.0.0.1	two
-@	a.de		TXT	"text here"	
+$ ndcli list zone a.de
+record zone ttl   type value                                                          layer3domain
+@      a.de 86400 SOA  localhost. hostmaster.a.de. 2021041404 14400 3600 605000 86400
+@      a.de       A    10.0.0.1                                                       default
+@      a.de       A    10.0.0.1                                                       two
+@      a.de       TXT  "text here"
 
 $ ndcli list rrs *a.de
+INFO - Result for list rrs *a.de
 record zone view    ttl   type value                                                          layer3domain
 @      a.de default 86400 SOA  localhost. hostmaster.a.de. 2017092004 14400 3600 605000 86400
 @      a.de default       A    10.0.0.1                                                        default
 @      a.de default       A    10.0.0.1                                                        two
 @      a.de default       TXT  "text here"
-INFO - Result for list rrs *a.de
 $ ndcli list rrs 10.0.0.1
+INFO - Result for list rrs 10.0.0.1
 record zone view    ttl type value   layer3domain
 @      a.de default     A    10.0.0.1 default
 @      a.de default     A    10.0.0.1 two
-INFO - Result for list rrs 10.0.0.1
 $ ndcli list rrs 10.0.0.1 layer3domain two
+INFO - Result for list rrs 10.0.0.1
 record zone view    ttl type value
 @      a.de default     A    10.0.0.1
-INFO - Result for list rrs 10.0.0.1
 $ ndcli list zone a.de layer3domain two
 record zone ttl type value
 @      a.de     A    10.0.0.1
