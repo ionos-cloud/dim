@@ -55,6 +55,24 @@ make VDIR=/tmp/venv ODIR=/tmp/test_output
 If you want to skip the database initialization or installing of dependencies,
 let *make* run the tests directly by using `make test`.
 
+To run a single testfile, use the following command after you have created the
+virtual environment:
+
+```
+export VDIR=/tmp/venv
+export ODIR=/tmp/test_output
+make VDIR=$VDIR ODIR=$ODIR
+PATH="$VDIR/bin:$PATH" TEST_OUTPUT_DIR=$ODIR $VIDR/bin/python ./runtest.py -d <testfile>
+```
+
+`runtest.py` will look in the t directory for the specific testcase and run
+only that single one. After the case was run, your dim environment will have
+exactly the state it broke in, so you can poke into it with ndcli, for example:
+
+```
+$VDIR/bin/ndcli list pools
+```
+
 where is the log?
 -----------------
 
