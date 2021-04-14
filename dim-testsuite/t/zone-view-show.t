@@ -27,8 +27,8 @@ created:<some timestamp>
 created_by:<some user>
 modified:<some timestamp>
 modified_by:<some user>
-views:2
 name:a.domain
+views:2
 $ ndcli show zone a.domain view public
 created:<some timestamp>
 created_by:<some user>
@@ -40,8 +40,8 @@ $ ndcli modify zone a.domain delete view public --cleanup
 INFO - Deleting RR www A 2.112.3.7 from zone a.domain view public
 INFO - Freeing IP 2.112.3.7 from layer3domain default
 $ ndcli delete zone a.domain --cleanup
-INFO - Deleting RR www A 192.168.78.2 from zone a.domain
+INFO - Deleting RR @ NS ins01.internal.test. from zone a.domain
 INFO - Deleting RR @ 1200 MX 10 mail.other.domain. from zone a.domain
 INFO - Deleting RR @ NS ns.some.net. from zone a.domain
-INFO - Deleting RR @ NS ins01.internal.test. from zone a.domain
+INFO - Deleting RR www A 192.168.78.2 from zone a.domain
 INFO - Freeing IP 192.168.78.2 from layer3domain default

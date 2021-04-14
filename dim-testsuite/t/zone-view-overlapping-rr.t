@@ -20,25 +20,25 @@ $ ndcli create rr a.brand.com. cname www view us
 INFO - Creating RR a CNAME www in zone brand.com view us
 WARNING - www.brand.com. does not exist.
 $ ndcli list rrs *brand*
-record zone    view ttl   type  value
+INFO - Result for list rrs *brand*
+record zone      view ttl   type  value
+@      brand.com eu   86400 SOA   ns-brand.example.com. dnsadmin.company.com. 2021041403 14400 3600 605000 86400
 @      brand.com eu         NS    ns-brand.example.com.
-@      brand.com eu   86400 SOA   ns-brand.example.com. dnsadmin.company.com. 2012121003 14400 3600 605000 86400
+@      brand.com us   86400 SOA   ns-brand.example.com. dnsadmin.company.com. 2021041402 14400 3600 605000 86400
 @      brand.com us         NS    ns-brand.example.com.
-@      brand.com us   86400 SOA   ns-brand.example.com. dnsadmin.company.com. 2012121002 14400 3600 605000 86400
 a      brand.com eu         A     217.160.12.19
 a      brand.com us         CNAME www
 www    brand.com eu         A     217.160.12.18
-INFO - Result for list rrs *brand*
 $ ndcli list rrs *brand* NS
-record zone    view ttl type value
+INFO - Result for list rrs *brand*
+record zone      view ttl type value
 @      brand.com eu       NS   ns-brand.example.com.
 @      brand.com us       NS   ns-brand.example.com.
-INFO - Result for list rrs *brand*
 $ ndcli modify zone brand.com delete view eu --cleanup
 INFO - Deleting RR @ NS ns-brand.example.com. from zone brand.com view eu
-INFO - Deleting RR www A 217.160.12.18 from zone brand.com view eu
-INFO - Freeing IP 217.160.12.19 from layer3domain default
 INFO - Deleting RR a A 217.160.12.19 from zone brand.com view eu
+INFO - Freeing IP 217.160.12.19 from layer3domain default
+INFO - Deleting RR www A 217.160.12.18 from zone brand.com view eu
 INFO - Freeing IP 217.160.12.18 from layer3domain default
 $ ndcli delete zone brand.com --cleanup
 INFO - Deleting RR @ NS ns-brand.example.com. from zone brand.com
