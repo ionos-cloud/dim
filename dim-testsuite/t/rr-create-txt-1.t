@@ -67,7 +67,7 @@ INFO - Creating RR txt TXT "this is a string with a quote\"" in zone a.de
 $ ndcli create rr txt2.a.de. txt "one string" "next string"
 INFO - Creating RR txt2 TXT "one string" "next string" in zone a.de
 
-# Can this generate a warning? 
+# Can this generate a warning?
 $ ndcli create rr txt3.a.de. txt a text without quotes which probably should have some
 INFO - Creating RR txt3 TXT "a" "text" "without" "quotes" "which" "probably" "should" "have" "some" in zone a.de
 $ ndcli create rr txt4.a.de. txt 1.2.3.4 a string can also be an ip address
@@ -86,8 +86,8 @@ $ ndcli create rr a.de. txt google-site-verification=J0NZ2F6kdhXzsguHSKZTm3CWujn
 INFO - Creating RR @ TXT "google-site-verification=J0NZ2F6kdhXzsguHSKZTm3CWujnrImftkDG3zhz14g0" in zone a.de
 
 $ ndcli create rr a.de. txt "v=spf1 ip4:82.165.0.0/16 ip4:195.20.224.0/19 ip4:212.227.0.0/16 ip4:87.106.0.0/16 ip4:217.160.0.0/16 ip4:213.165.64.0/19 ip4:217.72.192.0/20 ip4:74.208.0.0/17 ip4:74.208.128.0/18 ip4:66.236.18.66 ip4:67.88.206.40 ip4:67.88.206.48 ~all"
-INFO - Creating RR @ TXT "v=spf1 ip4:82.165.0.0/16 ip4:195.20.224.0/19 ip4:212.227.0.0/16 ip4:87.106.0.0/16 ip4:217.160.0.0/16 ip4:213.165.64.0/19 ip4:217.72.192.0/20 ip4:74.208.0.0/17 ip4:74.208.128.0/18 ip4:66.236.18.66 ip4:67.88.206.40 ip4:67.88.206.48 ~all" in zone a.de
 WARNING - The name a.de. already existed, creating round robin record
+INFO - Creating RR @ TXT "v=spf1 ip4:82.165.0.0/16 ip4:195.20.224.0/19 ip4:212.227.0.0/16 ip4:87.106.0.0/16 ip4:217.160.0.0/16 ip4:213.165.64.0/19 ip4:217.72.192.0/20 ip4:74.208.0.0/17 ip4:74.208.128.0/18 ip4:66.236.18.66 ip4:67.88.206.40 ip4:67.88.206.48 ~all" in zone a.de
 
 $ ndcli create rr god031.a.de. a 10.1.73.51
 INFO - Marked IP 10.1.73.51 from layer3domain default as static
@@ -98,30 +98,30 @@ $ ndcli create rr god031.a.de. txt "X-Status:" "active"
 INFO - Creating RR god031 TXT "X-Status:" "active" in zone a.de
 
 $ ndcli create rr god031.a.de. txt "X-Class:" "god"
-INFO - Creating RR god031 TXT "X-Class:" "god" in zone a.de
 WARNING - The name god031.a.de. already existed, creating round robin record
+INFO - Creating RR god031 TXT "X-Class:" "god" in zone a.de
 
 $ ndcli create rr god031.a.de. txt "X-Loc:" "DE/KA/B7-C-S02-20"
-INFO - Creating RR god031 TXT "X-Loc:" "DE/KA/B7-C-S02-20" in zone a.de
 WARNING - The name god031.a.de. already existed, creating round robin record
+INFO - Creating RR god031 TXT "X-Loc:" "DE/KA/B7-C-S02-20" in zone a.de
 
 # FIXME: SOA probablay incomplete
 $ ndcli list zone a.de
 record zone ttl   type value
 @      a.de 86400 SOA  localhost. hostmaster.a.de. 2012122113 14400 3600 605000 86400
-txt    a.de       TXT  "string"
-txt    a.de       TXT  "this is a string"
-txt2   a.de       TXT  "one string" "next string"
-txt3   a.de       TXT  "a" "text" "without" "quotes" "which" "probably" "should" "have" "some"
-txt4   a.de       TXT  "1.2.3.4" "a" "string" "can" "also" "be" "an" "ip" "address"
-vl1    a.de       TXT  "Very long string with more than 255 chars Very long string with more than 255 chars Very long string with more than 255 chars Very long string with more than 255 chars Very long string with more than 255 chars Very long string with more than 255 chars Ver" "y long string with more than 255 chars"
 @      a.de       TXT  "google-site-verification=J0NZ2F6kdhXzsguHSKZTm3CWujnrImftkDG3zhz14g0"
 @      a.de       TXT  "v=spf1 ip4:82.165.0.0/16 ip4:195.20.224.0/19 ip4:212.227.0.0/16 ip4:87.106.0.0/16 ip4:217.160.0.0/16 ip4:213.165.64.0/19 ip4:217.72.192.0/20 ip4:74.208.0.0/17 ip4:74.208.128.0/18 ip4:66.236.18.66 ip4:67.88.206.40 ip4:67.88.206.48 ~all"
-txt    a.de       TXT  "this is a string with a quote\""
 god031 a.de       A    10.1.73.51
 god031 a.de       TXT  "X-Status:" "active"
 god031 a.de       TXT  "X-Class:" "god"
 god031 a.de       TXT  "X-Loc:" "DE/KA/B7-C-S02-20"
+txt    a.de       TXT  "string"
+txt    a.de       TXT  "this is a string"
+txt    a.de       TXT  "this is a string with a quote\""
+txt2   a.de       TXT  "one string" "next string"
+txt3   a.de       TXT  "a" "text" "without" "quotes" "which" "probably" "should" "have" "some"
+txt4   a.de       TXT  "1.2.3.4" "a" "string" "can" "also" "be" "an" "ip" "address"
+vl1    a.de       TXT  "Very long string with more than 255 chars Very long string with more than 255 chars Very long string with more than 255 chars Very long string with more than 255 chars Very long string with more than 255 chars Very long string with more than 255 chars Ver" "y long string with more than 255 chars"
 
 # deleteing txt records is somewhat aweful
 $ ndcli delete rr god031.a.de. txt
