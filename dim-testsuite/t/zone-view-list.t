@@ -32,15 +32,15 @@ name
 internal
 public
 $ ndcli list rrs www.a.domain.
+INFO - Result for list rrs www.a.domain.
 record zone     view     ttl type value
 www    a.domain internal     A    192.168.78.2
 www    a.domain public       A    2.112.3.7
-INFO - Result for list rrs www.a.domain.
 $ ndcli modify zone a.domain delete view public --cleanup
 INFO - Deleting RR www A 2.112.3.7 from zone a.domain view public
 INFO - Freeing IP 2.112.3.7 from layer3domain default
 $ ndcli delete zone a.domain --cleanup
 INFO - Deleting RR @ NS ins01.internal.test. from zone a.domain
-INFO - Deleting RR www A 192.168.78.2 from zone a.domain
 INFO - Deleting RR @ 1200 MX 10 mail.other.domain. from zone a.domain
+INFO - Deleting RR www A 192.168.78.2 from zone a.domain
 INFO - Freeing IP 192.168.78.2 from layer3domain default

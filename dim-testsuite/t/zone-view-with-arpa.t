@@ -33,16 +33,16 @@ INFO - Creating RR www A 217.160.12.19 in zone brand.com view us
 INFO - Creating RR 19 PTR www.brand.com. in zone 12.160.217.in-addr.arpa
 
 $ ndcli list rrs *brand.com*
+INFO - Result for list rrs *brand.com*
 record zone                    view    ttl   type value
-@      brand.com                 eu            NS   ns-brand.company.com.
-@      brand.com                 eu      86400 SOA  ns-brand.company.com. dnsadmin.example.com. 2012121002 14400 3600 605000 86400
-www    brand.com                 eu            A    217.160.12.18
-@      brand.com                 us      86400 SOA  ns-brand.company.com. dnsadmin.example.com. 2012121002 14400 3600 605000 86400
-@      brand.com                 us            NS   ns-brand.company.com.
-www    brand.com                 us            A    217.160.12.19
 18     12.160.217.in-addr.arpa default       PTR  www.brand.com.
 19     12.160.217.in-addr.arpa default       PTR  www.brand.com.
-INFO - Result for list rrs *brand.com*
+@      brand.com               eu      86400 SOA  ns-brand.company.com. dnsadmin.example.com. 2021041402 14400 3600 605000 86400
+@      brand.com               eu            NS   ns-brand.company.com.
+@      brand.com               us      86400 SOA  ns-brand.company.com. dnsadmin.example.com. 2021041402 14400 3600 605000 86400
+@      brand.com               us            NS   ns-brand.company.com.
+www    brand.com               eu            A    217.160.12.18
+www    brand.com               us            A    217.160.12.19
 
 $ ndcli modify zone brand.com delete view eu --cleanup
 INFO - Deleting RR @ NS ns-brand.company.com. from zone brand.com view eu
@@ -56,8 +56,8 @@ INFO - Deleting RR 19 PTR www.brand.com. from zone 12.160.217.in-addr.arpa
 INFO - Freeing IP 217.160.12.19 from layer3domain default
 $ ndcli delete zone-profile brand-public
 $ ndcli delete zone network.test --cleanup
-INFO - Deleting RR 17 PTR gw-v1213.bs.kae.de.network.test. from zone 12.160.217.in-addr.arpa
 INFO - Deleting RR gw-v1213.bs.kae.de A 217.160.12.17 from zone network.test
+INFO - Deleting RR 17 PTR gw-v1213.bs.kae.de.network.test. from zone 12.160.217.in-addr.arpa
 INFO - Freeing IP 217.160.12.17 from layer3domain default
 $ ndcli modify pool brand-public-bs-v1213 remove subnet 217.160.12.16/28
 INFO - Deleting zone 12.160.217.in-addr.arpa

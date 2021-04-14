@@ -23,12 +23,12 @@ WARNING - mx01.example.com. does not exist.
 INFO - Creating RR @ MX 20 mx01.example.com. in zone a.com view us
 WARNING - mx01.example.com. does not exist.
 $ ndcli modify zone a.com delete view br --cleanup
+INFO - Deleting RR @ NS ns-example.dns-example.com. from zone a.com view br
 INFO - Deleting RR @ NS ns-example.dns-example.org. from zone a.com view br
 INFO - Deleting RR @ MX 20 mx01.example.com. from zone a.com view br
-INFO - Deleting RR @ NS ns-example.dns-example.com. from zone a.com view br
 $ ndcli modify zone a.com delete view us --cleanup
-INFO - Deleting RR @ NS ns-example.dns-example.org. from zone a.com view us
 INFO - Deleting RR @ NS ns-example.dns-example.com. from zone a.com view us
+INFO - Deleting RR @ NS ns-example.dns-example.org. from zone a.com view us
 INFO - Deleting RR @ MX 20 mx01.example.com. from zone a.com view us
 $ ndcli delete zone a.com --cleanup
 INFO - Deleting RR @ MX 10 mx00.company.com. from zone a.com

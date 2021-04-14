@@ -43,13 +43,13 @@ name
 eu
 us
 $ ndcli list zone v300.brand.com view eu
-record   zone         ttl   type value
+record   zone           ttl   type value
 @        v300.brand.com 86400 SOA  ins01.internal.test. dnsadmin.example.com. 2012121102 14400 3600 605000 86400
 @        v300.brand.com       NS   ins01.internal.test.
 @        v300.brand.com       NS   ins02.internal.test.
 
 $ ndcli list zone v300.brand.com view us
-record   zone         ttl   type value
+record   zone           ttl   type value
 @        v300.brand.com 86400 SOA  ins01.internal.test. dnsadmin.example.com. 2012121102 14400 3600 605000 86400
 @        v300.brand.com       NS   ins01.internal.test.
 @        v300.brand.com       NS   ins02.internal.test.
@@ -67,9 +67,9 @@ $ ndcli modify zone v300.brand.com delete view eu --cleanup
 INFO - Deleting RR @ NS ins01.internal.test. from zone v300.brand.com view eu
 INFO - Deleting RR @ NS ins02.internal.test. from zone v300.brand.com view eu
 $ ndcli delete zone v300.brand.com --cleanup
-INFO - Deleting RR foo A 1.2.3.4 from zone v300.brand.com
 INFO - Deleting RR @ NS ins01.internal.test. from zone v300.brand.com
 INFO - Deleting RR @ NS ins02.internal.test. from zone v300.brand.com
+INFO - Deleting RR foo A 1.2.3.4 from zone v300.brand.com
 INFO - Freeing IP 1.2.3.4 from layer3domain default
 $ ndcli delete zone-profile brand-public
 $ ndcli delete zone-profile internal
