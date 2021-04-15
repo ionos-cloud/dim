@@ -10,7 +10,7 @@
 #
 
 # Syntax error
-# $ ndcli create output nsia-de.kae.bs plugin pdns-db comment "internal zone data with special information for de.kae.bs goes here" 
+# $ ndcli create output nsia-de.kae.bs plugin pdns-db comment "internal zone data with special information for de.kae.bs goes here"
 # ERROR - You must specify the db-uri to create an output
 
 $ ndcli create output nsia-de.kae.bs plugin pdns-db db-uri "mysql://user:password@localhost:3306/netdot?unix_socket=/tmp/mysql-3306.sock" comment "internal zone data with special information for de.kae.bs goes here"
@@ -36,38 +36,38 @@ $ ndcli modify zone-group internal set comment "Zone group for all internal zone
 
 $ ndcli list outputs
 name           plugin
-nsia-de.kae.bs pdns-db
 nsia           pdns-db
+nsia-de.kae.bs pdns-db
 
 $ ndcli list outputs --status
 name           plugin  pending_records last_run status
-nsia           pdns-db               0          
-nsia-de.kae.bs pdns-db               0          
+nsia           pdns-db               0
+nsia-de.kae.bs pdns-db               0
 
 # This output cannot be reproduced in runtest:
 # name           plugin  pending_records last_run            status
 # nsia-de.kae.bs pdns-db               0 2013-02-01 12:35:01 ok
-# nsia           pdns-db             135                     
+# nsia           pdns-db             135
 
 $ ndcli show output nsia
+comment:generic internal zones with no site special information go here
+created:2012-11-14 11:03:02
+created_by:user
+db_uri:mysql://user:password@localhost:3306/nsia?unix_socket=/tmp/mysql-3306.sock
+modified:2012-11-14 11:03:02
+modified_by:user
 name:nsia
 type:pdns-db
-created:2012-11-14 11:03:02
-db_uri:mysql://user:password@localhost:3306/nsia?unix_socket=/tmp/mysql-3306.sock
-created_by:user
-modified:2012-11-14 11:03:02
-modified_by:user
-comment:generic internal zones with no site special information go here
 
 $ ndcli show output nsia-de.kae.bs
-name:nsia-de.kae.bs
-type:pdns-db
+comment:internal zone data with special information for de.kae.bs goes here
 created:2012-11-14 11:03:02
-db_uri:mysql://user:password@localhost:3306/netdot?unix_socket=/tmp/mysql-3306.sock
 created_by:user
+db_uri:mysql://user:password@localhost:3306/netdot?unix_socket=/tmp/mysql-3306.sock
 modified:2012-11-14 11:03:02
 modified_by:user
-comment:internal zone data with special information for de.kae.bs goes here
+name:nsia-de.kae.bs
+type:pdns-db
 # This output cannot be reproduced in runtest:
 # pending_changes:0
 # last_run:2013-01-12 09:13:01

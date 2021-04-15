@@ -35,7 +35,7 @@ ERROR - You can not add 2and2.de view public to the zone-group public because it
 
 # When deleteing a zone from a zone group, there is no need for
 # specifing the view, because there can only be one.
-$ ndcli modify zone-group internal remove zone 1und1.de
+$ ndcli modify zone-group internal remove zone 2and2.de
 
 $ ndcli modify output nsia remove zone-group public
 
