@@ -17,15 +17,15 @@ $ ndcli create rr this.some.domain. cname www.some.domain.
 INFO - Creating RR this CNAME www.some.domain. in zone some.domain
 $ ndcli dump zone some.domain
 some.domain.	86400	IN	SOA	ins01.internal.test. dnsadmin.company.com. 2012010105 28800 7200 604800 3600
+my.some.domain.	86400	IN	CNAME	www.some.domain.
 some.domain.	86400	IN	NS	ins01.internal.test.
 some.domain.	1200	IN	MX	10 mail.other.domain.
-www.some.domain.	86400	IN	A	192.168.78.2
-my.some.domain.	86400	IN	CNAME	www.some.domain.
 this.some.domain.	86400	IN	CNAME	www.some.domain.
+www.some.domain.	86400	IN	A	192.168.78.2
 $ ndcli delete zone some.domain --cleanup
-INFO - Deleting RR this CNAME www.some.domain. from zone some.domain
 INFO - Deleting RR @ NS ins01.internal.test. from zone some.domain
-INFO - Deleting RR www A 192.168.78.2 from zone some.domain
 INFO - Deleting RR @ 1200 MX 10 mail.other.domain. from zone some.domain
 INFO - Deleting RR my CNAME www from zone some.domain
+INFO - Deleting RR this CNAME www.some.domain. from zone some.domain
+INFO - Deleting RR www A 192.168.78.2 from zone some.domain
 INFO - Freeing IP 192.168.78.2 from layer3domain default

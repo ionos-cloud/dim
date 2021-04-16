@@ -24,16 +24,16 @@ WARNING - mintern00.schlund.de. does not exist.
 $ ndcli create zone subzone.some.domain profile internal
 INFO - Creating zone subzone.some.domain with profile internal
 INFO - Creating views default for zone subzone.some.domain
-WARNING - Rejected to move RR subzone CNAME web in zone subzone.some.domain, deleted RR from zone some.domain
 INFO - Moving RR my.subzone A 1.2.3.4 in zone subzone.some.domain from zone some.domain
+WARNING - Rejected to move RR subzone CNAME web in zone subzone.some.domain, deleted RR from zone some.domain
 
 # Yes, with this operation subzone.some.domain. cname web got deleted.
 
 $ ndcli list zone subzone.some.domain
 record zone                ttl   type  value
 @      subzone.some.domain 86400 SOA   localhost. hostmaster.internal. 2012120301 14400 3600 605000 86400
-my     subzone.some.domain       A     1.2.3.4
 @      subzone.some.domain       MX    10 mintern00.schlund.de.
+my     subzone.some.domain       A     1.2.3.4
 
 $ ndcli delete zone subzone.some.domain --cleanup -q
 $ ndcli delete zone some.domain -q
