@@ -39,6 +39,7 @@ INFO - Created subnet 2001:db8:fe:53::/64 in layer3domain default
 INFO - Creating zone 3.5.0.0.e.f.0.0.8.b.d.0.1.0.0.2.ip6.arpa with profile public
 
 $ cat <<EOF | ndcli import rev-zone
+$ORIGIN f.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
 f.0.0.8.b.d.0.1.0.0.2.ip6.arpa. 3600    IN      SOA     rns.company.de. dnsadmin.foo.test. 2005099742 21601 7200 604800 3600
 0.0.1.0.1.c.0.5.0.a.9.d.0.0.0.0.3.5.0.0.e.f.0.0.8.b.d.0.1.0.0.2.ip6.arpa. IN PTR ns-de.company.de.
 1.0.0.0.1.c.0.5.0.a.9.d.0.0.0.0.3.5.0.0.c.f.0.0.8.b.d.0.1.0.0.2.ip6.arpa. IN PTR anyins1.internal.test.
@@ -48,17 +49,18 @@ f.0.0.8.b.d.0.1.0.0.2.ip6.arpa. 3600    IN      SOA     rns.company.de. dnsadmin
 EOF
 RECORD - f.0.0.8.b.d.0.1.0.0.2.ip6.arpa. 3600 IN SOA rns.company.de. dnsadmin.foo.test. 2005099742 21601 7200 604800 3600
 INFO - Nothing to do
-RECORD - 0.0.1.0.1.c.0.5.0.a.9.d.0.0.0.0.3.5.0.0.e.f.0.0.8.b.d.0.1.0.0.2.ip6.arpa. IN PTR ns-de.company.de.
+RECORD - f.0.0.8.b.d.0.1.0.0.2.ip6.arpa. 3600 IN NS rns.company.de.
+INFO - No zone found for f.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
+RECORD - f.0.0.8.b.d.0.1.0.0.2.ip6.arpa. 3600 IN NS rns.company.com.
+INFO - No zone found for f.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
+RECORD - 0.0.1.0.1.c.0.5.0.a.9.d.0.0.0.0.3.5.0.0.e.f.0.0.8.b.d.0.1.0.0.2.ip6.arpa. 3600 IN PTR ns-de.company.de.
+INFO - Marked IP 2001:db8:fe:53:0:d9a0:50c1:100 from layer3domain default as static
 INFO - Creating RR 0.0.1.0.1.c.0.5.0.a.9.d.0.0.0.0 PTR ns-de.company.de. in zone 3.5.0.0.e.f.0.0.8.b.d.0.1.0.0.2.ip6.arpa
-RECORD - 1.0.0.0.1.c.0.5.0.a.9.d.0.0.0.0.3.5.0.0.c.f.0.0.8.b.d.0.1.0.0.2.ip6.arpa. IN PTR anyins1.internal.test.
+RECORD - 1.0.0.0.1.c.0.5.0.a.9.d.0.0.0.0.3.5.0.0.c.f.0.0.8.b.d.0.1.0.0.2.ip6.arpa. 3600 IN PTR anyins1.internal.test.
+INFO - Marked IP 2001:db8:fc:53:0:d9a0:50c1:1 from layer3domain default as static
 INFO - Creating zone 3.5.0.0.c.f.0.0.8.b.d.0.1.0.0.2.ip6.arpa with profile internal
 INFO - Creating RR 1.0.0.0.1.c.0.5.0.a.9.d.0.0.0.0 PTR anyins1.internal.test. in zone 3.5.0.0.c.f.0.0.8.b.d.0.1.0.0.2.ip6.arpa
-INFO - Marked IP 2001:db8:fe:53:0:d9a0:50c1:100 from layer3domain default as static
-RECORD - f.0.0.8.b.d.0.1.0.0.2.ip6.arpa. IN NS rns.company.de.
-INFO - No zone found for f.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
-INFO - Marked IP 2001:db8:fc:53:0:d9a0:50c1:1 from layer3domain default as static
-RECORD - f.0.0.8.b.d.0.1.0.0.2.ip6.arpa. IN NS rns.company.com.
-INFO - No zone found for f.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
+
 # Only the first SOA record will be processed
 #RECORD - f.0.0.8.b.d.0.1.0.0.2.ip6.arpa 3600    IN      SOA     rns.company.de. dnsadmin.foo.test. 2005099742 21601 7200 604800 3600
 #INFO - Nothing to do
