@@ -62,11 +62,11 @@ ERROR - Zone dlan.legacy.test already exists
 $ ndcli delete zone dlan.legacy.test --cleanup -q
 
 $ cat <<EOF | ndcli import rev-zone
+$ORIGIN 20.172.in-addr.arpa.
 20.172.in-addr.arpa.	3600	IN	SOA	ins01.internal.test. dnsadmin.company.com. 2005099742 21601 7200 604800 3600
 22.5.20.172.in-addr.arpa. 3600	IN	PTR	adimgfe01.dlan.legacy.test.
 23.5.20.172.in-addr.arpa. 3600	IN	PTR	foo.bar.
 1.11.20.172.in-addr.arpa. 300	IN	PTR	v558.gw-distwi.bs.ka.dlan.legacy.test.
-20.172.in-addr.arpa.	3600	IN	SOA	ins01.internal.test. dnsadmin.company.com. 2005099742 21601 7200 604800 3600
 EOF
 RECORD - 20.172.in-addr.arpa. 3600 IN SOA ins01.internal.test. dnsadmin.company.com. 2005099742 21601 7200 604800 3600
 INFO - Nothing to do
@@ -86,17 +86,17 @@ INFO - Creating RR 1 300 PTR v558.gw-distwi.bs.ka.dlan.legacy.test. in zone 11.2
 $ ndcli list zone 11.20.172.in-addr.arpa
 record zone                   ttl   type value
 @      11.20.172.in-addr.arpa 86400 SOA  ins01.internal.test. dnsadmin.example.com. 2012122705 14400 3600 605000 86400
-1      11.20.172.in-addr.arpa 300   PTR  v558.gw-distwi.bs.ka.dlan.legacy.test.
 @      11.20.172.in-addr.arpa       NS   ins01.internal.test.
 @      11.20.172.in-addr.arpa       NS   ins02.internal.test.
+1      11.20.172.in-addr.arpa 300   PTR  v558.gw-distwi.bs.ka.dlan.legacy.test.
 
 $ ndcli list zone 5.20.172.in-addr.arpa
 record zone                  ttl   type value
 @      5.20.172.in-addr.arpa 86400 SOA  ins01.internal.test. dnsadmin.example.com. 2012122705 14400 3600 605000 86400
-22     5.20.172.in-addr.arpa       PTR  adimgfe01.dlan.legacy.test.
-23     5.20.172.in-addr.arpa       PTR  foo.bar.
 @      5.20.172.in-addr.arpa       NS   ins01.internal.test.
 @      5.20.172.in-addr.arpa       NS   ins02.internal.test.
+22     5.20.172.in-addr.arpa       PTR  adimgfe01.dlan.legacy.test.
+23     5.20.172.in-addr.arpa       PTR  foo.bar.
 
 $ cat <<EOF | ndcli import zone dlan.legacy.test
 ; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.10.rc1.el6_3.6 <<>> axfr dlan.legacy.test @anyins-ins-bs01.dlan.legacy.test
@@ -121,10 +121,9 @@ RECORD - dlan.legacy.test. 3600 IN NS ins01.internal.test.
 INFO - Creating RR @ NS ins01.internal.test. in zone dlan.legacy.test
 WARNING - ins01.internal.test. does not exist.
 RECORD - dlan.legacy.test. 3600 IN NS ins02.internal.test.
-INFO - Marked IP 172.19.22.5 from layer3domain default as static
+WARNING - The name dlan.legacy.test. already existed, creating round robin record
 INFO - Creating RR @ NS ins02.internal.test. in zone dlan.legacy.test
 WARNING - ins02.internal.test. does not exist.
-WARNING - The name dlan.legacy.test. already existed, creating round robin record
 RECORD - dlan.legacy.test. 3600 IN MX 100 mailgate3.dlan.legacy.test.
 INFO - Creating RR @ MX 100 mailgate3.dlan.legacy.test. in zone dlan.legacy.test
 WARNING - mailgate3.dlan.legacy.test. does not exist.
@@ -136,6 +135,7 @@ RECORD - 01212.dlan.legacy.test. 3600 IN CNAME edit01.dlan.legacy.test.
 INFO - Creating RR 01212 CNAME edit01.dlan.legacy.test. in zone dlan.legacy.test
 WARNING - edit01.dlan.legacy.test. does not exist.
 RECORD - 01212lb01.dlan.legacy.test. 3600 IN A 172.20.5.208
+INFO - Marked IP 172.20.5.208 from layer3domain default as static
 INFO - Creating RR 01212lb01 A 172.20.5.208 in zone dlan.legacy.test
 INFO - Creating RR 208 PTR 01212lb01.dlan.legacy.test. in zone 5.20.172.in-addr.arpa
 RECORD - 01212lb01.dlan.legacy.test. 300 IN TXT "some key=" "some value"
@@ -148,8 +148,8 @@ INFO - 22.5.20.172.in-addr.arpa. PTR adimgfe01.dlan.legacy.test. already exists
 RECORD - adimgfe02.dlan.legacy.test. 3600 IN A 172.20.5.23
 INFO - Creating RR adimgfe02 A 172.20.5.23 in zone dlan.legacy.test
 WARNING - Not overwriting: 23.5.20.172.in-addr.arpa. PTR foo.bar.
-INFO - Marked IP 172.20.5.208 from layer3domain default as static
 RECORD - adimgfe03.dlan.legacy.test. 3600 IN A 172.19.22.5
+INFO - Marked IP 172.19.22.5 from layer3domain default as static
 INFO - Creating RR adimgfe03 A 172.19.22.5 in zone dlan.legacy.test
 INFO - No zone found for 5.22.19.172.in-addr.arpa.
 WARNING - No reverse zone found. Only creating forward entry.

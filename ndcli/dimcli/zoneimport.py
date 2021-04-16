@@ -156,8 +156,8 @@ def toposort_records(records):
     return [records[node] for node in sorted_nodes]
 
 
-def import_zone(server, content, zone_name='', view=None, revzone=False):
-    parsed_zone = dns.zone.from_text(str(content), origin=zone_name + '.', relativize=False, check_origin=False)
+def import_zone(server, content, zone_name=None, view=None, revzone=False):
+    parsed_zone = dns.zone.from_text(str(content), origin=zone_name, relativize=False, check_origin=False)
     soa_name, default_ttl, soa_rdata = get_first_soa(parsed_zone)
     if soa_rdata is None:
         raise Exception('Missing SOA')
