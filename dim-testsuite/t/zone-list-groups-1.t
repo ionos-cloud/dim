@@ -31,8 +31,8 @@ $ ndcli modify user-group DNS-ITO2 grant delete_rr example.com
 $ ndcli list user-group DNS-ITO1 rights
 action    object
 create_rr company.com view internal
-delete_rr company.com view internal
 create_rr example.com
+delete_rr company.com view internal
 delete_rr example.com
 
 $ ndcli list zone example.com rights

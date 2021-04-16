@@ -51,13 +51,13 @@ public-brand1
 public-brand2
 public-brand3
 $ ndcli show zone-profile internal
-name:internal
+comment:Profile for all internal Zones
 created:<some timestamp>
 created_by:<some user>
+foo:bar
 modified:<some timestamp>
 modified_by:<some user>
-comment:Profile for all internal Zones
-foo:bar
+name:internal
 $ ndcli list zone-profile internal
 record     ttl   type value
 @          86400 SOA  ins01.internal.test. dnsadmin.company.com. 2012102610 14400 3600 605000 86400
@@ -65,16 +65,16 @@ record     ttl   type value
 @                MX   10 mintern00.example.com.
 @                A    172.19.0.2
 w3               CNAME www
-www.a.zone       A    172.19.0.2
 www              A    172.19.0.2
+www.a.zone       A    172.19.0.2
 $ ndcli list zone-profile internal -H
 @	86400	SOA	ins01.internal.test. dnsadmin.company.com. 2012102610 14400 3600 605000 86400
 @		NS	ins01.internal.test.
 @		MX	10 mintern00.example.com.
 @		A	172.19.0.2
 w3		CNAME	www
-www.a.zone		A	172.19.0.2
 www		A	172.19.0.2
+www.a.zone		A	172.19.0.2
 $ ndcli delete zone-profile internal
 $ ndcli delete zone-profile public-brand1
 $ ndcli delete zone-profile public-brand2

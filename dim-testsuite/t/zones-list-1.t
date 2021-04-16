@@ -3,24 +3,24 @@ WARNING - Creating zone some.domain without profile
 $ ndcli create zone my.domain primary ins01.internal.test. mail dnsadmin@company.com
 WARNING - Creating zone my.domain without profile
 $ ndcli list zones *domain
+INFO - Result for list zones *domain
 name        views zone_groups
 my.domain   1     0
 some.domain 1     0
-INFO - Result for list zones *domain
 $ ndcli show zone some.domain
 created:<some timestamp>
 created_by:<some user>
 modified:<some timestamp>
 modified_by:<some user>
-views:1
 name:some.domain
+views:1
 $ ndcli show zone my.domain
 created:<some timestamp>
 created_by:<some user>
 modified:<some timestamp>
 modified_by:<some user>
-views:1
 name:my.domain
+views:1
 $ ndcli create zone vier.domain primary ins01.internal.test. mail dnsadmin@company.com
 WARNING - Creating zone vier.domain without profile
 $ ndcli create zone fuenf.domain primary ins01.internal.test. mail dnsadmin@company.com
@@ -41,6 +41,8 @@ $ ndcli create zone zwoelf.domain primary ins01.internal.test. mail dnsadmin@com
 WARNING - Creating zone zwoelf.domain without profile
 
 $ ndcli list zones *domain
+INFO - Result for list zones *domain
+WARNING - More results available
 name          views zone_groups
 acht.domain   1     0
 elf.domain    1     0
@@ -52,10 +54,9 @@ sieben.domain 1     0
 some.domain   1     0
 vier.domain   1     0
 zehn.domain   1     0
-INFO - Result for list zones *domain
-WARNING - More results available
 
 $ ndcli list zones *domain -L 20 -H
+INFO - Result for list zones *domain
 acht.domain	1	0
 elf.domain	1	0
 fuenf.domain	1	0
@@ -67,7 +68,6 @@ some.domain	1	0
 vier.domain	1	0
 zehn.domain	1	0
 zwoelf.domain	1	0
-INFO - Result for list zones *domain
 
 $ ndcli delete zone vier.domain
 $ ndcli delete zone fuenf.domain
