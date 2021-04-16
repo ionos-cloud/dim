@@ -17,10 +17,10 @@ $ ndcli create output pdns plugin pdns-db db-uri "uri" comment "comment"
 $ ndcli modify output pdns add zone-group internal
 
 $ ndcli list zones *.de
+INFO - Result for list zones *.de
 name views zone_groups
 a.de 2     2
 b.de 1     0
-INFO - Result for list zones *.de
 
 $ ndcli show zone a.de
 created:<some timestamp>

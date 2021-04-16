@@ -24,15 +24,15 @@ created:<some timestamp>
 created_by:<some user>
 modified:<some timestamp>
 modified_by:<some user>
-views:3
 name:company.com
+views:3
 zone_groups:3
 
 $ ndcli list zone company.com zone-groups
 zone-group        view
+customer-internal customer-internal
 internal          internal
 public            public
-customer-internal customer-internal
 
 $ ndcli delete zone-group internal
 $ ndcli delete zone-group customer-internal

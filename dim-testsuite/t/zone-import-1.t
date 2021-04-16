@@ -57,13 +57,13 @@ $ ndcli delete zone ilan.legacy.test --cleanup -q
 # only testing what happens if someting is in the reverse Zone.
 $ ndcli create rr 172.20.5.22 ptr adimgfe01.ilan.legacy.test.
 INFO - Marked IP 172.20.5.22 from layer3domain default as static
-INFO - No zone found for adimgfe01.ilan.legacy.test.
 INFO - Creating RR 22 PTR adimgfe01.ilan.legacy.test. in zone 5.20.172.in-addr.arpa
+INFO - No zone found for adimgfe01.ilan.legacy.test.
 WARNING - No forward zone found. Only creating reverse entry.
 $ ndcli create rr 172.20.5.23 ptr foo.bar.
 INFO - Marked IP 172.20.5.23 from layer3domain default as static
-INFO - No zone found for foo.bar.
 INFO - Creating RR 23 PTR foo.bar. in zone 5.20.172.in-addr.arpa
+INFO - No zone found for foo.bar.
 WARNING - No forward zone found. Only creating reverse entry.
 
 $ cat <<EOF | ndcli import zone ilan.legacy.test
@@ -89,10 +89,9 @@ RECORD - ilan.legacy.test. 3600 IN NS ins01.internal.test.
 INFO - Creating RR @ NS ins01.internal.test. in zone ilan.legacy.test
 WARNING - ins01.internal.test. does not exist.
 RECORD - ilan.legacy.test. 3600 IN NS ins02.internal.test.
-INFO - Marked IP 172.19.22.5 from layer3domain default as static
+WARNING - The name ilan.legacy.test. already existed, creating round robin record
 INFO - Creating RR @ NS ins02.internal.test. in zone ilan.legacy.test
 WARNING - ins02.internal.test. does not exist.
-WARNING - The name ilan.legacy.test. already existed, creating round robin record
 RECORD - ilan.legacy.test. 3600 IN MX 100 mailgate3.ilan.legacy.test.
 INFO - Creating RR @ MX 100 mailgate3.ilan.legacy.test. in zone ilan.legacy.test
 WARNING - mailgate3.ilan.legacy.test. does not exist.
@@ -104,20 +103,21 @@ RECORD - 01212.ilan.legacy.test. 3600 IN CNAME edit01.ilan.legacy.test.
 INFO - Creating RR 01212 CNAME edit01.ilan.legacy.test. in zone ilan.legacy.test
 WARNING - edit01.ilan.legacy.test. does not exist.
 RECORD - 01212lb01.ilan.legacy.test. 3600 IN A 172.20.5.208
+INFO - Marked IP 172.20.5.208 from layer3domain default as static
 INFO - Creating RR 01212lb01 A 172.20.5.208 in zone ilan.legacy.test
 INFO - Creating RR 208 PTR 01212lb01.ilan.legacy.test. in zone 5.20.172.in-addr.arpa
-RECORD - 1021931729._dkimkey.ilan.legacy.test. 300 IN TXT "v=DKIM1;k=rsa;p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCFpZEaLQAbzDDMkmDMZNzulKNI9QWcGOtD9SaMPwJ48xHRfTUxW1AIUgH/i1gFg0uM988hcNSyljkK81p0ASDGTmRBEwDZrHE+G96XOUhi4OZppteMswbbuDy3AIXQB/JG5ktFl0eYdAejkucOG0uIlvpeNhrSNn2wjASgYlqJBwIDAQAB"
-INFO - Creating RR 1021931729._dkimkey 300 TXT "v=DKIM1;k=rsa;p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCFpZEaLQAbzDDMkmDMZNzulKNI9QWcGOtD9SaMPwJ48xHRfTUxW1AIUgH/i1gFg0uM988hcNSyljkK81p0ASDGTmRBEwDZrHE+G96XOUhi4OZppteMswbbuDy3AIXQB/JG5ktFl0eYdAejkucOG0uIlvpeNhrSNn2wjASgYlqJBwIDAQAB" in zone ilan.legacy.test
 RECORD - 01212lb01.ilan.legacy.test. 300 IN TXT "some key=" "some value"
 INFO - Creating RR 01212lb01 300 TXT "some key=" "some value" in zone ilan.legacy.test
+RECORD - 1021931729._dkimkey.ilan.legacy.test. 300 IN TXT "v=DKIM1;k=rsa;p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCFpZEaLQAbzDDMkmDMZNzulKNI9QWcGOtD9SaMPwJ48xHRfTUxW1AIUgH/i1gFg0uM988hcNSyljkK81p0ASDGTmRBEwDZrHE+G96XOUhi4OZppteMswbbuDy3AIXQB/JG5ktFl0eYdAejkucOG0uIlvpeNhrSNn2wjASgYlqJBwIDAQAB"
+INFO - Creating RR 1021931729._dkimkey 300 TXT "v=DKIM1;k=rsa;p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCFpZEaLQAbzDDMkmDMZNzulKNI9QWcGOtD9SaMPwJ48xHRfTUxW1AIUgH/i1gFg0uM988hcNSyljkK81p0ASDGTmRBEwDZrHE+G96XOUhi4OZppteMswbbuDy3AIXQB/JG5ktFl0eYdAejkucOG0uIlvpeNhrSNn2wjASgYlqJBwIDAQAB" in zone ilan.legacy.test
 RECORD - adimgfe01.ilan.legacy.test. 3600 IN A 172.20.5.22
 INFO - Creating RR adimgfe01 A 172.20.5.22 in zone ilan.legacy.test
 INFO - 22.5.20.172.in-addr.arpa. PTR adimgfe01.ilan.legacy.test. already exists
 RECORD - adimgfe02.ilan.legacy.test. 3600 IN A 172.20.5.23
 INFO - Creating RR adimgfe02 A 172.20.5.23 in zone ilan.legacy.test
 WARNING - Not overwriting: 23.5.20.172.in-addr.arpa. PTR foo.bar.
-INFO - Marked IP 172.20.5.208 from layer3domain default as static
 RECORD - adimgfe03.ilan.legacy.test. 3600 IN A 172.19.22.5
+INFO - Marked IP 172.19.22.5 from layer3domain default as static
 INFO - Creating RR adimgfe03 A 172.19.22.5 in zone ilan.legacy.test
 INFO - No zone found for 5.22.19.172.in-addr.arpa.
 WARNING - No reverse zone found. Only creating forward entry.

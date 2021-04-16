@@ -5,7 +5,7 @@
 # desired.
 #
 # A zone can be in many zone-groups.
-# 
+#
 # A zone-group can only contain one view of zone.
 #
 # Zone-group names are unique
@@ -46,20 +46,20 @@ modified_by:admin
 $ ndcli modify zone-group internal set comment "Zone group for all internal zones except DataCenter local Zones"
 
 $ ndcli show zone-group internal
+comment:Zone group for all internal zones except DataCenter local Zones
 created:2012-11-14 11:03:02
 created_by:admin
 modified:2012-11-14 11:03:04
 modified_by:admin
-comment:Zone group for all internal zones except DataCenter local Zones
 
 $ ndcli list zone-group internal
 zone       view
-internal.test default
 company.com   internal
+internal.test default
 
 $ ndcli list zone-group internal -H
-internal.test	default
 company.com	internal
+internal.test	default
 
 # This should only work if the zone-group is not connected to any output-plugin
 $ ndcli delete zone-group internal

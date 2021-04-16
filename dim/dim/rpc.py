@@ -13,7 +13,7 @@ from flask import current_app as app, g
 from sqlalchemy import between, and_, or_, not_, select, String, desc
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.orm import aliased, joinedload, contains_eager
-from sqlalchemy.sql.expression import literal, func, FunctionElement
+from sqlalchemy.sql.expression import literal, func, FunctionElement, distinct
 
 import dim.dns
 import dim.ldap_sync
@@ -1457,13 +1457,16 @@ class RPC(object):
         pattern = make_wildcard(pattern)
         qfields = []
         if fields:
-            views_stmt = db.session.query(ZoneView.zone_id, func.count('*').label('views')).group_by(ZoneView.zone_id).subquery()
+            views_stmt = db.session.query(
+                    ZoneView.zone_id,
+                    func.count(distinct(ZoneView.id)).label('views'),
+                    func.count(ZoneGroup.id).label('zone_groups')
+                    ).select_from(ZoneView)\
+                            .outerjoin(ZoneGroup, ZoneView.groups)\
+                            .group_by(ZoneView.zone_id)\
+                            .subquery()
             qfields.append(views_stmt.c.views)
-            groups_stmt = db.session.query(Zone.id.label('zone_id'), ZoneView.id, func.count('*').label('zone_groups'))\
-                .join(ZoneView)\
-                .join(ZoneGroup, ZoneView.groups)\
-                .group_by(Zone.id, ZoneView.id).subquery()
-            qfields.append(func.coalesce(groups_stmt.c.zone_groups, 0).label('zone_groups'))
+            qfields.append(views_stmt.c.zone_groups)
             if self.user.is_super_admin:
                 qfields.extend([literal(True).label('can_create_rr'), literal(True).label('can_delete_rr')])
             else:
@@ -1478,8 +1481,7 @@ class RPC(object):
         if (can_delete_rr or can_create_rr) and not self.user.is_super_admin:
             zones = zones.filter(0 < self._changeable_views(can_create_rr=can_create_rr, can_delete_rr=can_delete_rr))
         if fields:
-            zones = zones.outerjoin(views_stmt, Zone.id == views_stmt.c.zone_id)\
-                .outerjoin(groups_stmt, Zone.id == groups_stmt.c.zone_id)
+            zones = zones.outerjoin(views_stmt, Zone.id == views_stmt.c.zone_id)
         zones = zones.order_by('name')
         if limit:
             offset = int(offset)
@@ -1501,13 +1503,16 @@ class RPC(object):
         pattern = make_wildcard(pattern)
         qfields = []
         if fields:
-            views_stmt = db.session.query(ZoneView.zone_id, func.count('*').label('views')).group_by(ZoneView.id).subquery()
+            views_stmt = db.session.query(
+                    ZoneView.zone_id,
+                    func.count(distinct(ZoneView.id)).label('views'),
+                    func.count(ZoneGroup.id).label('zone_groups')
+                    ).select_from(ZoneView)\
+                            .outerjoin(ZoneGroup, ZoneView.groups)\
+                            .group_by(ZoneView.zone_id)\
+                            .subquery()
             qfields.append(views_stmt.c.views)
-            groups_stmt = db.session.query(Zone.id.label('zone_id'), ZoneView.id, func.count('*').label('zone_groups')) \
-                .join(ZoneView) \
-                .join(ZoneGroup, ZoneView.groups) \
-                .group_by(Zone.id, ZoneView.id).subquery()
-            qfields.append(func.coalesce(groups_stmt.c.zone_groups, 0).label('zone_groups'))
+            qfields.append(views_stmt.c.zone_groups)
             if self.user.is_super_admin:
                 qfields.extend([literal(True).label('can_create_rr'), literal(True).label('can_delete_rr')])
             else:
@@ -1520,9 +1525,9 @@ class RPC(object):
 
         if (can_delete_rr or can_create_rr) and not self.user.is_super_admin:
             zones = zones.filter(0 < self._changeable_views(can_create_rr=can_create_rr, can_delete_rr=can_delete_rr))
+
         if fields:
-            zones = zones.outerjoin(views_stmt, Zone.id == views_stmt.c.zone_id) \
-                .outerjoin(groups_stmt, Zone.id == groups_stmt.c.zone_id)
+            zones = zones.outerjoin(views_stmt, Zone.id == views_stmt.c.zone_id)
 
         # Filter based on zone type (forward/reverse)
         if not forward_zones and not ipv4_reverse_zones and not ipv6_reverse_zones:
