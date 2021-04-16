@@ -42,10 +42,10 @@ record zone ttl  type value
 @      .    1000 SOA  localhost. hostmaster.root. 2013032503 14400 3600 605000 86400
 @      .         TXT  "test"
 $ ndcli list rrs *.
-record zone view     ttl  type value
-@      .    internal      TXT  "test"
-@      .    internal 1000 SOA  localhost. hostmaster.root. 2013040103 14400 3600 605000 86400
 INFO - Result for list rrs *.
+record zone view     ttl  type value
+@      .    internal 1000 SOA  localhost. hostmaster.root. 2013040103 14400 3600 605000 86400
+@      .    internal      TXT  "test"
 $ ndcli dump zone .
 .	1000	IN	SOA	localhost. hostmaster.root. 2013032503 14400 3600 605000 86400
 .	1000	IN	TXT	"test"

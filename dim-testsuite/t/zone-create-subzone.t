@@ -45,34 +45,34 @@ INFO - Creating RR bar.v300 CNAME bar.example.net. in zone example.net
 $ ndcli list zone v300.example.net
 ERROR - Zone v300.example.net does not exist
 $ ndcli list zone example.net
-record   zone    ttl   type  value
+record   zone        ttl   type  value
 @        example.net 86400 SOA   ns-example.company.org. hostmaster.example.net. 2012102612 14400 3600 605000 86400
-bar      example.net       A     10.99.1.14
-bar.v300 example.net       CNAME bar.example.net.
-foo      example.net       A     10.99.1.13
-foo.v300 example.net       CNAME foo
 @        example.net       NS    ns-example.company.com.
 @        example.net       NS    ns-example.company.org.
 @        example.net       NS    ns-example.company.biz.
 @        example.net       A     213.165.65.50
 @        example.net 900   MX    10 mx0.example.net.
+bar      example.net       A     10.99.1.14
+bar.v300 example.net       CNAME bar.example.net.
+foo      example.net       A     10.99.1.13
+foo.v300 example.net       CNAME foo
 mx0      example.net       A     213.165.64.100
 v300     example.net       A     10.99.1.12
 $ ndcli dump zone v300.example.net
 ERROR - Zone v300.example.net does not exist
 $ ndcli dump zone example.net
 example.net.	86400	IN	SOA	ns-example.company.org. hostmaster.example.net. 2012092000 600 7200 604800 3600
-example.net.	86400	IN	NS	ns-example.company.org.
+bar.example.net.	86400	IN	A	10.99.1.14
+bar.v300.example.net.	86400	IN	CNAME	bar.example.net.
 example.net.	86400	IN	NS	ns-example.company.com.
+example.net.	86400	IN	NS	ns-example.company.org.
 example.net.	86400	IN	NS	ns-example.company.biz.
 example.net.	86400	IN	A	213.165.65.50
-mx0.example.net.	86400	IN	A	213.165.64.100
 example.net.	900	IN	MX	10 mx0.example.net.
 foo.example.net.	86400	IN	A	10.99.1.13
-bar.example.net.	86400	IN	A	10.99.1.14
-v300.example.net.	86400	IN	A	10.99.1.12
 foo.v300.example.net.	86400	IN	CNAME	foo.example.net.
-bar.v300.example.net.	86400	IN	CNAME	bar.example.net.
+mx0.example.net.	86400	IN	A	213.165.64.100
+v300.example.net.	86400	IN	A	10.99.1.12
 $ ndcli create zone v300.example.net primary ins01.server.lan. mail dnsadmin@1und1.de
 WARNING - Creating zone v300.example.net without profile
 INFO - Creating views default for zone v300.example.net
@@ -80,35 +80,35 @@ INFO - Moving RR v300 A 10.99.1.12 in zone v300.example.net from zone example.ne
 INFO - Moving RR foo.v300 CNAME foo in zone v300.example.net from zone example.net
 INFO - Moving RR bar.v300 CNAME bar.example.net. in zone v300.example.net from zone example.net
 $ ndcli list zone v300.example.net
-record zone         ttl   type  value
+record zone             ttl   type  value
 @      v300.example.net 86400 SOA   ins01.server.lan. dnsadmin.1und1.de. <YYYYMMDD01> 600 7200 604800 3600
 @      v300.example.net       A     10.99.1.12
-foo    v300.example.net       CNAME foo.example.net.
 bar    v300.example.net       CNAME bar.example.net.
+foo    v300.example.net       CNAME foo.example.net.
 
 $ ndcli dump zone v300.example.net
 v300.example.net.	86400	IN	SOA	ins01.server.lan. dnsadmin.1und1.de. 2012092000 600 7200 604800 3600
-v300.example.net.	86400	IN	A	10.99.1.12
-foo.v300.example.net.	86400	IN	CNAME	foo.example.net.
 bar.v300.example.net.	86400	IN	CNAME	bar.example.net.
+foo.v300.example.net.	86400	IN	CNAME	foo.example.net.
+v300.example.net.	86400	IN	A	10.99.1.12
 
 $ ndcli delete zone example.net --cleanup
-WARNING - bar.example.net. is referenced by other records
-WARNING - foo.example.net. is referenced by other records
-INFO - Deleting RR @ 900 MX 10 mx0.example.net. from zone example.net
-INFO - Deleting RR foo A 10.99.1.13 from zone example.net
-INFO - Freeing IP 213.165.65.50 from layer3domain default
-INFO - Deleting RR @ A 213.165.65.50 from zone example.net
 INFO - Deleting RR @ NS ns-example.company.com. from zone example.net
-INFO - Deleting RR mx0 A 213.165.64.100 from zone example.net
-INFO - Freeing IP 10.99.1.14 from layer3domain default
 INFO - Deleting RR @ NS ns-example.company.org. from zone example.net
 INFO - Deleting RR @ NS ns-example.company.biz. from zone example.net
-INFO - Freeing IP 10.99.1.13 from layer3domain default
+INFO - Deleting RR @ A 213.165.65.50 from zone example.net
+INFO - Freeing IP 213.165.65.50 from layer3domain default
+INFO - Deleting RR @ 900 MX 10 mx0.example.net. from zone example.net
+WARNING - bar.example.net. is referenced by other records
 INFO - Deleting RR bar A 10.99.1.14 from zone example.net
+INFO - Freeing IP 10.99.1.14 from layer3domain default
+WARNING - foo.example.net. is referenced by other records
+INFO - Deleting RR foo A 10.99.1.13 from zone example.net
+INFO - Freeing IP 10.99.1.13 from layer3domain default
+INFO - Deleting RR mx0 A 213.165.64.100 from zone example.net
 INFO - Freeing IP 213.165.64.100 from layer3domain default
 $ ndcli delete zone v300.example.net --cleanup
-INFO - Deleting RR bar CNAME bar.example.net. from zone v300.example.net
-INFO - Freeing IP 10.99.1.12 from layer3domain default
-INFO - Deleting RR foo CNAME foo.example.net. from zone v300.example.net
 INFO - Deleting RR @ A 10.99.1.12 from zone v300.example.net
+INFO - Freeing IP 10.99.1.12 from layer3domain default
+INFO - Deleting RR bar CNAME bar.example.net. from zone v300.example.net
+INFO - Deleting RR foo CNAME foo.example.net. from zone v300.example.net

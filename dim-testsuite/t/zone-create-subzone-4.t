@@ -47,8 +47,8 @@ sub.a.de second
 $ ndcli list user-group g rights
 action    object
 create_rr a.de view default
-delete_rr a.de view default
 create_rr sub.a.de view default
+delete_rr a.de view default
 delete_rr sub.a.de view default
 $ ndcli list user-group g2 rights
 action    object
