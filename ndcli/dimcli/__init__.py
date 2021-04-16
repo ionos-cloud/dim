@@ -2593,7 +2593,7 @@ delegation).''')
         Imports BIND reverse zonefile data from stdin.
         '''
         content = sys.stdin.read()
-        zoneimport.import_zone(self.client, content, revzone=True)
+        zoneimport.import_zone(self.client, content, zone_name=None, revzone=True)
 
     @cmd.register('create zone-group',
                   zone_group_arg,
