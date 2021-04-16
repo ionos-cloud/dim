@@ -5,7 +5,7 @@
 # view is used in any zone-groups
 #
 # Also I haven't found an example for viewing a zone views modification time
-# 
+#
 
 $ ndcli create zone fuh.de
 WARNING - Creating zone fuh.de without profile
@@ -20,9 +20,9 @@ created:<some timestamp>
 created_by:<some user>
 modified:<some timestamp>
 modified_by:<some user>
+name:fuh.de
 views:1
 zone_groups:1
-name:fuh.de
 
 $ ndcli modify zone fuh.de create view pub
 WARNING - You created a view without specifing a profile, your view is totally empty.
@@ -36,8 +36,8 @@ created:<some timestamp>
 created_by:<some user>
 modified:<some timestamp>
 modified_by:<some user>
-views:2
 name:fuh.de
+views:2
 zone_groups:2
 
 $ ndcli show zone fuh.de view pub
@@ -45,9 +45,9 @@ created:<some timestamp>
 created_by:<some user>
 modified:<some timestamp>
 modified_by:<some user>
-zone_groups:1
 name:fuh.de
 view:pub
+zone_groups:1
 
 $ ndcli modify zone fuh.de rename view default to int
 
