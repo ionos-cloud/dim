@@ -78,6 +78,7 @@ record zone                  ttl   type value
 
 # import 2.208.74.in-addr.arpa
 $ cat <<EOF | ndcli import rev-zone
+$ORIGIN 2.208.74.in-addr.arpa.
 2.208.74.in-addr.arpa.	86400	IN	SOA	rns.company.com. dnsadmin.1und1.de. 2012122700 7200 3600 604800 86400
 2.208.74.in-addr.arpa.	86400	IN	NS	rns.company.com.
 2.208.74.in-addr.arpa.	86400	IN	NS	rns.company.biz.
@@ -122,11 +123,11 @@ WARNING - crns.example-dns.org. does not exist.
 $ ndcli list zone 2.208.74.in-addr.arpa
 record zone                  ttl   type value
 @      2.208.74.in-addr.arpa 86400 SOA  rns.company.com. dnsadmin.example.com. 2012122802 14400 3600 605000 86400
-1      2.208.74.in-addr.arpa       PTR  vl-418-sec.gw-dists-r5.slr.lxa.network.test.
 @      2.208.74.in-addr.arpa       NS   rns.company.com.
 @      2.208.74.in-addr.arpa       NS   rns.company.org.
 @      2.208.74.in-addr.arpa       NS   rns.company.biz.
 @      2.208.74.in-addr.arpa       NS   rns.company.de.
+1      2.208.74.in-addr.arpa       PTR  vl-418-sec.gw-dists-r5.slr.lxa.network.test.
 254    2.208.74.in-addr.arpa       NS   crns.example-dns.de.
 254    2.208.74.in-addr.arpa       NS   crns.example-dns.biz.
 254    2.208.74.in-addr.arpa       NS   crns.example-dns.com.
@@ -189,15 +190,15 @@ EOF
 INFO - Creating zone example.com view de
 RECORD - example.com. 86400 IN SOA dns.example.net. hostmaster.example.net. 2012120600 28800 7200 604800 3600
 INFO - Creating RR @ SOA dns.example.net. hostmaster.example.net. 2012120600 28800 7200 604800 3600 in zone example.com
-RECORD - wiki.example.com. 86400 IN A 213.165.65.35
-INFO - Marked IP 213.165.64.179 from layer3domain default as static
-INFO - Creating RR wiki A 213.165.65.35 in zone example.com
-INFO - Creating RR 35 PTR wiki.example.com. in zone 65.165.213.in-addr.arpa
 RECORD - example.com. 86400 IN MX 10 mailin-de.example.net.
 INFO - Creating RR @ MX 10 mailin-de.example.net. in zone example.com
 WARNING - mailin-de.example.net. does not exist.
-RECORD - www.example.com. 86400 IN A 213.165.64.179
+RECORD - wiki.example.com. 86400 IN A 213.165.65.35
 INFO - Marked IP 213.165.65.35 from layer3domain default as static
+INFO - Creating RR wiki A 213.165.65.35 in zone example.com
+INFO - Creating RR 35 PTR wiki.example.com. in zone 65.165.213.in-addr.arpa
+RECORD - www.example.com. 86400 IN A 213.165.64.179
+INFO - Marked IP 213.165.64.179 from layer3domain default as static
 INFO - Creating RR www A 213.165.64.179 in zone example.com
 INFO - Creating RR 179 PTR www.example.com. in zone 64.165.213.in-addr.arpa
 
@@ -216,14 +217,14 @@ EOF
 INFO - Creating zone example.com view us
 RECORD - example.com. 86400 IN SOA dns.example.net. hostmaster.example.net. 2012120600 28800 7200 604800 3600
 INFO - Creating RR @ SOA dns.example.net. hostmaster.example.net. 2012120600 28800 7200 604800 3600 in zone example.com view us
-RECORD - wiki.example.com. 86400 IN A 213.165.65.35
-INFO - Marked IP 74.208.5.85 from layer3domain default as static
-INFO - Creating RR wiki A 213.165.65.35 in zone example.com view us
-INFO - 35.65.165.213.in-addr.arpa. PTR wiki.example.com. already exists
 RECORD - example.com. 86400 IN MX 10 mailin-us.example.net.
 INFO - Creating RR @ MX 10 mailin-us.example.net. in zone example.com view us
 WARNING - mailin-us.example.net. does not exist.
+RECORD - wiki.example.com. 86400 IN A 213.165.65.35
+INFO - Creating RR wiki A 213.165.65.35 in zone example.com view us
+INFO - 35.65.165.213.in-addr.arpa. PTR wiki.example.com. already exists
 RECORD - www.example.com. 86400 IN A 74.208.5.85
+INFO - Marked IP 74.208.5.85 from layer3domain default as static
 INFO - Creating RR www A 74.208.5.85 in zone example.com view us
 INFO - Creating RR 85 PTR www.example.com. in zone 5.208.74.in-addr.arpa
 
