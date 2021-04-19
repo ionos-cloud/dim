@@ -1,5 +1,4 @@
 import logging
-import math
 import random
 from collections import namedtuple
 from itertools import islice, groupby
@@ -116,7 +115,7 @@ def free_ranges(parent_query):
                 # We need to split the range if we had no children, otherwise we
                 # could try to allocate a child with the same prefix, which is not
                 # possible
-                mid = math.floor((range_end + 1 + range_start) / 2)
+                mid = ((range_end - range_start + 1) % 2 + range_start)
                 ranges.append([range_start, mid - 1])
                 ranges.append([mid, range_end])
             else:
