@@ -371,7 +371,7 @@ def delete_with_references(query, free_ips, references, user):
             done = True
         rrs = (orphaned | forward_reverse) - to_delete
         to_delete |= forward_reverse
-    for rr in sorted(to_delete, key=lambda rr: (rr.type, rr.name, rr.target, rr.value)):
+    for rr in sorted(to_delete, key=lambda rr: (rr.type, rr.name, rr.target, rr.value, rr.id)):
         Messages.info("Deleting RR %s from %s" % (rr.bind_str(relative=True), rr.view))
         if free_ips and rr.ipblock_id:
             ipblocks.add(rr.ipblock_id)
