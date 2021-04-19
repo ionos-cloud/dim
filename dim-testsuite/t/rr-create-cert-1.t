@@ -38,7 +38,7 @@ INFO - Creating RR @ CERT 1 4242 8 MIIEVzCCAz+gAwIBAgICAPkwDQYJKoZIhvcNAQELBQAwd
 $ ndcli modify zone a.de delete view public --cleanup -q
 $ ndcli delete zone a.de --cleanup -q
 $ ndcli delete zone 3.2.1.in-addr.arpa --cleanup -q
-$ ndcli delete zone e.f.0.0.d.a.e.d.8.d.8.0.1.0.0.2.ip6.arpa --cleanup -q
+$ ndcli delete zone e.f.0.0.d.a.e.d.8.b.d.0.1.0.0.2.ip6.arpa --cleanup -q
 $ ndcli modify pool apool_v6 remove subnet 2001:db8:dead:fe::/64
 $ ndcli delete pool apool_v6
 $ ndcli modify pool apool remove subnet 1.2.3.0/24
