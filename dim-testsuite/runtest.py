@@ -262,7 +262,6 @@ def match_table(actual_table, expected_table, actual_raw, expected_raw) -> list[
 
     result = []
     if len(actual_table) != len(expected_table):
-        print("number of lines between output and expected output differs")
         return actual_raw
     offset = 0
     for no, row in enumerate(actual_raw):

@@ -40,16 +40,16 @@ b      a.de       AAAA  2001:db8:be:ef::1:1
 
 $ ndcli delete rr a.a.de. -n
 INFO - Dryrun mode, no data will be modified
-INFO - Deleting RR 2 PTR a.a.de. from zone 2.1.10.in-addr.arpa
 INFO - Deleting RR a A 10.1.2.2 from zone a.de
+INFO - Deleting RR 2 PTR a.a.de. from zone 2.1.10.in-addr.arpa
 INFO - Freeing IP 10.1.2.2 from layer3domain default
 
 $ ndcli delete rr a.a.de. -q
 
 $ ndcli delete rr b.a.de. -n
 INFO - Dryrun mode, no data will be modified
-INFO - Deleting RR 1.0.0.0.1.0.0.0.0.0.0.0.0.0.0.0 PTR b.a.de. from zone f.e.0.0.e.b.0.0.8.b.d.0.1.0.0.2.ip6.arpa
 INFO - Deleting RR b AAAA 2001:db8:be:ef::1:1 from zone a.de
+INFO - Deleting RR 1.0.0.0.1.0.0.0.0.0.0.0.0.0.0.0 PTR b.a.de. from zone f.e.0.0.e.b.0.0.8.b.d.0.1.0.0.2.ip6.arpa
 INFO - Freeing IP 2001:db8:be:ef::1:1 from layer3domain default
 
 $ ndcli modify pool tp1_v6 free ip 2001:db8:be:ef::1:1 -n
