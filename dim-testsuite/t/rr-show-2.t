@@ -23,14 +23,14 @@ $ ndcli show rr a.a.de.
 ERROR - a.a.de. is ambiguous
 
 $ ndcli show rr a.a.de. txt
+comment:a comment
 created:2012-11-14 11:03:02
 created_by:user
 modified:2012-11-14 11:03:02
 modified_by:user
-comment:a comment
-zone:a.de
-ttl:600
 rr:a 600 TXT "test text"
+ttl:600
+zone:a.de
 
 $ ndcli delete zone a.de -q --cleanup
 $ ndcli delete zone 3.2.1.in-addr.arpa

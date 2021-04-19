@@ -14,6 +14,6 @@ $ ndcli list user-group usergroup rights
 action               object
 allocate             pool
 create_rr            test.com view default
-delete_rr            test.com view new
 create_rr            test.com view new
+delete_rr            test.com view new
 dns_update_agent     all

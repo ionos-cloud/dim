@@ -40,10 +40,10 @@ $ ndcli modify pool p remove subnet 1.0.0.0/23 -f -n
 INFO - Dryrun mode, no data will be modified
 $ ndcli modify pool p remove subnet 1.0.0.0/23 -f -c
 INFO - Deleting RR @ A 1.0.0.1 from zone a.de
-INFO - Deleting RR 128 PTR a.de. from zone 0.0.1.in-addr.arpa
+INFO - Deleting RR @ A 1.0.0.128 from zone a.de
 INFO - Deleting RR b CNAME a.de. from zone b.de
 INFO - Deleting RR 1 PTR a.de. from zone 0.0.1.in-addr.arpa
-INFO - Deleting RR @ A 1.0.0.128 from zone a.de
+INFO - Deleting RR 128 PTR a.de. from zone 0.0.1.in-addr.arpa
 INFO - Freeing IP 1.0.0.1 from layer3domain default
 INFO - Freeing IP 1.0.0.128 from layer3domain default
 INFO - Deleting RR @ NS rns.example.com. from zone 0.0.1.in-addr.arpa

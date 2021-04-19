@@ -10,14 +10,13 @@ INFO - Creating RR @ MX 10 m.a.de. in zone a.de
 WARNING - m.a.de. does not exist.
 
 $ ndcli modify rr a.de. -c "some comment"
+comment:some comment
 created:2012-11-14 11:03:02
 created_by:user
 modified:2012-11-14 11:03:03
 modified_by:user
-comment:some comment
 rr:@ MX 10 m.a.de.
 zone:a.de
-
 $ ndcli create rr a.de. a 1.2.3.4
 INFO - Marked IP 1.2.3.4 from layer3domain default as static
 INFO - Creating RR @ A 1.2.3.4 in zone a.de
@@ -28,22 +27,22 @@ $ ndcli modify rr a.de. -c "a comment"
 ERROR - a.de. is ambiguous
 
 $ ndcli modify rr a.de. a -c "comments are fully utf8 enabled فارسی درى"
+comment:comments are fully utf8 enabled فارسی درى
 created:2012-11-14 11:03:03
 created_by:user
 modified:2012-11-14 11:03:04
 modified_by:user
-comment:comments are fully utf8 enabled فارسی درى
-zone:a.de
 rr:@ A 1.2.3.4
+zone:a.de
 
 $ ndcli modify rr a.de. a 1.2.3.4 -c "another comment"
+comment:another comment
 created:2012-11-14 11:03:03
 created_by:user
 modified:2012-11-14 11:03:05
 modified_by:user
-comment:another comment
-zone:a.de
 rr:@ A 1.2.3.4
+zone:a.de
 
 $ ndcli delete zone a.de -q --cleanup
 

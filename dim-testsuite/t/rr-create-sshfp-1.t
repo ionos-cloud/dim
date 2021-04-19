@@ -19,9 +19,9 @@ INFO - Creating RR s SSHFP 1 1 8cb0fc6c527506a053f4f14c8464bebbd6dede2738d11468d
 
 $ ndcli create rr s.a.de. a 1.2.34.5
 INFO - Marked IP 1.2.34.5 from layer3domain default as static
-WARNING - No reverse zone found. Only creating forward entry.
-INFO - No zone found for 5.34.2.1.in-addr.arpa.
 INFO - Creating RR s A 1.2.34.5 in zone a.de
+INFO - No zone found for 5.34.2.1.in-addr.arpa.
+WARNING - No reverse zone found. Only creating forward entry.
 
 $ ndcli create rr s.a.de. sshfp 0 1 8cb0fc6c527506a053f4f14c8464bebbd6dede2738d11468dd953d7d6a3021f1
 ERROR - Invalid algorithm: 0

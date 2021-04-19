@@ -23,14 +23,14 @@ $ ndcli show rr a.a.de.
 ERROR - A view must be selected from: de default
 
 $ ndcli show rr a.a.de. view de
+comment:a comment
 created:2012-11-14 11:03:02
 created_by:user
 modified:2012-11-14 11:03:02
 modified_by:user
-comment:a comment
-zone:a.de
-view:de
 rr:a A 1.2.3.4
+view:de
+zone:a.de
 
 $ ndcli modify zone a.de delete view default
 $ ndcli delete zone a.de -q --cleanup

@@ -50,8 +50,8 @@ $ ndcli modify user-group ipam-mam grant allocate pool-mam
 
 $ ndcli list user-group dns-mam rights
 action   object
-create_rr example.com
 create_rr company.com view internal
+create_rr example.com
 
 $ ndcli list user-group ipam-mam rights
 action   object
@@ -96,8 +96,8 @@ ERROR - Permission denied (can_create_rr zone company.net)
 
 $ ndcli create rr 10.30.0.5 ptr five.example.com.
 INFO - Marked IP 10.30.0.5 from layer3domain default as static
-INFO - Creating RR five A 10.30.0.5 in zone example.com
 INFO - Creating RR 5 PTR five.example.com. in zone 0.30.10.in-addr.arpa
+INFO - Creating RR five A 10.30.0.5 in zone example.com
 
 $ ndcli create rr 10.30.0.132 ptr six.example.com.
 ERROR - Permission denied (can_allocate pool-non-mam)

@@ -19,11 +19,11 @@ $ ndcli show rr a.de.
 ERROR - a.de. is ambiguous
 
 $ ndcli show rr a.de. mx
+comment:some comment
 created:2012-11-14 11:03:02
 created_by:user
 modified:2012-11-14 11:03:02
 modified_by:user
-comment:some comment
 rr:@ MX 10 mx.a.de.
 zone:a.de
 

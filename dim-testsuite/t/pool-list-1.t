@@ -6,9 +6,9 @@ INFO - Created subnet 10.0.0.0/24 in layer3domain default
 WARNING - Creating zone 0.0.10.in-addr.arpa without profile
 WARNING - Primary NS for this Domain is now localhost.
 $ ndcli list pool some-pool
+INFO - Total free IPs: 254
 prio subnet      gateway free total
    1 10.0.0.0/24         254   256
-INFO - Total free IPs: 254
 
 # if -H then do not output the INFO
 $ ndcli list pool some-pool -H

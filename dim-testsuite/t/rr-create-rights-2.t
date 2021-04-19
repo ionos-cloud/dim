@@ -62,12 +62,12 @@ $ ndcli list user user rights
 group     object right
 all_users
 dns-users pool   allocate
-dns-users a.de   delete_rr
 dns-users a.de   create_rr
+dns-users a.de   delete_rr
 dns-users all    network_admin
 $ ndcli delete zone 3.2.1.in-addr.arpa --cleanup
-INFO - Deleting RR 5 PTR a.de. from zone 3.2.1.in-addr.arpa
 INFO - Deleting RR @ A 1.2.3.5 from zone a.de
+INFO - Deleting RR 5 PTR a.de. from zone 3.2.1.in-addr.arpa
 INFO - Freeing IP 1.2.3.5 from layer3domain default
 $ ndcli create zone 4.2.1.in-addr.arpa
 WARNING - Creating zone 4.2.1.in-addr.arpa without profile

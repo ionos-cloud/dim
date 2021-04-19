@@ -7,8 +7,8 @@ WARNING - Creating zone 2.1.10.in-addr.arpa without profile
 WARNING - Primary NS for this Domain is now localhost.
 $ ndcli create rr 10.1.2.25 ptr phuh.com.
 INFO - Marked IP 10.1.2.25 from layer3domain default as static
-INFO - No zone found for phuh.com.
 INFO - Creating RR 25 PTR phuh.com. in zone 2.1.10.in-addr.arpa
+INFO - No zone found for phuh.com.
 WARNING - No forward zone found. Only creating reverse entry.
 $ ndcli delete rr 10.1.2.25 ptr phuh.com.
 INFO - Deleting RR 25 PTR phuh.com. from zone 2.1.10.in-addr.arpa
