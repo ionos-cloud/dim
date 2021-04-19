@@ -528,7 +528,7 @@ class ZoneKey(db.Model):
                  4: hashlib.sha384}
         if digest_type not in hfunc:
             raise InvalidParameterError('Invalid DS digest type: %s' % digest_type)
-        return ds_hash(self.zone.name, self.rdata(), hfunc[digest_type])
+        return ds_hash(self.zone.name.encode('utf-8'), self.rdata(), hfunc[digest_type])
 
     def ds_rr_params(self, digest_type):
         return dict(name=self.zone.name + '.', rr_type='DS', key_tag=self.tag(), algorithm=self.algorithm,
@@ -548,13 +548,21 @@ def dnskey_tag(rdata):
 
 
 def ds_hash(owner, rdata, digest_function):
-    parts = owner.lower().split('.')
+    if type(owner) != bytes:
+        raise TypeError(f"owner must be of type bytes, got {type(owner)}")
+    if type(rdata) != bytes:
+        raise TypeError(f"rdata must be of type bytes, got {type(owner)}")
+
+    parts = owner.lower().split(b'.')
     canon = []
     for p in parts:
         canon.append(bytes([len(p)]))
         canon.append(p)
-    canon.append(chr(0))
-    return digest_function(b''.join(canon) + rdata).hexdigest().upper()
+    canon.append(bytes([0]))
+    raw = digest_function(b''.join(canon) + rdata)
+    digest = raw.hexdigest()
+    result = digest.upper()
+    return result
 
 
 class Output(db.Model, TrackChanges):
