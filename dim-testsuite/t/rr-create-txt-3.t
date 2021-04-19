@@ -25,16 +25,3 @@ INFO - Deleting RR @ TXT "\" \"" from zone a.de
 $ ndcli delete rr -n a.de. txt \"\\\"\ \\\"\"
 INFO - Dryrun mode, no data will be modified
 INFO - Deleting RR @ TXT "\" \"" from zone a.de
-
-
-$ ndcli create rr a.de. spf '\"' '\"'
-INFO - Creating RR @ SPF "\"" "\"" in zone a.de
-$ ndcli delete rr -n a.de. spf '\"' '\"'
-INFO - Dryrun mode, no data will be modified
-INFO - Deleting RR @ SPF "\"" "\"" from zone a.de
-$ ndcli delete rr -n a.de. spf "\\\"" "\\\""
-INFO - Dryrun mode, no data will be modified
-INFO - Deleting RR @ SPF "\"" "\"" from zone a.de
-$ ndcli delete rr -n a.de. spf \"\\\"\"\ \"\\\"\"
-INFO - Dryrun mode, no data will be modified
-INFO - Deleting RR @ SPF "\"" "\"" from zone a.de
