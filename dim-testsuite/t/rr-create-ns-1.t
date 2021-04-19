@@ -21,17 +21,17 @@ WARNING - ns.example.com. does not exist.
 $ ndcli list zone a.de
 record zone ttl   type  value
 @      a.de 86400 SOA   localhost. hostmaster.a.de. 2012111402 14400 3600 605000 86400
+@      a.de       NS    a
+@      a.de       NS    ns.example.com.
 a      a.de       A     1.2.3.4
 ns     a.de       CNAME a
 web    a.de       CNAME ns
-@      a.de       NS    a
-@      a.de       NS    ns.example.com.
 $ ndcli delete rr a.a.de. -R
-INFO - Deleting RR 4 PTR a.a.de. from zone 3.2.1.in-addr.arpa
-INFO - Deleting RR web CNAME ns from zone a.de
-INFO - Deleting RR @ NS a from zone a.de
 INFO - Deleting RR a A 1.2.3.4 from zone a.de
 INFO - Deleting RR ns CNAME a from zone a.de
+INFO - Deleting RR web CNAME ns from zone a.de
+INFO - Deleting RR @ NS a from zone a.de
+INFO - Deleting RR 4 PTR a.a.de. from zone 3.2.1.in-addr.arpa
 INFO - Freeing IP 1.2.3.4 from layer3domain default
 $ ndcli list zone 3.2.1.in-addr.arpa
 record zone               ttl   type value

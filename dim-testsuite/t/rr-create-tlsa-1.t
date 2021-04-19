@@ -26,8 +26,8 @@ INFO - Creating RR _25._tcp TLSA 3 0 1 8cb0fc6c527506a053f4f14c8464bebbd6dede273
 # issue a warning if user supplies values not defined in rfc 6698
 $ ndcli create rr _25._tcp.a.de. tlsa 4 2 3 8cb0fc6c527506a053f4f14c8464bebbd6dede2738d11468dd953d7d6a3021f1
 WARNING - certificate_usage value 4 is unassigned
-WARNING - matching_type value 3 is unassigned
 WARNING - selector value 2 is unassigned
+WARNING - matching_type value 3 is unassigned
 WARNING - The name _25._tcp.a.de. already existed, creating round robin record
 INFO - Creating RR _25._tcp TLSA 4 2 3 8cb0fc6c527506a053f4f14c8464bebbd6dede2738d11468dd953d7d6a3021f1 in zone a.de
 

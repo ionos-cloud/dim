@@ -24,9 +24,9 @@ $ ndcli login -u user -p p
 $ ndcli create pool testpool2
 ERROR - Permission denied (can_network_admin)
 $ ndcli list pool testpool
+INFO - Total free IPs: 254
 prio subnet      gateway free total
    1 12.0.0.0/24          254   256
-INFO - Total free IPs: 254
 $ ndcli create user-group testgroup2
 ERROR - Permission denied (can_create_groups)
 $ ndcli modify user-group testgroup add user user

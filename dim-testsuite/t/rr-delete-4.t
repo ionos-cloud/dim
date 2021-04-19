@@ -73,28 +73,28 @@ INFO - Freeing IP 8.8.3.69 from layer3domain default
 
 $ ndcli delete rr www.example.com. view us -n
 INFO - Dryrun mode, no data will be modified
-INFO - Deleting RR 67 PTR www.example.com. from zone 3.8.8.in-addr.arpa
 INFO - Deleting RR www A 8.8.3.67 from zone example.com view us
+INFO - Deleting RR 67 PTR www.example.com. from zone 3.8.8.in-addr.arpa
 INFO - Freeing IP 8.8.3.67 from layer3domain default
 
 $ ndcli delete rr www.example.com. a 8.8.3.67 view us -n
 INFO - Dryrun mode, no data will be modified
-INFO - Deleting RR 67 PTR www.example.com. from zone 3.8.8.in-addr.arpa
 INFO - Deleting RR www A 8.8.3.67 from zone example.com view us
+INFO - Deleting RR 67 PTR www.example.com. from zone 3.8.8.in-addr.arpa
 INFO - Freeing IP 8.8.3.67 from layer3domain default
 
 $ ndcli delete rr www.example.com. view eu -n -R
 INFO - Dryrun mode, no data will be modified
-INFO - Deleting RR 140 PTR www.example.com. from zone 101.9.9.in-addr.arpa
 INFO - Deleting RR www A 9.9.101.140 from zone example.com view eu
 INFO - Deleting RR web CNAME www from zone example.com view eu
+INFO - Deleting RR 140 PTR www.example.com. from zone 101.9.9.in-addr.arpa
 INFO - Freeing IP 9.9.101.140 from layer3domain default
 
 $ ndcli delete rr www.example.com. a 9.9.101.140 view eu -n -R
 INFO - Dryrun mode, no data will be modified
-INFO - Deleting RR 140 PTR www.example.com. from zone 101.9.9.in-addr.arpa
 INFO - Deleting RR www A 9.9.101.140 from zone example.com view eu
 INFO - Deleting RR web CNAME www from zone example.com view eu
+INFO - Deleting RR 140 PTR www.example.com. from zone 101.9.9.in-addr.arpa
 INFO - Freeing IP 9.9.101.140 from layer3domain default
 
 $ ndcli create zone noview.com
@@ -105,10 +105,10 @@ $ ndcli create rr www.noview.com. cname www.example.com.
 INFO - Creating RR www CNAME www.example.com. in zone noview.com
 
 $ ndcli delete rr www.example.com. view eu -R
-INFO - Deleting RR 140 PTR www.example.com. from zone 101.9.9.in-addr.arpa
-INFO - Deleting RR web CNAME www from zone example.com view eu
 INFO - Deleting RR www A 9.9.101.140 from zone example.com view eu
+INFO - Deleting RR web CNAME www from zone example.com view eu
 INFO - Deleting RR www CNAME www.example.com. from zone noview.com
+INFO - Deleting RR 140 PTR www.example.com. from zone 101.9.9.in-addr.arpa
 INFO - Freeing IP 9.9.101.140 from layer3domain default
 
 $ ndcli create zone view.com
@@ -124,10 +124,10 @@ $ ndcli create rr www.view.com. cname w3.example.com. view one
 INFO - Creating RR www CNAME w3.example.com. in zone view.com view one
 
 $ ndcli delete rr w3.example.com. view eu -R
-INFO - Deleting RR 69 PTR w3.example.com. from zone 3.8.8.in-addr.arpa
-INFO - Deleting RR www CNAME w3.example.com. from zone view.com view one
 INFO - Deleting RR w3 A 8.8.3.69 from zone example.com view eu
 INFO - Deleting RR www CNAME w3.example.com. from zone view.com view default
+INFO - Deleting RR www CNAME w3.example.com. from zone view.com view one
+INFO - Deleting RR 69 PTR w3.example.com. from zone 3.8.8.in-addr.arpa
 INFO - Freeing IP 8.8.3.69 from layer3domain default
 
 $ ndcli delete zone noview.com -q --cleanup

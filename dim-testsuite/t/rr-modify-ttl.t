@@ -12,21 +12,21 @@ INFO - No zone found for 251.2.19.172.in-addr.arpa.
 WARNING - No reverse zone found. Only creating forward entry.
 
 $ ndcli list rrs 172.19.2.251
+INFO - Result for list rrs 172.19.2.251
 record zone view    ttl type value
 www    a.de default     A    172.19.2.251
-INFO - Result for list rrs 172.19.2.251
 
 $ ndcli modify rr www.a.de. a 172.19.2.251 --ttl 600
 $ ndcli list rrs 172.19.2.251
+INFO - Result for list rrs 172.19.2.251
 record zone view    ttl type value
 www    a.de default 600 A    172.19.2.251
-INFO - Result for list rrs 172.19.2.251
 
 $ ndcli modify rr www.a.de. a 172.19.2.251 --ttl default
 $ ndcli list rrs 172.19.2.251
+INFO - Result for list rrs 172.19.2.251
 record zone view    ttl type value
 www    a.de default     A    172.19.2.251
-INFO - Result for list rrs 172.19.2.251
 
 $ ndcli modify rr www.a.de. a 172.19.2.251 --ttl invalid
 ERROR - Invalid ttl: invalid

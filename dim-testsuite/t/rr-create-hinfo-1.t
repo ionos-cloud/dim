@@ -45,21 +45,21 @@ $ ndcli create rr god031.a.de. txt "X-Status:" "active"
 INFO - Creating RR god031 TXT "X-Status:" "active" in zone a.de
 
 $ ndcli create rr god031.a.de. txt "X-Class:" "god"
-INFO - Creating RR god031 TXT "X-Class:" "god" in zone a.de
 WARNING - The name god031.a.de. already existed, creating round robin record
+INFO - Creating RR god031 TXT "X-Class:" "god" in zone a.de
 
 $ ndcli create rr god031.a.de. txt "X-Loc:" "DE/KA/B7-C-S02-20"
-INFO - Creating RR god031 TXT "X-Loc:" "DE/KA/B7-C-S02-20" in zone a.de
 WARNING - The name god031.a.de. already existed, creating round robin record
+INFO - Creating RR god031 TXT "X-Loc:" "DE/KA/B7-C-S02-20" in zone a.de
 
 $ ndcli list zone a.de
 record zone ttl   type value
 @      a.de 86400 SOA   localhost. hostmaster.a.de. 2013010306 14400 3600 605000 86400
 god031 a.de       A    10.1.64.51
+god031 a.de       HINFO "Dell/i386/E5405" "Linux/debGMX/sarge"
 god031 a.de       TXT  "X-Status:" "active"
 god031 a.de       TXT  "X-Class:" "god"
 god031 a.de       TXT  "X-Loc:" "DE/KA/B7-C-S02-20"
-god031 a.de       HINFO "Dell/i386/E5405" "Linux/debGMX/sarge"
 
 $ ndcli delete rr god031.a.de. txt
 ERROR - god031.a.de. TXT is ambiguous
@@ -68,8 +68,8 @@ $ ndcli delete rr god031.a.de. hinfo
 INFO - Deleting RR god031 HINFO "Dell/i386/E5405" "Linux/debGMX/sarge" from zone a.de
 
 $ ndcli delete rr god031.a.de. a
-INFO - Deleting RR 51 PTR god031.a.de. from zone 64.1.10.in-addr.arpa
 INFO - Deleting RR god031 A 10.1.64.51 from zone a.de
+INFO - Deleting RR 51 PTR god031.a.de. from zone 64.1.10.in-addr.arpa
 INFO - Freeing IP 10.1.64.51 from layer3domain default
 
 $ ndcli delete rr god031.a.de. txt "X-Status:" "active"

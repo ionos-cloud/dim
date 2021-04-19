@@ -35,8 +35,8 @@ WARNING - Primary NS for this Domain is now localhost.
 INFO - Creating views default, us for zone subzone.some.domain
 WARNING - Rejected to move RR subzone CNAME web in zone subzone.some.domain view default, deleted RR from zone some.domain view default
 INFO - Moving RR my.subzone A 1.2.3.4 in zone subzone.some.domain view default from zone some.domain view default
-WARNING - Rejected to move RR subzone CNAME web2 in zone subzone.some.domain view us, deleted RR from zone some.domain view us
 INFO - Moving RR this.subzone A 2.3.4.5 in zone subzone.some.domain view us from zone some.domain view us
+WARNING - Rejected to move RR subzone CNAME web2 in zone subzone.some.domain view us, deleted RR from zone some.domain view us
 INFO - Moving RR c.this.subzone CNAME web3 in zone subzone.some.domain view us from zone some.domain view us
 
 $ ndcli list zone some.domain views
@@ -61,8 +61,8 @@ my     subzone.some.domain       A     1.2.3.4
 
 $ ndcli modify zone some.domain delete view us
 $ ndcli modify zone subzone.some.domain delete view us --cleanup
-INFO - Deleting RR this A 2.3.4.5 from zone subzone.some.domain view us
 INFO - Deleting RR c.this CNAME web3.some.domain. from zone subzone.some.domain view us
+INFO - Deleting RR this A 2.3.4.5 from zone subzone.some.domain view us
 INFO - Freeing IP 2.3.4.5 from layer3domain default
 WARNING - Parent zone some.domain has no view named us, cannot clean up NS Records
 $ ndcli delete zone subzone.some.domain --cleanup

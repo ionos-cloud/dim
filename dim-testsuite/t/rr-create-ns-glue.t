@@ -31,11 +31,11 @@ $ ndcli modify zone example.com create view internal profile internal
 
 $ ndcli modify zone example.com rename view default to public
 
-$ ndcli create rr app01.bas.example.com. a 10.46.104.20 view internal 
+$ ndcli create rr app01.bas.example.com. a 10.46.104.20 view internal
 INFO - Marked IP 10.46.104.20 from layer3domain default as static
 INFO - Creating RR app01.bas A 10.46.104.20 in zone example.com view internal
 INFO - Creating RR 20.104 PTR app01.bas.example.com. in zone 46.10.in-addr.arpa
-$ ndcli create rr app02.bas.example.com. a 10.46.104.80 view internal 
+$ ndcli create rr app02.bas.example.com. a 10.46.104.80 view internal
 INFO - Marked IP 10.46.104.80 from layer3domain default as static
 INFO - Creating RR app02.bas A 10.46.104.80 in zone example.com view internal
 INFO - Creating RR 80.104 PTR app02.bas.example.com. in zone 46.10.in-addr.arpa
@@ -52,8 +52,8 @@ $ ndcli create rr 104.46.10.in-addr.arpa. ns app02.bas.example.com.
 WARNING - The name 104.46.10.in-addr.arpa. already existed, creating round robin record
 INFO - Creating RR 104 NS app02.bas.example.com. in zone 46.10.in-addr.arpa
 
-$ ndcli list zone example.com view internal 
-record    zone     ttl   type value
+$ ndcli list zone example.com view internal
+record    zone        ttl   type value
 @         example.com 86400 SOA  ins01.internal.zone. dnsadmin.example.net. 2012121103 14400 3600 605000 86400
 @         example.com       NS   ins01.internal.zone.
 @         example.com       NS   ins02.internal.zone.
@@ -67,9 +67,9 @@ record zone               ttl   type value
 @      46.10.in-addr.arpa 86400 SOA  ins01.internal.zone. dnsadmin.example.net. 2012121103 14400 3600 605000 86400
 @      46.10.in-addr.arpa       NS   ins01.internal.zone.
 @      46.10.in-addr.arpa       NS   ins02.internal.zone.
-20.104 46.10.in-addr.arpa       PTR  app01.bas.example.com.
 104    46.10.in-addr.arpa       NS   app01.bas.example.com.
 104    46.10.in-addr.arpa       NS   app02.bas.example.com.
+20.104 46.10.in-addr.arpa       PTR  app01.bas.example.com.
 80.104 46.10.in-addr.arpa       PTR  app02.bas.example.com.
 $ ndcli modify zone example.com delete view public --cleanup -q
 $ ndcli delete zone example.com --cleanup -q

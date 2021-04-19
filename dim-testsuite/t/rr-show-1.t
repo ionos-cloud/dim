@@ -17,13 +17,13 @@ INFO - Creating RR a A 1.2.3.4 comment a comment in zone a.de
 INFO - Creating RR 4 PTR a.a.de. comment a comment in zone 3.2.1.in-addr.arpa
 
 $ ndcli show rr a.a.de.
+comment:a comment
 created:2012-11-14 11:03:02
 created_by:user
 modified:2012-11-14 11:03:02
 modified_by:user
-comment:a comment
-zone:a.de
 rr:a A 1.2.3.4
+zone:a.de
 
 $ ndcli delete zone a.de -q --cleanup
 $ ndcli delete zone 3.2.1.in-addr.arpa

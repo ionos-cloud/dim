@@ -47,8 +47,8 @@ $ ndcli create rr web.a.de. txt "some txt"
 ERROR - web.a.de. TXT "some txt" cannot be created because a CNAME with the same name exists
 
 $ ndcli delete zone a.de --cleanup
-INFO - Deleting RR www A 1.0.0.1 from zone a.de
-INFO - Freeing IP 2001:db8::1 from layer3domain default
 INFO - Deleting RR w6 AAAA 2001:db8::1 from zone a.de
+INFO - Freeing IP 2001:db8::1 from layer3domain default
 INFO - Deleting RR web 600 CNAME www from zone a.de
+INFO - Deleting RR www A 1.0.0.1 from zone a.de
 INFO - Freeing IP 1.0.0.1 from layer3domain default

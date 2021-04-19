@@ -50,9 +50,9 @@ record       zone ttl   type value
 @            a.de 86400 SOA  localhost. hostmaster.a.de. 2012102603 14400 3600 605000 86400
 @            a.de       RP   dnsadmin.example.com. dim.system.
 domainsurfer a.de       A    10.1.64.102
-itodsi-dns   a.de       TXT  "ITODSI DNS on call system - call -8929 for for assistance."
 domainsurfer a.de       RP   john\.doe.example.com. itodsi-dns.a.de.
 foo          a.de       TXT  "useless information"
+itodsi-dns   a.de       TXT  "ITODSI DNS on call system - call -8929 for for assistance."
 
 $ ndcli delete zone a.de -q --cleanup
 
