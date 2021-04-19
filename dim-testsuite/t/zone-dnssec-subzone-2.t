@@ -29,8 +29,8 @@ INFO - Creating RR subzone DS 23900 8 2 710B3390D14A61ED364656133504046486A895F4
 $ ndcli list zone subzone.a.com keys
 label                                   type tag   algorithm bits created
 subzone.a.com_ksk_20160721_141912022755 KSK  47485 8         2048 2016-07-21 14:19:12
-subzone.a.com_zsk_20160721_141912082687 ZSK  39991 8         1024 2016-07-21 14:19:12
 subzone.a.com_ksk_20160721_141912114236 KSK  23900 8         2048 2016-07-21 14:19:12
+subzone.a.com_zsk_20160721_141912082687 ZSK  39991 8         1024 2016-07-21 14:19:12
 
 # delete old ksk (two spaces after $ to run with bash)
 $  ndcli list zone subzone.a.com keys -H | grep ksk | cut -s -f 1 | head -n1 | xargs ndcli modify zone subzone.a.com dnssec delete key 2> /dev/null
