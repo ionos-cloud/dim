@@ -14,6 +14,6 @@ record zone        ttl   type value
 @      some.domain 1200  MX   10 mail.other.domain.
 www    some.domain       A    192.168.78.2
 $ ndcli delete zone some.domain --cleanup
-INFO - Deleting RR www A 192.168.78.2 from zone some.domain
 INFO - Deleting RR @ 1200 MX 10 mail.other.domain. from zone some.domain
+INFO - Deleting RR www A 192.168.78.2 from zone some.domain
 INFO - Freeing IP 192.168.78.2 from layer3domain default
