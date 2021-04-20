@@ -43,6 +43,10 @@ jobs:
       - run: echo "::set-output name=version::$( git tag | grep dimclient | head -1 | cut -d'-' -f2- )"
         id: dimclient
         shell: bash
+      - run: echo "${_version} - ${_dimclient}"
+        env:
+          _dimclient: ${{ steps.dimclient.outputs.version }}
+          _version: ${{ steps.version.outputs.version }}
 
   centos7:
     runs-on: ubuntu-latest
