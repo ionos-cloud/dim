@@ -40,7 +40,7 @@ jobs:
         with:
           name: ndcli-src-${{ steps.version.outputs.version }}.tar.gz
           path: ndcli-src-${{ steps.version.outputs.version }}.tar.gz
-      - run: echo "::set-output name=version::$( git tag | grep dimclient | head -1 | cut -d'-' -f2- )"
+      - run: echo "::set-output name=version::$( git tag | grep dimclient | sort | tail -1 | cut -d'-' -f2- )"
         id: dimclient
         shell: bash
       - run: echo "${_version} - ${_dimclient}"
