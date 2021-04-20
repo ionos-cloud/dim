@@ -68,10 +68,13 @@ $ ndcli create rr _ldap._tcp.a.de. srv 10 10 389 6.a.de.
 WARNING - The name _ldap._tcp.a.de. already existed, creating round robin record
 INFO - Creating RR _ldap._tcp SRV 10 10 389 6.a.de. in zone a.de
 $ ndcli create rr w4.a.de. from apool
+INFO - Marked IP 1.2.3.1 from layer3domain default as static
+INFO - Creating RR w4 A 1.2.3.1 in zone a.de
+INFO - Creating RR 1 PTR w4.a.de. in zone 3.2.1.in-addr.arpa
 created:2012-12-04 16:22:55
 gateway:1.2.3.1
-layer3domain:default
 ip:1.2.3.1
+layer3domain:default
 mask:255.255.255.0
 modified:2012-12-04 16:22:55
 modified_by:user
@@ -80,9 +83,6 @@ ptr_target:w4.a.de.
 reverse_zone:3.2.1.in-addr.arpa
 status:Static
 subnet:1.2.3.0/24
-INFO - Marked IP 1.2.3.1 from layer3domain default as static
-INFO - Creating RR w4 A 1.2.3.1 in zone a.de
-INFO - Creating RR 1 PTR w4.a.de. in zone 3.2.1.in-addr.arpa
 $ ndcli create rr w7.a.de. from apool_v6 -q
 created:2012-12-04 16:24:39
 ip:2001:db8:dead:fe::1:0
@@ -96,9 +96,12 @@ reverse_zone:e.f.0.0.d.a.e.d.8.b.d.0.1.0.0.2.ip6.arpa
 status:Static
 subnet:2001:db8:dead:fe::/64
 $ ndcli create rr w6.a.de. from apool_v6
+INFO - Marked IP 2001:db8:dead:fe::1:1 from layer3domain default as static
+INFO - Creating RR w6 AAAA 2001:db8:dead:fe::1:1 in zone a.de
+INFO - Creating RR 1.0.0.0.1.0.0.0.0.0.0.0.0.0.0.0 PTR w6.a.de. in zone e.f.0.0.d.a.e.d.8.b.d.0.1.0.0.2.ip6.arpa
 created:2012-12-04 16:14:29
-layer3domain:default
 ip:2001:db8:dead:fe::1:1
+layer3domain:default
 modified:2012-12-04 16:14:29
 modified_by:user
 pool:apool_v6
@@ -107,34 +110,31 @@ ptr_target:w6.a.de.
 reverse_zone:e.f.0.0.d.a.e.d.8.b.d.0.1.0.0.2.ip6.arpa
 status:Static
 subnet:2001:db8:dead:fe::/64
-INFO - Marked IP 2001:db8:dead:fe::1:1 from layer3domain default as static
-INFO - Creating RR w6 AAAA 2001:db8:dead:fe::1:1 in zone a.de
-INFO - Creating RR 1.0.0.0.1.0.0.0.0.0.0.0.0.0.0.0 PTR w6.a.de. in zone e.f.0.0.d.a.e.d.8.b.d.0.1.0.0.2.ip6.arpa
 $ ndcli delete zone a.de --cleanup
 INFO - Deleting RR _ldap._tcp SRV 10 10 389 a.de. from zone a.de
-INFO - Deleting RR 2 PTR a.de. from zone 3.2.1.in-addr.arpa
-INFO - Deleting RR 0.0.0.0.1.0.0.0.0.0.0.0.0.0.0.0 PTR w7.a.de. from zone e.f.0.0.d.a.e.d.8.b.d.0.1.0.0.2.ip6.arpa
-INFO - Deleting RR @ AAAA 2001:db8:dead:fe:389:0:1:100 from zone a.de
-INFO - Freeing IP 1.2.3.2 from layer3domain default
 INFO - Deleting RR srv CNAME a.de. from zone a.de
-INFO - Deleting RR w7 AAAA 2001:db8:dead:fe::1:0 from zone a.de
-INFO - Freeing IP 2001:db8:dead:fe:389:0:1:100 from layer3domain default
-INFO - Deleting RR 0.0.1.0.1.0.0.0.0.0.0.0.9.8.3.0 PTR a.de. from zone e.f.0.0.d.a.e.d.8.b.d.0.1.0.0.2.ip6.arpa
-INFO - Deleting RR 1 PTR w4.a.de. from zone 3.2.1.in-addr.arpa
 INFO - Deleting RR @ A 1.2.3.2 from zone a.de
-INFO - Freeing IP 1.2.3.4 from layer3domain default
-INFO - Deleting RR w6 AAAA 2001:db8:dead:fe::1:1 from zone a.de
+INFO - Deleting RR 2 PTR a.de. from zone 3.2.1.in-addr.arpa
+INFO - Freeing IP 1.2.3.2 from layer3domain default
+INFO - Deleting RR @ AAAA 2001:db8:dead:fe:389:0:1:100 from zone a.de
+INFO - Deleting RR 0.0.1.0.1.0.0.0.0.0.0.0.9.8.3.0 PTR a.de. from zone e.f.0.0.d.a.e.d.8.b.d.0.1.0.0.2.ip6.arpa
+INFO - Freeing IP 2001:db8:dead:fe:389:0:1:100 from layer3domain default
+INFO - Deleting RR _ldap._tcp SRV 10 10 389 4.a.de. from zone a.de
 INFO - Deleting RR 4 A 1.2.3.4 from zone a.de
 INFO - Deleting RR 4 PTR 4.a.de. from zone 3.2.1.in-addr.arpa
-INFO - Freeing IP 2001:db8:dead:fe:389:0:1:200 from layer3domain default
-INFO - Deleting RR 1.0.0.0.1.0.0.0.0.0.0.0.0.0.0.0 PTR w6.a.de. from zone e.f.0.0.d.a.e.d.8.b.d.0.1.0.0.2.ip6.arpa
-INFO - Deleting RR w4 A 1.2.3.1 from zone a.de
-INFO - Freeing IP 1.2.3.1 from layer3domain default
+INFO - Freeing IP 1.2.3.4 from layer3domain default
 INFO - Deleting RR _ldap._tcp SRV 10 10 389 6.a.de. from zone a.de
-INFO - Deleting RR 0.0.2.0.1.0.0.0.0.0.0.0.9.8.3.0 PTR 6.a.de. from zone e.f.0.0.d.a.e.d.8.b.d.0.1.0.0.2.ip6.arpa
-INFO - Freeing IP 2001:db8:dead:fe::1:1 from layer3domain default
-INFO - Deleting RR _ldap._tcp SRV 10 10 389 4.a.de. from zone a.de
 INFO - Deleting RR 6 AAAA 2001:db8:dead:fe:389:0:1:200 from zone a.de
+INFO - Deleting RR 0.0.2.0.1.0.0.0.0.0.0.0.9.8.3.0 PTR 6.a.de. from zone e.f.0.0.d.a.e.d.8.b.d.0.1.0.0.2.ip6.arpa
+INFO - Freeing IP 2001:db8:dead:fe:389:0:1:200 from layer3domain default
+INFO - Deleting RR w4 A 1.2.3.1 from zone a.de
+INFO - Deleting RR 1 PTR w4.a.de. from zone 3.2.1.in-addr.arpa
+INFO - Freeing IP 1.2.3.1 from layer3domain default
+INFO - Deleting RR w6 AAAA 2001:db8:dead:fe::1:1 from zone a.de
+INFO - Deleting RR 1.0.0.0.1.0.0.0.0.0.0.0.0.0.0.0 PTR w6.a.de. from zone e.f.0.0.d.a.e.d.8.b.d.0.1.0.0.2.ip6.arpa
+INFO - Freeing IP 2001:db8:dead:fe::1:1 from layer3domain default
+INFO - Deleting RR w7 AAAA 2001:db8:dead:fe::1:0 from zone a.de
+INFO - Deleting RR 0.0.0.0.1.0.0.0.0.0.0.0.0.0.0.0 PTR w7.a.de. from zone e.f.0.0.d.a.e.d.8.b.d.0.1.0.0.2.ip6.arpa
 INFO - Freeing IP 2001:db8:dead:fe::1:0 from layer3domain default
 $ ndcli delete zone 3.2.1.in-addr.arpa
 $ ndcli delete zone e.f.0.0.d.a.e.d.8.b.d.0.1.0.0.2.ip6.arpa

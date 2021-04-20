@@ -128,7 +128,7 @@ modified_by:admin
 pool:dns-public-v6
 prefixlength:64
 ptr_target:pub-srv.example.net.
-reverse_zone:3.5.0.0.e.f.0.0.8.d.8.0.1.0.0.2.ip6.arpa
+reverse_zone:3.5.0.0.e.f.0.0.8.b.d.0.1.0.0.2.ip6.arpa
 status:Static
 subnet:2001:db8:fe:53::/64
 
@@ -139,7 +139,7 @@ record     zone       ttl   type value
 @          example.net       NS   ns.example.com.
 @          example.net       NS   ns.example.org.
 @          example.net       NS   ns.example.biz.
-gw-v473    example.net       A    217.160.80.1 
+gw-v473    example.net       A    217.160.80.1
 gw-v473-v6 example.net       AAAA 2001:db8:fe:53::1
 pub-srv    example.net       A    217.160.80.2
 pub-srv    example.net       AAAA 2001:db8:fe:53::2
@@ -149,9 +149,9 @@ record     zone       ttl   type value
 @          example.net 86400 SOA  ins01.internal.com. dnsadmin.example.de. 2013082007 14400 3600 605000 86400
 @          example.net       NS   ins01.internal.com.
 @          example.net       NS   ins02.internal.com.
-gw-v563    example.net       A    172.20.36.1
-gw-v473    example.net       A    217.160.80.1 
+gw-v473    example.net       A    217.160.80.1
 gw-v473-v6 example.net       AAAA 2001:db8:fe:53::1
+gw-v563    example.net       A    172.20.36.1
 int-srv    example.net       A    172.20.36.2
 pub-srv    example.net       A    217.160.80.2
 pub-srv    example.net       AAAA 2001:db8:fe:53::2
@@ -163,7 +163,7 @@ $ ndcli delete zone 80.160.217.in-addr.arpa --cleanup -q
 $ ndcli delete zone 81.160.217.in-addr.arpa --cleanup -q
 $ ndcli delete zone 82.160.217.in-addr.arpa --cleanup -q
 $ ndcli delete zone 83.160.217.in-addr.arpa --cleanup -q
-$ ndcli delete zone 3.5.0.0.e.f.0.0.8.d.8.0.1.0.0.2.ip6.arpa --cleanup -q
+$ ndcli delete zone 3.5.0.0.e.f.0.0.8.b.d.0.1.0.0.2.ip6.arpa --cleanup -q
 
 $ ndcli modify zone example.net delete view public --cleanup -q
 $ ndcli delete zone example.net --cleanup -q
