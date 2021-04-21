@@ -2882,6 +2882,7 @@ class RPC(object):
         max_priority = pool.subnets[-1].priority if pool.subnets else 0
         block.pool = pool
         block.priority = max_priority + 1
+        record_history(block, action='set_attr', attrname='pool', newvalue=pool.name)
 
     def _ip_mark(self, ip, attributes, pool=None, layer3domain=None, parse_rr=False, allow_overlap=False):
         if ip is None:
