@@ -963,7 +963,9 @@ class RPC(object):
     @readonly
     def ippool_list(self, pool=None, vlan=None, cidr=None, full=False, include_subnets=True,
                     can_allocate=None, owner=None, favorite_only=False, limit=None, offset=0,
-                    fields=False, attributes=[]):
+                    fields=False, attributes=['name', 'vlan', 'subnets']):
+        if len(attributes) == 0:
+            raise DimError('no attributes selected to return')
         ids = self._ippool_query(pool, vlan, cidr, can_allocate, owner)
         if favorite_only:
             ids = ids.join(FavoritePool).filter(FavoritePool.user_id == self.user.id)
