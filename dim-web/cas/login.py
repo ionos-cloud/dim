@@ -7,7 +7,7 @@ from time import gmtime
 from xmltodict import parse
 
 import requests
-import urllib
+import urllib.parse
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py', silent=True)
@@ -67,13 +67,13 @@ def login():
     first_name = ''
     if 'cas:firstName' in attributes:
         first_name = attributes['cas:firstName'].encode('latin-1')
-    full_name = first_name + " " + last_name
+    full_name = first_name + b" " + last_name
     salt = str(gmtime())
 
     response = current_app.make_response(redirect(app.config['FRONTEND_SERVICE']))
     response.set_cookie(
       key='LOGIN_ARGS',
-      value=urllib.urlencode({
+      value=urllib.parse.urlencode({
         'username': username,
         'tool': app.config['TOOL_NAME'],
         'salt': salt,
