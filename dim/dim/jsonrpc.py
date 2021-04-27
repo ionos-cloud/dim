@@ -70,7 +70,7 @@ def _do_login(authenticated, username, tool):
 
 
 def _compute_sign(username, salt, secret_key):
-    return hashlib.md5(username + salt + secret_key).hexdigest()
+    return hashlib.md5((username + salt + secret_key).encode('utf-8')).hexdigest()
 
 
 def _check_tool_login(username, tool, salt, sign):
