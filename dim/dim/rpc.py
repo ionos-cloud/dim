@@ -1521,7 +1521,7 @@ class RPC(object):
                 qfields.append(and_(0 < self._changeable_views(can_create_rr=True, can_delete_rr=False)).label('can_create_rr'))
                 qfields.append(and_(0 < self._changeable_views(can_create_rr=False, can_delete_rr=True)).label('can_delete_rr'))
         zones = db.session.query(Zone.name.label('name'), Zone.id, Zone.keys.any().label('dnssec').label('dnssec'),
-                                 *qfields).filter(Zone.name.like(pattern)).filter_by(profile=profile)
+                                 *qfields).filter(Zone.name.like(pattern)).filter(Zone.profile==profile)
         if owner is not None:
             zones = zones.join(Group).filter(Zone.owner == get_group(owner))
 
