@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    testCompile 'junit:junit:3.8.1'
+    testImplementation 'junit:junit:3.8.1'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

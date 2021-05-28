@@ -14,9 +14,9 @@ repositories {
 }
 
 dependencies {
-    compile 'commons-cli:commons-cli:1.2'
-    compile 'dim:jdnssec-dnsjava:2.1.7'
-    testCompile 'junit:junit:3.8.1'
+    implementation 'commons-cli:commons-cli:1.2'
+    implementation 'dim:jdnssec-dnsjava:2.1.7'
+    testImplementation 'junit:junit:3.8.1'
 }
 
 sourceSets {

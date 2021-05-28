@@ -275,9 +275,9 @@ public class AddressTest extends TestCase
 	InetAddress out = Address.getByName("128.145.198.231");
 	assertEquals("128.145.198.231", out.getHostAddress());
 
-	out = Address.getByName("google-public-dns-a.google.com");
-	assertEquals("google-public-dns-a.google.com", out.getCanonicalHostName());
-	assertEquals("8.8.8.8", out.getHostAddress());
+	out = Address.getByName("217-160-0-1.elastic-ssl.ui-r.com");
+	assertEquals("217-160-0-1.elastic-ssl.ui-r.com", out.getCanonicalHostName());
+	assertEquals("217.160.0.1", out.getHostAddress());
     }
 
     public void test_getByName_invalid() throws UnknownHostException
@@ -302,9 +302,9 @@ public class AddressTest extends TestCase
 	assertEquals(1, out.length);
 	assertEquals("128.145.198.231", out[0].getHostAddress());
 
-	out = Address.getAllByName("google-public-dns-a.google.com");
-	assertEquals("google-public-dns-a.google.com", out[0].getCanonicalHostName());
-	assertEquals("8.8.8.8", out[0].getHostAddress());
+	out = Address.getAllByName("217-160-0-1.elastic-ssl.ui-r.com");
+	assertEquals("217-160-0-1.elastic-ssl.ui-r.com", out[0].getCanonicalHostName());
+	assertEquals("217.160.0.1", out[0].getHostAddress());
 
 	out = Address.getAllByName("cnn.com");
 	assertTrue(out.length > 1);

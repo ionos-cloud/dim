@@ -1,5 +1,5 @@
 buildscript {
-    repositories { jcenter() }
+    repositories { mavenCentral() }
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
     }
@@ -10,10 +10,11 @@ plugins {
     id 'application'
     id 'maven-publish'
     id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'nebula.ospackage' version '8.5.6'
 }
 
 group = 'dim'
-version = '0.1-SNAPSHOT'
+version = '4.0.0'
 mainClassName = 'dim.PdnsOutput'
 
 repositories {
@@ -22,18 +23,20 @@ repositories {
 }
 
 dependencies {
-    compile 'com.zaxxer:HikariCP:2.4.5'
-    compile 'mysql:mysql-connector-java:5.1.39'
-    compile 'org.jooq:jooq:3.8.2'
+    implementation 'org.jooq:jooq:3.8.2'
+    implementation 'mysql:mysql-connector-java:5.1.39'
+    implementation 'com.zaxxer:HikariCP:2.4.5'
 
-    compile 'dim:jdnssec-tools:0.13'
+    implementation 'commons-cli:commons-cli:1.2'
+    implementation 'dim:jdnssec-tools:0.13'
+    implementation 'dim:jdnssec-dnsjava:2.1.7'
 
-    compile 'org.apache.logging.log4j:log4j-core:2.8'
-    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.8'
-    compile 'org.slf4j:jul-to-slf4j:1.7.21'
+    implementation 'org.apache.logging.log4j:log4j-core:2.8'
+    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.8'
+    implementation 'org.slf4j:jul-to-slf4j:1.7.21'
 
-    compile 'dim:gmp-rsa:0.1'
+    implementation 'dim:gmp-rsa:0.1'
 
-    testCompile 'commons-io:commons-io:2.5'
-    testCompile 'junit:junit:4.12'
+    testImplementation 'commons-io:commons-io:2.5'
+    testImplementation 'junit:junit:4.12'
 }

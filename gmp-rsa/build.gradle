@@ -16,10 +16,10 @@ repositories {
 }
 
 dependencies {
-    compile group: 'net.java.dev.jna', name: 'jna', version: '4.0.0'
-    compile group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.56'
+    implementation group: 'net.java.dev.jna', name: 'jna', version: '4.0.0'
+    implementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.56'
 
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 }
 
 publishing {
