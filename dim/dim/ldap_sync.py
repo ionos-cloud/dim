@@ -15,7 +15,7 @@ class LDAP(object):
     def __init__(self):
         ldap_server = app.config['LDAP_SERVER']
         try:
-            self.conn = ldap.initialize(ldap_server)
+            self.conn = ldap.initialize(ldap_server, bytes_mode=False)
             self.conn.set_option(ldap.OPT_TIMEOUT, app.config['LDAP_OPT_TIMEOUT'])
             self.conn.set_option(ldap.OPT_TIMELIMIT, app.config['LDAP_OPT_TIMELIMIT'])
             self.conn.set_option(ldap.OPT_NETWORK_TIMEOUT, app.config['LDAP_OPT_NETWORK_TIMEOUT'])
@@ -37,7 +37,7 @@ class LDAP(object):
     def users(self, filter):
         '''Return the set of usernames matching the ldap query.'''
         def fix_int(s): return int(s) if s is not None else s
-        return [User(username=u[1]['o'][0],
+        return [User(username=u[1]['o'][0].decode('utf-8'),
                      ldap_cn=u[1]['cn'][0].decode('utf-8'),
                      ldap_uid=fix_int(u[1]['uid'][0]),
                      department_number=fix_int(u[1]['departmentNumber'][0]),
@@ -55,22 +55,28 @@ class LDAP(object):
                     for dept in res]
 
 
-def sync_departments(ldap):
+def sync_departments(ldap, dry_run=False):
     '''Update the department table'''
     db_departments = Department.query.all()
     ldap_departments = dict((dep.department_number, dep) for dep in ldap.departments(None))
     # handle renamed or deleted departments
     for ddep in db_departments:
         ldep = ldap_departments.get(ddep.department_number)
-        if ldep is None:
-            db.session.delete(ddep)
-        else:
+        if ldep:
             if ddep.name != ldep.name:
-                ddep.name = ldep.name
+                logging.info('Renaming department %s to %s' % (ddep.name, ldep.name))
+                if not dry_run:
+                    ddep.name = ldep.name
             del ldap_departments[ddep.department_number]
+        else:
+            logging.info('Deleting department %s' % ddep.name)
+            if not dry_run:
+                db.session.delete(ddep)
     # handle new departments
     for ldep in list(ldap_departments.values()):
-        db.session.add(ldep)
+        logging.info('Creating department %s' % ldep.name)
+        if not dry_run:
+            db.session.add(ldep)
 
 
 def log_stdout(message):
@@ -78,7 +84,7 @@ def log_stdout(message):
     print(message)
 
 
-def sync_users(ldap):
+def sync_users(ldap, dry_run=False):
     '''Update the user table ldap_cn, ldap_uid and department_number fields'''
     db_users = User.query.all()
     ldap_users = dict((u.username, u)
@@ -91,29 +97,38 @@ def sync_users(ldap):
                              (db_user.username,
                               db_user.ldap_cn,
                               ldap_user.ldap_cn))
-                db_user.ldap_cn = ldap_user.ldap_cn
+                if not dry_run:
+                    db_user.ldap_cn = ldap_user.ldap_cn
             if db_user.department_number != ldap_user.department_number:
                 logging.info('User %s moved from department_number %s to %s' %
                              (db_user.username,
                               db_user.department_number,
                               ldap_user.department_number))
-                db_user.department_number = ldap_user.department_number
-            db_user.ldap_uid = ldap_user.ldap_uid
+                if not dry_run:
+                    db_user.department_number = ldap_user.department_number
+            if db_user.ldap_uid != ldap_user.ldap_uid:
+                logging.info('User %s changed uid from %s to %s' %
+                             (db_user.username,
+                              db_user.ldap_uid,
+                              ldap_user.ldap_uid))
+                if not dry_run:
+                    db_user.ldap_uid = ldap_user.ldap_uid
         elif db_user.ldap_uid:
             log_stdout('Deleting user %s' % db_user.username)
-            db.session.delete(db_user)
+            if not dry_run:
+                db.session.delete(db_user)
 
 
 @time_function
 @transaction
-def ldap_sync():
+def ldap_sync(dry_run=False):
     ldap = LDAP()
 
     if sys.stdout.isatty():
         logging.getLogger().addHandler(logging.StreamHandler(sys.stderr))
 
-    sync_departments(ldap)
-    sync_users(ldap)
+    sync_departments(ldap, dry_run)
+    sync_users(ldap, dry_run)
 
     # Synchronize group members
     ldap_users = {}  # map department_number to list of usernames
@@ -135,7 +150,8 @@ def ldap_sync():
                     # DIM-209 append id to department name to generate an unique user group name
                     new_name += '_%s' % dept.department_number
                 logging.info('Renaming group %s to %s' % (group.name, new_name))
-                group.name = new_name
+                if not dry_run:
+                    group.name = new_name
             ldap_users[group.department_number] = \
                 [u.username for u in ldap.users('departmentNumber=%s' % dept.department_number)]
     # Remove all users added by a ldap query that are no longer present in the group
@@ -144,7 +160,8 @@ def ldap_sync():
            membership.user.username not in ldap_users[membership.group.department_number]:
             logging.info('User %s was removed from group %s' %
                          (membership.user.username, membership.group.name))
-            membership.group.remove_user(membership.user)
+            if not dry_run:
+                membership.group.remove_user(membership.user)
     # Add new users to groups
     for group in Group.query.filter(Group.department_number != None).all():  # noqa
         group_users = set([u.username for u in group.users])
@@ -158,11 +175,13 @@ def ldap_sync():
                                 ldap_uid=lu.ldap_uid,
                                 ldap_cn=lu.ldap_cn,
                                 department_number=lu.department_number)
-                    db.session.add(user)
-                    db.session.add(GroupMembership(user=user, group=group, from_ldap=True))
+                    if not dry_run:
+                        db.session.add(user)
+                        db.session.add(GroupMembership(user=user, group=group, from_ldap=True))
                     group_users.add(username)
                     logging.info('User %s was created and added to group %s', username, group.name)
             else:
                 logging.info('User %s was added to group %s', username, group.name)
-                db.session.add(GroupMembership(user=user, group=group, from_ldap=True))
+                if not dry_run:
+                    db.session.add(GroupMembership(user=user, group=group, from_ldap=True))
                 group_users.add(username)
