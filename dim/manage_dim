@@ -53,14 +53,16 @@ def update_validity():
         dim.models.db.session.commit()
 
 
-@manager.command
-def sync_ldap():
-    dim.ldap_sync.ldap_sync()
+@manager.option('-n', '--dry-run', dest='dry_run', action='store_true')
+def ldap_sync(dry_run):
+    '''Update Users, Group, and Departments from LDAP'''
+    dim.ldap_sync.ldap_sync(dry_run=dry_run)
 
 
-@manager.command
-def ldap_sync():
-    dim.ldap_sync.ldap_sync()
+@manager.option('-n', '--dry-run', dest='dry_run', action='store_true')
+def sync_ldap(dry_run):
+    '''Update Users, Group, and Departments from LDAP'''
+    dim.ldap_sync.ldap_sync(dry_run=dry_run)
 
 
 @manager.command
