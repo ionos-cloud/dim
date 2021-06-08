@@ -40,13 +40,13 @@ def generate_RSASHA256_key_pair(bits):
     for field in ['n', 'e', 'd', 'p', 'q', 'u']:
         f = getattr(key, field)
         f = Crypto.Util.number.long_to_bytes(f)
-        keydata[field] = base64.b64encode(f)
+        keydata[field] = base64.b64encode(f).decode('utf-8')
     dmp1 = Crypto.Util.number.long_to_bytes(key.d % (key.p - 1))
-    keydata['dmp1'] = base64.b64encode(dmp1)
+    keydata['dmp1'] = base64.b64encode(dmp1).decode('utf-8')
     dmq1 = Crypto.Util.number.long_to_bytes(key.d % (key.q - 1))
-    keydata['dmq1'] = base64.b64encode(dmq1)
+    keydata['dmq1'] = base64.b64encode(dmq1).decode('utf-8')
     # key.u == inverse(p, q), but rfc3447 needs inverse(q, p)
     u = Crypto.Util.number.long_to_bytes(inverse(key.q, key.p))
-    keydata['u'] = base64.b64encode(u)
+    keydata['u'] = base64.b64encode(u).decode('utf-8')
     privkey = _file_privkey_rsa % keydata
     return (pubkey, privkey)
