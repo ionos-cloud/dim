@@ -160,16 +160,16 @@ def index():
 
 @jsonrpc.route('/jsonrpc', methods=['POST'])
 def jsonrpc_handler():
-    # logging.debug('jsonrpc request: %r', request.data)
+    logging.debug('jsonrpc request: %r', request.data)
+    if 'username' not in session:
+        return reject_request('invalid session')
+
     json_response = dict(jsonrpc='2.0', id=None)
     try:
         json_request = json.loads(request.data)
     except Exception as e:
         return jsonify(error=dict(code=-32700, message='Parse error', data=text_type(e)),
                        **json_response)
-
-    if 'username' not in session:
-        return reject_request(f'invalid session - {json_request.get("method", None)}')
 
     json_response['id'] = json_request.get('id', None)
     rpc = TRPC(username=session['username'], tool=session.get('tool', None), ip=request.remote_addr)
