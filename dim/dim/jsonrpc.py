@@ -70,7 +70,7 @@ def _do_login(authenticated, username, tool):
 
 
 def _compute_sign(username, salt, secret_key):
-    return hashlib.md5((username + salt + secret_key).encode('utf-8')).hexdigest()
+    return hashlib.md5(username.encode('utf-8') + salt.encode('utf-8') + secret_key.encode('utf-8')).hexdigest()
 
 
 def _check_tool_login(username, tool, salt, sign):
@@ -143,7 +143,7 @@ def old_login():
     return _do_login(authenticated, username, tool=tool)
 
 def reject_request(msg):
-    logging.info('Username not present in session: %s. Headers %s', session, repr(request.headers))
+    logging.info('Username not present in session "%s": %s. Headers %s', msg, session, repr(request.headers))
 
     json_response = dict(jsonrpc='2.0', id=None)
     return jsonify(error=dict(code=-32700, message=msg, status_code=403),
@@ -160,8 +160,6 @@ def index():
 
 @jsonrpc.route('/jsonrpc', methods=['POST'])
 def jsonrpc_handler():
-    if 'username' not in session:
-        return reject_request('invalid session')
     # logging.debug('jsonrpc request: %r', request.data)
     json_response = dict(jsonrpc='2.0', id=None)
     try:
@@ -169,6 +167,9 @@ def jsonrpc_handler():
     except Exception as e:
         return jsonify(error=dict(code=-32700, message='Parse error', data=text_type(e)),
                        **json_response)
+
+    if 'username' not in session:
+        return reject_request(f'invalid session - {json_request.get("method", None)}')
 
     json_response['id'] = json_request.get('id', None)
     rpc = TRPC(username=session['username'], tool=session.get('tool', None), ip=request.remote_addr)
