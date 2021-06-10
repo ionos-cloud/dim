@@ -63,6 +63,12 @@ def create_app(db_mode: Optional[str] = None, testing: bool = False):
     from .jsonrpc import jsonrpc
 
     app.register_blueprint(jsonrpc)
+    # add manage_dim commands
+    from .manage_dim import manage_dim
+    app.register_blueprint(manage_dim)
+    # add manage_db commands
+    from .manage_db import manage_db
+    app.register_blueprint(manage_db)
     return app
 
 

@@ -1,11 +1,8 @@
-#!/usr/bin/env python
-from __future__ import print_function
-
 import uuid
 
-from flask import g, current_app
+from flask import g, current_app, Blueprint
 from sqlalchemy import create_engine, text
-from flask_script import Manager
+import click
 
 import dim.models
 from dim import db
@@ -13,18 +10,18 @@ from dim.models import Zone, OutputUpdate, Output, ZoneView
 from dim.models.migrate import migrate
 
 
-manager = Manager(dim.create_app, with_default_commands=False)
-manager.add_option('-t', '--test', dest='db_mode', action='store_const', const='TEST', required=False)
+manage_db = Blueprint('manage_db', __name__, cli_group='db')
+#app.add_option('-t', '--test', dest='db_mode', action='store_const', const='TEST', required=False)
 
 
-@manager.command
+@manage_db.cli.command('init')
 def init():
     '''Creates tables and inserts default data'''
     dim.db.create_all()
     dim.models.insert_default_data()
 
 
-@manager.command
+@manage_db.cli.command('check')
 def check():
     '''Checks if the database is accessible and has the correct schema version'''
     if dim.models.SchemaInfo.current_version() == dim.models.SCHEMA_VERSION:
@@ -33,14 +30,14 @@ def check():
         print("Database accessible but has wrong schema version.")
 
 
-@manager.command
+@manage_db.cli.command('clear')
 def clear():
     '''Drops tables and runs init'''
     dim.db.drop_all()
     init()
 
 
-@manager.command
+@manage_db.cli.command('upgrade')
 def upgrade():
     '''Upgrades the schema'''
     try:
@@ -50,14 +47,16 @@ def upgrade():
         return 1
 
 
-@manager.command
+@manage_db.cli.command('script')
+@click.argument('filename')
 def script(filename):
     '''Runs a SQL script'''
     with open(filename) as f:
         sql = f.read()
     db.engine.execute(sql)
 
-
+@manage_db.cli.command('fix_ipv6')
+@click.argument('s')
 def fix_ipv6(s):
     if s.count('::') == 0:
         return s
@@ -84,7 +83,7 @@ def new_tid():
     g.tid = uuid.uuid4().hex()[16:]
 
 
-@manager.command
+@manage_db.cli.command('migrate_new_pdns')
 def migrate_new_pdns():
     with current_app.test_request_context():
         new_tid()
@@ -109,7 +108,7 @@ def migrate_new_pdns():
         dim.models.db.session.commit()
 
 
-@manager.command
+@manage_db.cli.command('migrate_pdns_databases')
 def migrate_pdns_databases():
     '''Adds the records.rev_name column to each pdns output database'''
     with current_app.test_request_context():
@@ -124,7 +123,3 @@ def migrate_pdns_databases():
                     print('Output %s migrated successfully' % output.name)
                 else:
                     print('Output %s has no records.rev_name column' % output.name)
-
-
-if __name__ == '__main__':
-    manager.run()

@@ -1,12 +1,8 @@
-#!/usr/bin/env python
-from __future__ import print_function
-
 import datetime
 import uuid
 
-import sqlalchemy
-from flask import current_app, g
-from flask_script import Manager, Shell
+from flask import current_app, g, Blueprint
+import click
 
 import dim.autodns3
 import dim.commands
@@ -15,17 +11,19 @@ import dim.ldap_sync
 import dim.models
 
 
-manager = Manager(dim.create_app)
-manager.add_option('-t', '--test', dest='db_mode', action='store_const', const='TEST', required=False)
+manage_dim = Blueprint('manage_dim', __name__, cli_group=None)
+#manage_dim.add_option('-t', '--test', dest='db_mode', action='store_const', const='TEST', required=False)
 
 
-@manager.command
+@manage_dim.cli.command('rebuild_tree')
 def rebuild_tree():
     '''Rebuilds the IP tree parents'''
     dim.commands.rebuild_tree()
 
 
-@manager.command
+@manage_dim.cli.command('set_user')
+@click.option('-u', '--username')
+@click.option('-t', '--type')
 def set_user(username, type):
     '''Sets the user type (Admin or User)'''
     try:
@@ -34,7 +32,7 @@ def set_user(username, type):
         print(str(e))
 
 
-@manager.command
+@manage_dim.cli.command('')
 def update_validity():
     '''Check for signed zones with less than half of the validity window left and increase the validity period'''
     with current_app.test_request_context():
@@ -53,34 +51,22 @@ def update_validity():
         dim.models.db.session.commit()
 
 
-@manager.option('-n', '--dry-run', dest='dryrun', action='store_true')
-@manager.option('-f', '--ignore-deletion-threshold', dest='ignore_deletion_threshold', action='store_true')
+@manage_dim.cli.command('ldap_sync')
+@click.option('-n', '--dry-run', '--noop', dest='dryrun',  is_flag=True)
+@click.option('-f', '--ignore-deletion-threshold', dest='ignore_deletion_threshold', action='store_true')
 def ldap_sync(dryrun, ignore_deletion_threshold):
     '''Update Users, Group, and Departments from LDAP'''
     dim.ldap_sync.ldap_sync(dryrun=dryrun, ignore_deletion_threshold=ignore_deletion_threshold)
 
 
-@manager.option('-n', '--dry-run', dest='dryrun', action='store_true')
-@manager.option('-f', '--ignore-deletion-threshold', dest='ignore_deletion_threshold', action='store_true')
+@manage_dim.cli.command('sync_ldap')
+@click.option('-n', '--dry-run', '--noop', dest='dryrun',  is_flag=True)
+@click.option('-f', '--ignore-deletion-threshold', dest='ignore_deletion_threshold', action='store_true')
 def sync_ldap(dryrun, ignore_deletion_threshold):
     '''Update Users, Group, and Departments from LDAP'''
     dim.ldap_sync.ldap_sync(dryrun=dryrun, ignore_deletion_threshold=ignore_deletion_threshold)
 
 
-@manager.command
+@manage_dim.cli.command('autodns3')
 def autodns3():
     dim.autodns3.run()
-
-
-def _make_context():
-    context = dict(sqlalchemy.__dict__)
-    context.update(dim.__dict__)
-    context.update(dim.ipaddr.__dict__)
-    context.update(dim.models.__dict__)
-    return context
-
-
-manager.add_command("shell", Shell(make_context=_make_context))
-
-if __name__ == '__main__':
-    manager.run()
