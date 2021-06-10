@@ -1,0 +1,359 @@
+4.0.5
+-----
+* remove global option *bigint_as_string* (Flask 2.x)
+
+4.0.x
+---
+* change code to work on Python3
+* update dependencies like Flask, sqlalchemy, mysql driver to latest
+* dim, ndcli - add attribute output to list pools
+
+3.0
+---
+* `GPHDIM-408 <https://hosting-jira.1and1.org/browse/GPHDIM-408>`_ Layer3domains support in DIM
+* `GPHDIM-535 <https://hosting-jira.1and1.org/browse/GPHDIM-535>`_ broken fqdn + zone = broken record
+
+API Changes:
+
+* Most ip-related function calls now also have a layer3domain option.
+
+2.11.0
+------
+* `GPHDIM-513 <https://hosting-jira.1and1.org/browse/GPHDIM-513>`_ SRV target can be a NS record
+* pdns-output bugfixes and optimizations
+* `GPHDOMDEV-1260 <https://hosting-jira.1and1.org/browse/GPHDOMDEV-1260>`_ Fix ldap_sync deleting departments on ldap errors/timeouts
+* `GPHDIM-378 <https://hosting-jira.1and1.org/browse/GPHDIM-378>`_ listing reverse zones fails when a rr name looks like an invalid IP
+* `GPHDIM-261 <https://hosting-jira.1and1.org/browse/GPHDIM-261>`_ ndcli history zone <U> must list grant and revoke rights events
+
+API Changes:
+
+* Timestamps returned by the API can include microseconds.
+* `GPHDIM-432 <https://hosting-jira.1and1.org/browse/GPHDIM-432>`_ Creating subnets without a pool is not allowed
+* Added *zone_create* and *zone_admin* rights. Deleted *manage_forward_zones*, *modify_zone_group* and *manage_zone_views* rights.
+
+Migration procedure:
+
+* Run ``manage_db migrate_pdns_databases`` in order to set for each output ``records.rev_name`` to ``reverse(records.name)``.
+
+2.10.0
+------
+* `GPHDIM-390 <https://hosting-jira.1and1.org/browse/GPHDIM-390>`_ CAA record type
+* `GPHDIM-316 <https://hosting-jira.1and1.org/browse/GPHDIM-316>`_ Fix :func:`ippool_list` ignoring the 0 address
+* `GPHDIM-270 <https://hosting-jira.1and1.org/browse/GPHDIM-270>`_ Fix incorrectly updating ip parent with a different ip version ipblock
+* `GPHDIM-268 <https://hosting-jira.1and1.org/browse/GPHDIM-268>`_ Configurable ldap timeout settings
+* Fix :func:`group_get_access` not listing *modify_zone_group* rights
+
+API Changes:
+
+* `GPHDIM-309 <https://hosting-jira.1and1.org/browse/GPHDIM-309>`_ :func:`zone_create` now accepts options *inherit_rights* and *inherit_zone_groups*
+* `GPHDIM-253 <https://hosting-jira.1and1.org/browse/GPHDIM-253>`_ :func:`ip_list` with option *cidr* lists ips outside subnets as well
+
+2.9.4
+-----
+* `GPHDIM-443 <https://hosting-jira.1and1.org/browse/GPHDIM-443>`_ pdns-output.jar: Fix update_soa overwriting all rrs in the zone
+
+2.9.3
+-----
+* `GPHDIM-440 <https://hosting-jira.1and1.org/browse/GPHDIM-440>`_ Add *alias* option back to :func:`zone_count` and :func:`zone_list` for backwards compatibility
+
+2.9.2
+-----
+* Only dns_admin are able to run registrar actions
+* Cleanup rights when deleting a zone-group
+* `GPHDIM-400 <https://hosting-jira.1and1.org/browse/GPHDIM-400>`_ Fix code trying to select from the zonealias table
+* `GPHDIM-270 <https://hosting-jira.1and1.org/browse/GPHDIM-270>`_ Fix incorrectly updating ip parent with a different ip version ipblock
+
+2.9.1
+-----
+
+* `DIM-346 <https://dev-jira.1and1.org/browse/DIM-346>`_ migration does not work well at live DIM size
+* `DIM-347 <https://dev-jira.1and1.org/browse/DIM-347>`_ Migration merges _sign outputs with their non-sign counterparts
+* ``manage_db upgrade`` now uses the mysql client.
+* `GPHDIM-356 <https://hosting-jira.1and1.org/browse/GPHDIM-356>`_ Update jdnssec-tools version
+* `GPHDIM-357 <https://hosting-jira.1and1.org/browse/GPHDIM-357>`_ pdns-output.jar: configure logging
+* `GPHDIM-354 <https://hosting-jira.1and1.org/browse/GPHDIM-354>`_ Retry transactions if they fail with deadlock-related mysql errors
+* `GPHDIM-364 <https://hosting-jira.1and1.org/browse/GPHDIM-364>`_ Recreate all DNSKEY rrs at resign
+* `GPHDIM-365 <https://hosting-jira.1and1.org/browse/GPHDIM-365>`_ Don't try to sign without zsks
+* `GPHDIM-377 <https://hosting-jira.1and1.org/browse/GPHDIM-377>`_ Fix update_validity
+* `GPHDIM-375 <https://hosting-jira.1and1.org/browse/GPHDIM-375>`_ Don't hold the lock while generating zone keys
+* `GPHDIM-379 <https://hosting-jira.1and1.org/browse/GPHDIM-379>`_ Parallelize DNSSEC whole zone signing
+* `GPHDIM-387 <https://hosting-jira.1and1.org/browse/GPHDIM-387>`_ Configurable max size of sql queries
+* `GPHDIM-358 <https://hosting-jira.1and1.org/browse/GPHDIM-358>`_ Faster RSA in pdns-output using libgmp
+* pdns-output bugfixes and optimizations
+* :func:`rr_list`: Fixed not returning @ records when using the *limit* option
+
+2.9.0
+-----
+
+* Output plugin ``pdns-sign-agent`` was merged with the reimplemented ``pdns-db`` output plugin.
+* `DIM-200 <https://dev-jira.1and1.org/browse/DIM-200>`_ Framework for uploading KSKs to the autodns3 registrar (see :ref:`autodns3`).
+* `DIM-270 <https://dev-jira.1and1.org/browse/DIM-270>`_ Script for resigning zones (see :ref:`manage_dim update_validity`).
+* `DIM-271 <https://dev-jira.1and1.org/browse/DIM-271>`_ Automatically create DS records in DIM managed parent zones.
+* `DIM-313 <https://dev-jira.1and1.org/browse/DIM-313>`_ Fix limit option in ``ndcli history user``.
+* `DIM-263 <https://dev-jira.1and1.org/browse/DIM-263>`_ DS record type
+* History for DNSSEC events
+* Fixed ``manage_dim rebuild_tree``
+
+API Changes:
+
+* Purged the zone alias feature.
+* New functions :func:`registrar_account_create`, :func:`registrar_account_create`,
+  :func:`registrar_account_get_attrs`, :func:`registrar_account_list`, :func:`registrar_account_list_zones`,
+  :func:`registrar_account_add_zone`, :func:`registrar_account_delete_zone`, :func:`zone_registrar_actions`,
+  :func:`registrar_account_update_zone`, :func:`registrar_account_update_zones`
+
+
+Database schema changed version from 9 to 10. Lossless rollback is not possible because the
+migration scripts delete the zone-alias, softhsm, pdns-sign and pdns-slave related information from the
+database.
+
+Migration procedure:
+
+1. Run the usual ``manage_db upgrade`` to update the database schema. This will convert
+``pdns-sign-agent`` outputs to ``pdns-db`` by setting ``db_uri`` to the previous
+``pdns_slave_db_uri``.
+
+2. For importing private keys into the dim database a modified version of SoftHSMv2 generates SQL
+statements::
+
+    softhsm2-util --export --slot 0 --pin 1234 > private_keys.sql
+
+3. To complete the data migration:
+
+- Zone aliases must be deleted and re-created as zones.
+- The new signing algorithm doesn't use NSEC3 opt-out so all zones must have the NSEC3 opt-out bit set to 0.
+- AAAA/TLSA records from all ouputs need to be adjusted to prevent any problems with deleting rrs.
+
+To fix all of these issues and resign the zones run::
+
+    manage_db migrate_new_pdns
+
+2.8.0
+-----
+
+* LDAP-related functionality was rewritten for the new zone and pool ownership feature.
+
+API Changes:
+
+* :func:`group_create` now accepts *department_number* instead of the *ldap_base* and
+  *ldap_filter* options
+* :func:`group_get_attrs` now returns *department_number* instead of *ldap_base* and *ldap_filter*
+* :func:`group_get_users` now returns *ldap_cn*, *ldap_uid* and *department_number* if
+  *include_ldap* is true
+
+* :func:`zone_create`, :func:`ippool_create`, :func:`ippool_list` and :func:`zone_list` now accept
+  *owner*
+* :func:`zone_get_attrs` and :func:`ippool_get_attrs` now also return *owner* and
+  *department_number* if available
+
+* New functions :func:`group_set_department_number`, :func:`department_list`,
+  :func:`department_number`, :func:`user_get_attrs`, :func:`zone_set_owner`, :func:`ippool_set_owner`
+
+Configuration changes:
+
+* New options: *LDAP_USER_BASE*, *LDAP_DEPARTMENT_BASE*
+* Removed options: *LDAP_SYNC_BASE*, *LDAP_SYNC_FILTER*
+
+Database schema changed version from 8 to 9.
+
+
+2.7.0
+-----
+
+* `DIM-224 <https://dev-jira.1and1.org/browse/DIM-224>`_ - If a user is added to a user-group again a confusing error message is displayed
+* `DIM-226 <https://dev-jira.1and1.org/browse/DIM-226>`_, `DIM-236 <https://dev-jira.1and1.org/browse/DIM-236>`_ - pdns_sign_agent: 'MySQL server has gone away' not handled
+* `DIM-235 <https://dev-jira.1and1.org/browse/DIM-235>`_ - DIM accepts broken content for certain recordtypes
+* `DIM-126 <https://dev-jira.1and1.org/browse/DIM-126>`_ - Permission bug: ndcli modify zone mailcore.server.lan set attrs comment:foo
+* `DIM-195 <https://dev-jira.1and1.org/browse/DIM-195>`_ - a zone-group must not be shared among pdns-sign-agent outputs and pdns-db/bind outputs
+* `DIM-204 <https://dev-jira.1and1.org/browse/DIM-204>`_ - CIDR notation on the comandline should be rounded to the next valid container configured in DIM
+
+2.6.1
+-----
+
+* DNSSEC technical concept in the documentation
+
+
+2.6.0
+-----
+
+* `DIM-100 <https://dev-jira.1and1.org/browse/DIM-100>`_ Numerical sorting for reverse zones in ``ndcli list zone``
+* `DIM-119 <https://dev-jira.1and1.org/browse/DIM-119>`_ New ``Unmanaged`` status for ips which don't have a top level container
+* `DIM-142 <https://dev-jira.1and1.org/browse/DIM-142>`_ Fix auditing information in ``ndcli history group`` and ``ndcli history user``
+* `DIM-173 <https://dev-jira.1and1.org/browse/DIM-173>`_ Dynamic LDAP-based group-names
+* `DIM-203 <https://dev-jira.1and1.org/browse/DIM-203>`_ A subnet must always have a container as a parent
+
+
+2.5.1
+-----
+
+* Fixed ``pdns_sign_agent`` with multiple outputs.
+
+
+2.5.0
+-----
+
+* New output plugin ``pdns-sign-agent`` for DNSSEC
+* PDNS signing agent (``manage_dim pdns_sign_agent``)
+* Softhsm2 agent (``manage_dim softshm_agent``)
+* Script for initiating AXFRs for all zones of a ``pdns-sign-agent`` output (``manage_dim pdns_sign_agent_transfer``)
+* SSHFP record type (`DIM-6 <https://dev-jira.1and1.org/browse/DIM-6>`_)
+* TLSA record type (`DIM-127 <https://dev-jira.1and1.org/browse/DIM-127>`_)
+
+API Changes:
+
+* New functions :func:`zone_list_keys`, :func:`zone_create_key`, :func:`zone_delete_key`
+* :func:`zone_set_attrs` and :func:`zone_get_attrs` have new built-in DNSSEC attributes
+* :func:`output_create` accepts the new plugin type ``pdns-sign-agent``
+* :func:`output_get_attrs` uses a new spelling for the old ``db-uri`` attribute:
+  ``db_uri`` (for consistency with the rest of the attribute names)
+
+2.4.0
+-----
+
+* Fixed duplicate zone output updates when creating subzones (`DIM-93 <https://dev-jira.1and1.org/browse/DIM-93>`_)
+* Added the rights *delete_reverse_zone* and *delete_rr* on all zones for network admins (`DIM-106 <https://dev-jira.1and1.org/browse/DIM-106>`_)
+* Automatic reservation of the first address for IPv6 subnets (`DIM-26 <https://dev-jira.1and1.org/browse/DIM-26>`_)
+* ``ndcli list pool rights`` (`DIM-4 <https://dev-jira.1and1.org/browse/DIM-4>`_)
+* ``ndcli list zone rights`` (`DIM-22 <https://dev-jira.1and1.org/browse/DIM-22>`_)
+* Fixed warn-flag in dim-report script (`DIM-92 <https://dev-jira.1and1.org/browse/DIM-92>`_)
+* Changed the error message for modify rr (`DIM-80 <https://dev-jira.1and1.org/browse/DIM-80>`_)
+* The underscore character is no longer special in wildcards
+
+API Changes:
+
+* Added :func:`ippool_get_access` and :func:`zone_get_access`.
+
+2.3.2
+-----
+* Delete pool display a waring when still contains subnets (`DIM-75 <https://dev-jira.1and1.org/browse/DIM-75>`_)
+* Fix rights and output-queue inheritance feature for new subzone (`DIM-93 <https://dev-jira.1and1.org/browse/DIM-93>`_)
+
+2.3.1
+-----
+* SOA record changes will require dns_admin rights (`DIM-11 <https://dev-jira.1and1.org/browse/DIM-11>`_)
+* :func:`zone_list`: Fix option exclude_reverse
+
+2.3
+---
+* Performance improvement for pdns soa update (`ND-98 <http://issue.tool.1and1.com/browse/ND-98>`_).
+* Fix rr_create(type='PTR', create_linked=False) pointing to a CNAME (`ND-100 <http://issue.tool.1and1.com/browse/ND-100>`_).
+* Don't create IPv6 rev zones smaller than /64 (`ND-96 <http://issue.tool.1and1.com/browse/ND-96>`_).
+* Record tool & ip of requests (`ND-102 <http://issue.tool.1and1.com/browse/ND-102>`_).
+* Added *manage_dim sync_ldap* command (`ND-103 <http://issue.tool.1and1.com/browse/ND-103>`_).
+
+API Changes:
+
+* Deprecated the old login method and added a new one (see :ref:`authentication`).
+* :func:`rr_delete`: added 'ignore' to the set of possible values for *references* option.
+* Changed behavior of :func:`ipblock_remove` (`ND-91 <http://issue.tool.1and1.com/browse/ND-91>`_).
+
+2.2.1
+-----
+* Modifying the ttl of a zoneview gets reflected in pdns (`ND-83 <http://issue.tool.1and1.com/browse/ND-83>`_).
+* Subzones inherit rights/zone-group membership from parents (`ND-84 <http://issue.tool.1and1.com/browse/ND-84>`_).
+* Validate zone alias name (`ND-87 <http://issue.tool.1and1.com/browse/ND-87>`_).
+* Fix *begin* and *end* options for some history api calls.
+* :func:`ippool_add_subnet` succeeds even if some ip reserving fails (`ND-94 <http://issue.tool.1and1.com/browse/ND-94>`_).
+* Fix pdns blocking outputs (`ND-76 <http://issue.tool.1and1.com/browse/ND-76>`_).
+
+2.2
+---
+* Added :func:`rr_set_attrs`, :func:`server_info`.
+* :func:`output_get_attrs` needs the dns_admin right (fixes `ND-71 <http://issue.tool.1and1.com/browse/ND-71>`_).
+* Functions :func:`rr_set_ttl` and :func:`rr_set_comment` now require the delete_rr right.
+* Fixed history functions returning ipv6 and groups results  (`ND-82 <http://issue.tool.1and1.com/browse/ND-82>`_).
+* Fixed :func:`rr_list` not returning correct ptr_target.
+* Fixed rights bug that prevented legit operations (`ND-73 <http://issue.tool.1and1.com/browse/ND-73>`_).
+* Improved history performance (`ND-72 <http://issue.tool.1and1.com/browse/ND-72>`_, `ND-81 <http://issue.tool.1and1.com/browse/ND-81>`_).
+
+2.1.1
+-----
+* Fixed `ND-69 create subzone moves wrong records to subzones <http://issue.tool.1and1.com/browse/ND-69>`_
+* :func:`rr_create_from_pool` accepts the *comment* option (needed for `ND-63 <http://issue.tool.1and1.com/browse/ND-63>`_).
+* Fix displaying IPv6 ips as IPv4. Reject IPv4/IPv6 ips for AAAA/A rrs (fixes `ND-57 <http://issue.tool.1and1.com/browse/ND-57>`_).
+
+2.1
+---
+* If an A/AAAA record targets to space outside the ip pools, the network_admin right is not necessary (fixes `ND-58 <http://issue.tool.1and1.com/browse/ND-58>`_).
+* Fix bugs in :func:`ip_list` and :func:`rr_create_from_pool`.
+* Change ip free behavior: delete all rrs that reference the ip.
+* DIM must receive dns character-strings as input (old behavior was to escapify the strings received).
+* Support for DIM Frontend.
+* Issue error when trying to delete inexistent rr.
+* Improved error message for zone create.
+* Fix unicode rr parameters validation.
+* Comments accept unicode values.
+* Fix rr names in messages.
+* Don't accept rr CERT if the certificate field has spaces.
+* Bugfixes for dns functions.
+
+API Changes:
+
+* Objects returned by :func:`ippool_get_subnets` with *include_usage* option have the *static* property.
+* :func:`ip_list` accepts the *offset* option. Also accepts *pool* as an attribute name for the *attributes* option.
+* :func:`ippool_list` accepts options *limit* and *offset*. Using the *fields* options will add the *can_allocate* property.
+* Added :func:`zone_group_list_outputs`, :func:`ippool_count`.
+* :func:`rr_create_from_pool` accepts the *views* option (fixes `ND-55 <http://issue.tool.1and1.com/browse/ND-55>`_).
+* Many other changes for dns functions (mostly support for DIMFE)
+
+2.0
+---
+
+* DNS functionality.
+
+API Changes:
+
+* :func:`ip_free` and :func:`ipblock_remove` have a new option *include_messages*.
+* :func:`ipblock_get_attrs` accepts :ref:`check-options`
+* The *container* parameter for :func:`container_list` is now an option.
+* New DNS functions.
+
+1.0.6
+-----
+
+* Fixed the ``--warning`` parameter for the pool report.
+
+1.0.5
+-----
+
+* Simpler API error codes.
+* The ipblock system attributes will include `subnet` for IPv6 too.
+* Fixed `ND-35 Moving subnets is not possible if the pools have a different VLAN <http://issue.tool.1and1.com/browse/ND-35>`_
+* Fixed `ND-40 Remove reserved IPs when subnet is removed from pool <http://issue.tool.1and1.com/browse/ND-40>`_
+* Fixed :func:`group_revoke_access` for network_admin.
+* :func:`container_list` no longer returns non-container top level blocks if no parameter is given.
+* :func:`ippool_list` returns the correct vlan for for empty pools.
+* Workaround for a bug in Python 2.6 corrupting messages sent to syslog.
+
+API Changes:
+
+* Added :func:`user_list`.
+* :func:`ippool_list` accepts the *include_subnets* and *can_allocate* options.
+* :func:`ippool_get_subnets` and :func:`ippool_get_delegations` accept the *include_usage* option.
+* Added the global option *bigint_as_string*.
+
+1.0.4
+-----
+
+* Performance improvements, especially for IPv6.
+* Changes in user rights are applied immediately (re-login no longer required).
+* Users with the *network_admin* right can set container attributes (fixes `ND-32 <http://issue.tool.1and1.com/browse/ND-32>`_).
+* Setting the ``ip`` ipblock attribute is no longer allowed (fixes `ND-31 <http://issue.tool.1and1.com/browse/ND-31>`_).
+* Custom attributes starting with - are no longer allowed.
+* Fixed two allocator bugs.
+* Configurable template for pool_report.
+* ``db_upgrade`` and ``db_check`` scripts.
+
+API Changes:
+
+* Added :func:`ipblock_get_delegation` (needed for `ND-28 <http://issue.tool.1and1.com/browse/ND-28>`_).
+* Added the the *attributes* option to :func:`ip_list()`
+  (`ND-26 <http://issue.tool.1and1.com/browse/ND-26>`_).
+* :func:`ipblock_create()` now returns the attributes (needed for `ND-28 <http://issue.tool.1and1.com/browse/ND-28>`_).
+* Added the *disallow_children* and check options to :func:`ipblock_create`
+  (needed for `ND-28 <http://issue.tool.1and1.com/browse/ND-28>`_).
+* The following options must be specified as int values:
+    * *vlan* option for :func:`ippool_create`, :func:`ippool_set_vlan`
+    * *priority* parameter for :func:`subnet_set_priority`
+    * *prefix*, *maxsplit* parameters for :func:`ippool_get_delegation`
+

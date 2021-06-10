@@ -15,9 +15,6 @@ Global Options
 In addition to the options documented separately for each function, all
 functions also accept the following options:
 
-- *bigint_as_string*: encode integers larger than 2^53 or smaller than -2^53 as
-  strings. This is useful if the JSON parser does not support large integers
-  (address counts can be as large as 2^128)
 - *dryrun*: roll back the changes made to the database during this function call
 
 

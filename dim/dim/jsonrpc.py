@@ -185,10 +185,8 @@ def jsonrpc_handler():
     try:
         params = json_request.get('params', [])
         args, kwargs = _expand_jsonrpc_options(method, params)
-        bigint_as_string = kwargs.pop('bigint_as_string', False)
         return json.dumps(dict(result=method(*args, **kwargs), **json_response),
-                          default=default_for_json,
-                          bigint_as_string=bigint_as_string)
+                          default=default_for_json)
     except DimError as e:
         logging.info('DimError: %s', e)
         return jsonify(error=dict(code=e.code, message=text_type(e)), **json_response)
