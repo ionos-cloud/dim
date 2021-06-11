@@ -2409,9 +2409,9 @@ class RPC(object):
 
         if reverse_zone_sorting:
             result = [x for x in rrs if x['type'] == 'SOA']
-            result += sorted([x for x in rrs if x['record'].startswith('_')])
-            result += sorted([x for x in rrs if (x['record'].startswith('@') and x['type'] != 'SOA')])
-            result += sorted([x for x in rrs if x['record'].startswith('*')])
+            result += [x for x in rrs if x['record'].startswith('_')]
+            result += [x for x in rrs if (x['record'].startswith('@') and x['type'] != 'SOA')]
+            result += [x for x in rrs if x['record'].startswith('*')]
 
             def split_by_ip(dict_list):
                 """
@@ -4019,4 +4019,4 @@ def _find_ipblock(ipblock, layer3domain, status=None):
 def fast_count(query):
     '''Run a SELECT COUNT(*) with the same filters as query and return the resulting number'''
     # query.count() would use a subselect which is very slow in MySQL
-    return db.session.execute(query.statement.with_only_columns([func.count()]).order_by(None)).scalar()
+    # return db.session.execute(query.statement.with_only_columns([func.count()]).order_by(None)).scalar()
