@@ -38,7 +38,7 @@ def set_user(username, type):
 def update_validity():
     '''Check for signed zones with less than half of the validity window left and increase the validity period'''
     with current_app.test_request_context():
-        g.tid = uuid.uuid4().hex()[16:]
+        g.tid = uuid.uuid4().hex[16:]
         for zone in dim.models.Zone.query.all():
             try:
                 if (len(zone.keys) > 0 and
