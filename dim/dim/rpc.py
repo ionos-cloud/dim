@@ -4020,3 +4020,5 @@ def fast_count(query):
     '''Run a SELECT COUNT(*) with the same filters as query and return the resulting number'''
     # query.count() would use a subselect which is very slow in MySQL
     # return db.session.execute(query.statement.with_only_columns([func.count()]).order_by(None)).scalar()
+    # FIXME: implement fas again
+    return query.count()
