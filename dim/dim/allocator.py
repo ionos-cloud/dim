@@ -1,4 +1,3 @@
-import logging
 import random
 from collections import namedtuple
 from itertools import islice, groupby
@@ -72,7 +71,7 @@ def allocate(parent_query, version, prefix, maxsplit, strategy, allow_hosts):
             break
         subblocks = 2 ** (maxsplit - splitbits)  # nr of minblocks in a /subprefix block
         for ranges in free:
-            blocks = substract_blocks(ranges, needed / subblocks, subprefix, version, strategy)
+            blocks = substract_blocks(ranges, needed // subblocks, subprefix, version, strategy)
             needed -= subblocks * len(blocks)
             selected.extend(blocks)
             if needed < subblocks:
@@ -191,7 +190,7 @@ def substract_blocks(ranges, maxnr, prefix, version, strategy):
 
     def substract_first():
         ret = []
-        still_needed = int(maxnr)
+        still_needed = maxnr
         for i in range(len(ranges)):
             blocks = list(islice(blocks_in_range(ranges[i], prefix, total_bits, version), still_needed))
             remove_blocks(ranges, i, blocks)
@@ -212,7 +211,7 @@ def substract_blocks(ranges, maxnr, prefix, version, strategy):
         for i in range(len(ranges)):
             range_start, range_end = ranges[i]
             start = align(range_start, numaddrs)
-            count = (range_end - start + 1) / numaddrs
+            count = (range_end - start + 1) // numaddrs
             if count > 0:
                 candidates.append(CandidateRange(start, range_end, count, i))
 
