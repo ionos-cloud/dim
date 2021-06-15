@@ -1,3 +1,22 @@
+4.0.9
+-----
+* restore old behavoir and send http status 403 on reject request
+
+4.0.8
+-----
+* avoid conversion to float
+
+4.0.7
+-----
+* .hex is now an attribute
+* port sort order fixes to rr_list2
+* disable sqlalchemy speedup hack for query.count()
+
+4.0.6
+-----
+* pin Flask and dependencies to specific, working versions
+
+
 4.0.5
 -----
 * remove global option *bigint_as_string* (Flask 2.x)

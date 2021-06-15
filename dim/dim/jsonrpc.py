@@ -147,7 +147,7 @@ def reject_request(msg):
 
     json_response = dict(jsonrpc='2.0', id=None)
     return jsonify(error=dict(code=-32700, message=msg, status_code=403),
-       **json_response)
+       **json_response), 403
 
 @jsonrpc.route('/')
 @jsonrpc.route('/index.html')
