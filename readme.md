@@ -1,6 +1,6 @@
 ## DIM - DNS and IP Management (and also DHCP)
 
-DIM can be used as IP Management for a companies whole IP address space (RFC1918, public IPv4, ULA IPv6 and public IPv6).
+DIM can be used as IP Management for a companies whole IP address space (e.g. RFC1918, public IPv4, ULA IPv6, public IPv6 (GUA), Multicast IPs, ...).
 
 DIM can be used to manage all DNS reverse entries for all IP address space.
 
