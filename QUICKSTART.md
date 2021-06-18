@@ -41,82 +41,84 @@ name = MariaDB
 baseurl = http://yum.mariadb.org/10.5/centos8-amd64
 gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
 gpgcheck=1
+module_hotfixes=1
 EOF
 ```
 
 ### install Software:
 
 ```
-$ sudo dnf install MariaDB-server MariaDB-client
+$ sudo dnf install MariaDB-server
 
 $ sudo systemctl enable mariadb
 $ sudo systemctl start mariadb
 
- $ mysql -u root
- create database dim;
- create database pdns_int;
- create database pdns_int;
- -- create users
- grant all on dim.* to dim_user@localhost identified by 'dim_pass';
- grant insert,update,delete,select on pdns_int.* to dim_pdns_int_user@localhost identified by 'SuperSecret1';
- grant insert,update,delete,select on pdns_pub.* to dim_pdns_pub_user@localhost identified by 'SuperSecret2';
- grant select on pdns_pub.* to pdns_pub_user@localhost identified by 'SuperSecret3';
- grant select on pdns_int.* to pdns_int_user@localhost identified by 'SuperSecret4';
- -- to create the necessary tables for powerdns see appendix.
+$ mysql -u root
+create database dim;
+create database pdns_int;
+create database pdns_pub;
+-- create users
+grant all on dim.* to dim_user@localhost identified by 'dim_pass';
+grant insert,update,delete,select on pdns_int.* to dim_pdns_int_user@localhost identified by 'SuperSecret1';
+grant insert,update,delete,select on pdns_pub.* to dim_pdns_pub_user@localhost identified by 'SuperSecret2';
+grant select on pdns_pub.* to pdns_pub_user@localhost identified by 'SuperSecret3';
+grant select on pdns_int.* to pdns_int_user@localhost identified by 'SuperSecret4';
+```
 
-PowerDNS
-________
+## PowerDNS
 
-Setup additional IPs::
 
- cat <<EOF >cat /etc/sysconfig/network-scripts/ifcfg-lo-pdns-int
- DEVICE=lo
- IPADDR=127.1.0.1
- NETMASK=255.0.0.0
- NETWORK=127.0.0.0
- # If you're having problems with gated making 127.0.0.0/8 a martian,
- # you can change this to something else (255.255.255.255, for example)
- BROADCAST=127.255.255.255
- ONBOOT=yes
- NAME=loopback
- EOF
+Setup additional IPs:
+
+```
+cat <<EOF >cat /etc/sysconfig/network-scripts/ifcfg-lo-pdns-int
+DEVICE=lo
+IPADDR=127.1.0.1
+NETMASK=255.0.0.0
+NETWORK=127.0.0.0
+# If you're having problems with gated making 127.0.0.0/8 a martian,
+# you can change this to something else (255.255.255.255, for example)
+BROADCAST=127.255.255.255
+ONBOOT=yes
+NAME=loopback
+EOF
  
- cat <<EOF >cat /etc/sysconfig/network-scripts/ifcfg-lo-pdns-pub
- DEVICE=lo
- IPADDR=127.2.0.1
- NETMASK=255.0.0.0
- NETWORK=127.0.0.0
- # If you're having problems with gated making 127.0.0.0/8 a martian,
- # you can change this to something else (255.255.255.255, for example)
- BROADCAST=127.255.255.255
- ONBOOT=yes
- NAME=loopback
- EOF
+cat <<EOF >cat /etc/sysconfig/network-scripts/ifcfg-lo-pdns-pub
+DEVICE=lo
+IPADDR=127.2.0.1
+NETMASK=255.0.0.0
+NETWORK=127.0.0.0
+# If you're having problems with gated making 127.0.0.0/8 a martian,
+# you can change this to something else (255.255.255.255, for example)
+BROADCAST=127.255.255.255
+ONBOOT=yes
+NAME=loopback
+EOF
  
- cat <<EOF >cat /etc/sysconfig/network-scripts/ifcfg-lo-pdns-rec-int
- DEVICE=lo
- IPADDR=127.3.0.1
- NETMASK=255.0.0.0
- NETWORK=127.0.0.0
- # If you're having problems with gated making 127.0.0.0/8 a martian,
- # you can change this to something else (255.255.255.255, for example)
- BROADCAST=127.255.255.255
- ONBOOT=yes
- NAME=loopback
- EOF
+cat <<EOF >cat /etc/sysconfig/network-scripts/ifcfg-lo-pdns-rec-int
+DEVICE=lo
+IPADDR=127.3.0.1
+NETMASK=255.0.0.0
+NETWORK=127.0.0.0
+# If you're having problems with gated making 127.0.0.0/8 a martian,
+# you can change this to something else (255.255.255.255, for example)
+BROADCAST=127.255.255.255
+ONBOOT=yes
+NAME=loopback
+EOF
  
- cat <<EOF >cat /etc/sysconfig/network-scripts/ifcfg-lo-bind-int
- DEVICE=lo
- IPADDR=127.4.0.1
- NETMASK=255.0.0.0
- NETWORK=127.0.0.0
- # If you're having problems with gated making 127.0.0.0/8 a martian,
- # you can change this to something else (255.255.255.255, for example)
- BROADCAST=127.255.255.255
- ONBOOT=yes
- NAME=loopback
- EOF
-
+cat <<EOF >cat /etc/sysconfig/network-scripts/ifcfg-lo-bind-int
+DEVICE=lo
+IPADDR=127.4.0.1
+NETMASK=255.0.0.0
+NETWORK=127.0.0.0
+# If you're having problems with gated making 127.0.0.0/8 a martian,
+# you can change this to something else (255.255.255.255, for example)
+BROADCAST=127.255.255.255
+ONBOOT=yes
+NAME=loopback
+EOF
+```
 
 Install repo file and install software::
 
