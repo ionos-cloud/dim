@@ -15,9 +15,10 @@ This is not a firewalling tutorial, so we just disable it.
 Setup additional IPs:
 
 ```
-$ dnf install network-scripts
+# dnf install network-scripts
+# systemctl enable network.service
 
-$ cat <<EOF >/etc/sysconfig/network-scripts/ifcfg-lo-pdns-int
+# cat <<EOF >/etc/sysconfig/network-scripts/ifcfg-lo-pdns-int
 DEVICE=lo
 IPADDR=127.1.0.1
 NETMASK=255.0.0.0
@@ -28,7 +29,7 @@ NAME=loopback1
 NM_CONTROLLED=no
 EOF
  
-$ cat <<EOF >/etc/sysconfig/network-scripts/ifcfg-lo-pdns-pub
+# cat <<EOF >/etc/sysconfig/network-scripts/ifcfg-lo-pdns-pub
 DEVICE=lo
 IPADDR=127.2.0.1
 NETMASK=255.0.0.0
@@ -39,7 +40,7 @@ NAME=loopback2
 NM_CONTROLLED=no
 EOF
  
-$ cat <<EOF >/etc/sysconfig/network-scripts/ifcfg-lo-pdns-rec-int
+# cat <<EOF >/etc/sysconfig/network-scripts/ifcfg-lo-pdns-rec-int
 DEVICE=lo
 IPADDR=127.3.0.1
 NETMASK=255.0.0.0
@@ -50,7 +51,7 @@ NAME=loopback3
 NM_CONTROLLED=no
 EOF
  
-$ cat <<EOF >/etc/sysconfig/network-scripts/ifcfg-lo-bind-int
+# cat <<EOF >/etc/sysconfig/network-scripts/ifcfg-lo-bind-int
 DEVICE=lo
 IPADDR=127.4.0.1
 NETMASK=255.0.0.0
@@ -65,18 +66,18 @@ EOF
 
 # Install EPEL:
 
-`$ sudo dnf install epel-release`
+`# dnf install epel-release`
 
 ### Install necessary tools:
 
-`$ sudo dnf install wget bind-utils`
+`# dnf install wget bind-utils`
 
 # MariaDB
 
 ## Install MariaDB. Setup repository:
 
 ```
-$ sudo cat <<EOF >/etc/yum.repos.d/mariadb.repo
+# cat <<EOF >/etc/yum.repos.d/mariadb.repo
 [mariadb]
 name = MariaDB
 baseurl = http://yum.mariadb.org/10.5/centos8-amd64
@@ -89,10 +90,10 @@ EOF
 ## install Software:
 
 ```
-$ sudo dnf install MariaDB-server
+# dnf install MariaDB-server
 
-$ sudo systemctl enable mariadb
-$ sudo systemctl start mariadb
+# systemctl enable mariadb
+# systemctl start mariadb
 
 $ mysql -u root
 create database dim;
@@ -116,22 +117,22 @@ $ wget -O - https://raw.githubusercontent.com/miesi/dim/master/dim/pdns.sql | my
 
 Install repo file and install software::
 ```
-$ curl -o /etc/yum.repos.d/powerdns-auth-44.repo https://repo.powerdns.com/repo-files/centos-auth-44.repo
-$ dnf install pdns-tools pdns-backend-mysql
+# curl -o /etc/yum.repos.d/powerdns-auth-44.repo https://repo.powerdns.com/repo-files/centos-auth-44.repo
+# dnf install pdns-tools pdns-backend-mysql
 ```
 
 Fix config
 ```
-$ rm -f /etc/pdns/pdns.conf
+# rm -f /etc/pdns/pdns.conf
 ```
 
 Setup two PowerDNS instances:
 
 internal pdns
 ```
-$ mkdir -p /etc/pdns/{int,pub}
+# mkdir -p /etc/pdns/{int,pub}
  
-$ cat <<EOF >/etc/pdns/int/pdns-int.conf
+# cat <<EOF >/etc/pdns/int/pdns-int.conf
 setgid=pdns
 setuid=pdns
 version-string=powerdns
@@ -174,7 +175,7 @@ EOF
 
 public pdns
 ```
-$ cat <<EOF >/etc/pdns/pub/pdns-pub.conf
+# cat <<EOF >/etc/pdns/pub/pdns-pub.conf
 setgid=pdns
 setuid=pdns
 version-string=powerdns
@@ -232,18 +233,18 @@ use systemctl status to verify that startup worked.
 Install pdns-recursor software
 
 ```
-$ curl -o /etc/yum.repos.d/powerdns-rec-45.repo https://repo.powerdns.com/repo-files/centos-rec-45.repo
+# curl -o /etc/yum.repos.d/powerdns-rec-45.repo https://repo.powerdns.com/repo-files/centos-rec-45.repo
 
-$ dnf install pdns-recursor
+# dnf install pdns-recursor
 ```
 remove default config
 ```
-$ rm -f /etc/pdns-recursor/recursor.conf
+# rm -f /etc/pdns-recursor/recursor.conf
 ```
 
 Setup instance
 ```
-$ mkdir -p /etc/pdns-recursor/int
+# mkdir -p /etc/pdns-recursor/int
  
 $ cat <<EOF  >/etc/pdns-recursor/recursor-int.conf
 allow-from=0.0.0.0/0, ::/0
@@ -297,12 +298,12 @@ edns-outgoing-bufsize=1220
 version-string=PowerDNS-Recursor
 EOF
 
-$ cat <<EOF >/etc/pdns-recursor/int/forward.zones
+# cat <<EOF >/etc/pdns-recursor/int/forward.zones
 +example.com=127.1.0.1
 +internal.local=127.1.0.1
 EOF
  
-$ cat <<EOF >/etc/pdns-recursor/int/nta.lua
+# cat <<EOF >/etc/pdns-recursor/int/nta.lua
 addNTA('internal.local')
 addNTA('example.com')
 EOF
@@ -310,8 +311,8 @@ EOF
 
 Enable and start the service, please verify service health using `journalctl`
 ```
-$ systemctl enable pdns-recursor@int
-$ systemctl start pdns-recursor@int
+# systemctl enable pdns-recursor@int
+# systemctl start pdns-recursor@int
 ```
 
 # DIM
@@ -319,17 +320,17 @@ $ systemctl start pdns-recursor@int
 Install rpms of dim, dimclient, ndcli and jdk::
 
 ```
-$ mkdir -p /etc/dim /srv/http/dim.example.com
-$ dnf install https://github.com/1and1/dim/releases/download/dim-4.0.9/dim-4.0.9-1.el8.x86_64.rpm
-$ dnf install https://github.com/1and1/dim/releases/download/dimclient-0.4.3/python3-dimclient-0.4.3-1.el8.x86_64.rpm
-$ dnf install https://github.com/1and1/dim/releases/download/ndcli-4.0.0/python3-ndcli-4.0.0-1.el8.x86_64.rpm
-$ dnf install https://github.com/1and1/dim/releases/download/dim-web-0.1/python3-dim-web-0.1-1.el8.x86_64.rpm
+# mkdir -p /etc/dim /srv/http/dim.example.com
+# dnf install https://github.com/1and1/dim/releases/download/dim-4.0.9/dim-4.0.9-1.el8.x86_64.rpm
+# dnf install https://github.com/1and1/dim/releases/download/dimclient-0.4.3/python3-dimclient-0.4.3-1.el8.x86_64.rpm
+# dnf install https://github.com/1and1/dim/releases/download/ndcli-4.0.0/python3-ndcli-4.0.0-1.el8.x86_64.rpm
+# dnf install https://github.com/1and1/dim/releases/download/dim-web-0.1/python3-dim-web-0.1-1.el8.x86_64.rpm
 ```
 
 pdns-output needs to be build manually at the moment (any volunteers?)
 
 ```
-$ dnf install git java-1.8.0-openjdk-devel
+# dnf install git java-1.8.0-openjdk-devel
 $ git clone https://github.com/1and1/dim
 $ cd dim
 $ cd jdnssec-dnsjava && ../gradlew build -x test && ../gradlew publishToMavenLocal; cd ..
@@ -340,7 +341,7 @@ $ cp pdns-output/build/libs/pdns-output-4.0.0-all.jar /opt/dim
 $ cd ..
 $ rm -rf dim
 
-$ cat <<EOF >/etc/dim/pdns-output.properties
+# cat <<EOF >/etc/dim/pdns-output.properties
 # dim database connection parameters
 db.serverName=127.0.0.1
 db.portNumber=3306
@@ -371,7 +372,7 @@ EOF
 systemd unit file
 
 ```
-cat <<EOF >/etc/systemd/system/pdns-output.service
+# cat <<EOF >/etc/systemd/system/pdns-output.service
 [Unit]
 Description=DIM to PowerDNS DB
 After=network.target mysql.target
@@ -445,12 +446,12 @@ LAYER3DOMAIN_WHITELIST = ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16', '100.
 
 Install apache httpd and mod_wsgi:
 ```
-$ dnf install python3-mod_wsgi mod_ssl
-$ echo "" > /etc/httpd/conf.d/welcome.conf
+# dnf install python3-mod_wsgi mod_ssl
+# echo "" > /etc/httpd/conf.d/welcome.conf
 ```
 setup /opt/dim/dim.wsgi:
 ```
-$ cat <<EOF >/opt/dim/dim.wsgi
+# cat <<EOF >/opt/dim/dim.wsgi
 #managed by puppet
 from dim import create_app
 application = create_app()
@@ -459,7 +460,7 @@ EOF
 
 setup wsgi.conf:
 ```
-$ cat <<EOF >/etc/httpd/conf.d/dim.example.com.conf
+# cat <<EOF >/etc/httpd/conf.d/dim.example.com.conf
 <VirtualHost *:80>
   ServerName dim.example.com
   ServerAlias localhost
@@ -513,70 +514,72 @@ EOF
 
 make sure that ``bash-completion`` is installed (to enable ``ndcli`` completion):
 
-`$ dnf install bash-completion`
+`# dnf install bash-completion`
 
 run ``ndcli show server-info`` to test connection to DIM. Just hit enter if a password is asked. Should output information about python and db used.
 
-DIM output
-__________
+# DIM output
 
-Edit config file::
+config file
+```
+# cat <<EOF >/etc/dim/pdns-output.properties
+# dim database connection parameters
+db.serverName=127.0.0.1
+db.portNumber=3306
+db.databaseName=dim
+db.user=dim_user
+db.password=dim_pass
 
- cat <<EOF >/etc/dim/pdns-output.properties
- # dim database connection parameters
- db.serverName=127.0.0.1
- db.portNumber=3306
- db.databaseName=dim
- db.user=dim_user
- db.password=dim_pass
- 
- # Timeout in seconds for getting the pdns_poller lock which prevents multiple pdns-output instances from running
- lockTimeout=120
- 
- # Delay in seconds used when polling the dim outputupdate table
- pollDelay=1
- 
- # Delay in seconds before retrying a failed update
- retryInterval=60
- 
- # Debug option to print to stdout transaction ids after processing them
- printTxn=false
- 
- # Max size of a sql query in bytes
- # should be less than the configured max_allowed_packet in mysql
- maxQuerySize=4000000
- 
- useNativeCrypto=true
- EOF
+# Timeout in seconds for getting the pdns_poller lock which prevents multiple pdns-output instances from running
+lockTimeout=120
 
-Create Service file::
+# Delay in seconds used when polling the dim outputupdate table
+pollDelay=1
 
- cat <<EOF >/etc/systemd/system/pdns-output.service
- [Unit]
- Description=DIM to PowerDNS DB
- After=network.target mysql.target
+# Delay in seconds before retrying a failed update
+retryInterval=60
+
+# Debug option to print to stdout transaction ids after processing them
+printTxn=false
+
+# Max size of a sql query in bytes
+# should be less than the configured max_allowed_packet in mysql
+maxQuerySize=4000000
+
+useNativeCrypto=true
+EOF
+```
+
+Create systemd unit
+```
+# cat <<EOF >/etc/systemd/system/pdns-output.service
+[Unit]
+Description=DIM to PowerDNS DB
+After=network.target mysql.target
+
+[Service]
+Type=simple
+ExecStart=/bin/java -jar /opt/dim/pdns-output.jar
+Restart=on-failure
+StartLimitInterval=0
+PrivateTmp=true
+PrivateDevices=true
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE CAP_SETGID CAP_SETUID CAP_CHOWN CAP_SYS_CHROOT
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+LimitNOFILE=40000
  
- [Service]
- Type=simple
- ExecStart=/bin/java -jar /opt/dim/pdns-output.jar
- Restart=on-failure
- StartLimitInterval=0
- PrivateTmp=true
- PrivateDevices=true
- CapabilityBoundingSet=CAP_NET_BIND_SERVICE CAP_SETGID CAP_SETUID CAP_CHOWN CAP_SYS_CHROOT
- NoNewPrivileges=true
- ProtectSystem=full
- ProtectHome=true
- RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
- LimitNOFILE=40000
- 
- [Install]
- WantedBy=multi-user.target
- EOF
+[Install]
+WantedBy=multi-user.target
+EOF
+```
 
-Start service::
+Eenable and start service
+```
+# systemctl enable pdns-output
+# systemctl start pdns-output
+```
 
- systemctl enable pdns-output
- systemctl start pdns-output
-
-ndcli Basics
+Now the system is setup completely and you can start exploring the usage of DIM/ndcli.
