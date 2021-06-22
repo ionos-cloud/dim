@@ -562,7 +562,7 @@ After=network.target mysql.target
 
 [Service]
 Type=simple
-ExecStart=/bin/java -jar /opt/dim/pdns-output.jar
+ExecStart=/bin/java -jar /opt/dim/pdns-output-4.0.0-all.jar
 Restart=on-failure
 StartLimitInterval=0
 PrivateTmp=true
