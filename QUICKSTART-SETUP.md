@@ -509,9 +509,11 @@ create a ``.ndclirc`` in your home:
 ```
 cat <<EOF >~/.ndclirc
 server=http://localhost/dim
-username=admin
+username=user
 EOF
 ```
+
+Give the user `user` uberadmin rights `/opt/dim/bin/manage_dim set_user user Admin` and force re login `rm -f ~/.ndcli.cookie`.
 
 make sure that ``bash-completion`` is installed (to enable ``ndcli`` completion)
 
