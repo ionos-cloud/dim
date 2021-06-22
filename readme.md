@@ -11,7 +11,10 @@ DIM simplifies the steps "mark ip as used, create forward record, create reverse
 DIM provides an API to allow products to consume and return single IPv4 addresses or whole /64 or /56 prefixes for IPv6.
 
 # Quickstart
-Please read [Quickstart](QUICKSTART.md).
+Download VM ([Documentation](QUICKSTART-SETUP.md) how the VM was created)
+
+Read [Quickstart](QUICKSTART.md) to see how DIM can be used to document Prefixes and manage DNS Records.
+
 
 # Docker
 not yet available
