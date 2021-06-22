@@ -2,14 +2,14 @@
 
 The following steps assume that you have a minimal CentOS 8 installed.
 
-## Disable SELINUX
+### Disable SELINUX
 
 ```
 $ echo -e "SELINUX=disabled\nSELINUXTYPE=targeted" >/etc/sysconfig/selinux
 $ systemctl stop firewalld
 $ systemctl disable firewalld
 ```
-This is not a firewalling tutorial, so we just disable it.
+This is not a tutorial on Linux Security Technologies, so just disable it.
 
 # Networking
 Setup additional IPs:
@@ -64,17 +64,17 @@ EOF
 ```
 
 
-# Install EPEL:
+# Install EPEL
 
 `# dnf install epel-release`
 
-### Install necessary tools:
+Install necessary tools
 
 `# dnf install wget bind-utils`
 
 # MariaDB
 
-## Install MariaDB. Setup repository:
+### Setup repository
 
 ```
 # cat <<EOF >/etc/yum.repos.d/mariadb.repo
@@ -87,7 +87,7 @@ module_hotfixes=1
 EOF
 ```
 
-## install Software:
+### install Software
 
 ```
 # dnf install MariaDB-server
@@ -107,7 +107,7 @@ grant select on pdns_pub.* to pdns_pub_user@localhost identified by 'SuperSecret
 grant select on pdns_int.* to pdns_int_user@localhost identified by 'SuperSecret4';
 ```
 
-## create tables for pdns:
+### create tables for pdns
 ```
 $ wget -O - https://raw.githubusercontent.com/miesi/dim/master/dim/pdns.sql | mysql -u root pdns_int
 $ wget -O - https://raw.githubusercontent.com/miesi/dim/master/dim/pdns.sql | mysql -u root pdns_pub
@@ -115,7 +115,7 @@ $ wget -O - https://raw.githubusercontent.com/miesi/dim/master/dim/pdns.sql | my
 
 # PowerDNS
 
-Install repo file and install software::
+Install repo file and install software
 ```
 # curl -o /etc/yum.repos.d/powerdns-auth-44.repo https://repo.powerdns.com/repo-files/centos-auth-44.repo
 # dnf install pdns-tools pdns-backend-mysql
@@ -126,7 +126,7 @@ Fix config
 # rm -f /etc/pdns/pdns.conf
 ```
 
-Setup two PowerDNS instances:
+### Setup two PowerDNS instances
 
 internal pdns
 ```
@@ -396,7 +396,7 @@ WantedBy=multi-user.target
 EOF
 ```
 
-modify database and ldap in `/etc/dim/dim.cfg`, set secret key:
+modify database and ldap in `/etc/dim/dim.cfg`, set secret key
 
 ```
 DB_USERNAME = 'dim_user'
@@ -444,12 +444,13 @@ LAYER3DOMAIN_WHITELIST = ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16', '100.
 
 ```
 
-Install apache httpd and mod_wsgi:
+Install apache httpd and mod_wsgi
 ```
 # dnf install python3-mod_wsgi mod_ssl
 # echo "" > /etc/httpd/conf.d/welcome.conf
 ```
-setup /opt/dim/dim.wsgi:
+
+setup /opt/dim/dim.wsgi
 ```
 # cat <<EOF >/opt/dim/dim.wsgi
 #managed by puppet
@@ -458,7 +459,7 @@ application = create_app()
 EOF
 ```
 
-setup wsgi.conf:
+setup wsgi.conf
 ```
 # cat <<EOF >/etc/httpd/conf.d/dim.example.com.conf
 <VirtualHost *:80>
@@ -512,7 +513,7 @@ username=admin
 EOF
 ```
 
-make sure that ``bash-completion`` is installed (to enable ``ndcli`` completion):
+make sure that ``bash-completion`` is installed (to enable ``ndcli`` completion)
 
 `# dnf install bash-completion`
 
