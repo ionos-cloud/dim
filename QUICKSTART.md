@@ -1,127 +1,210 @@
-# Intended Audience
-Experienced Network- and Systemadministrators with knowledge of IP Addresses, DNS Zones, DNS Records,
-software installation using yum and rpm, basic knowledge of relational databases.
-
-DIM was designed in a ~10000 Person hosting company to support 100s of products with IPv4 and IPv6 Addresses
-and help ~400 technical people to store and retrieve accurat technical information. If you are used to the processes
-in a 10 Person company you will probably scratch your head why this is so complex.
-People used to the processes in a 100000 Person company will probably just scartch their head and look for a real Tool... :-)
-
 # Quick Start Guide
 
-In this Guide I will simply skip all theory and all conceptual explanations.
-I will demonstrate a full installation of DIM, MySQL, PowerDNS, PowerDNS recursor and the
-DIM-bind-file-agent on CentOS 8 x86_64. I will do this on a single machine with multiple IP addresses.
+### `ndcli`
 
-In a production environment you should have separated HA MySQL Databases for DIM,
-internal DNS and public DNS. You should have a set of public facing Nameserver, a set of internal
-Nameservers and a set of internal recursors. I also recommend to put the pdns-output process,
-ldap sync, dnssec rekey and autodns3 agent onto a separate machine.
+This name roots back to NetDot CLI. We never managed to change it after the creation of DIM.
 
-Read QUICKSTART-SETUP.md to see how the qcow2 vm was created or just download it here.
+Use `man ndcli` for complete list of commands.
 
-# using DIM
+Use `-h` or <TAB><TAB> to see the valid set of sucommands
 
+Use `-d` to see API calls made.
 
-Use ``man ndcli`` for complete list of commands.
+Use `-H` to get a parsing friendly output.
 
-Use ``-h`` or <TAB><TAB> to see the valid set of sucommands
+To limit memory usage on the server machine many commands are limit the result set. Please use `-L` to override.
 
-Use ``-d`` to see API calls made.
+# Setup templates
 
-Use ``-H`` to get a parsing friendly output.
+### Setup DNS Zone Profiles
 
-To limit memory usage on the server machine many commands are limit the result set. Please use ``-L`` to override.
-
-Setup DNS Zone Profiles
-=======================
-Every DNS Zone you create needs some basic NS and MX records and settings in the SOA adjusted to your needs. To avoid typing this every time you should create zone-profiles.
+Every DNS Zone you create needs some basic NS and MX records and settings in the SOA adjusted to your needs. To avoid typing this every time lets create zone-profiles.
 
 For a small setup which only has internal and public zones, two zone-profiles are recommended.
+	
+create zone-profile public
+```
+ndcli create zone-profile public
+ndcli modify zone-profile public create rr @ NS ns1.example.com.
+ndcli modify zone-profile public create rr @ NS ns2.example.com.
+ndcli modify zone-profile public set ttl 86400
+ndcli modify zone-profile public set primary ns1.example.com.
+ndcli modify zone-profile public set mail dnadmins@example.com
+ndcli modify zone-profile public set minimum 600
+ndcli modify zone-profile public set refresh 3600
+ndcli modify zone-profile public set expire 2592000
+```
+	
+create zone-profile internal
+```
+ndcli create zone-profile internal
+ndcli modify zone-profile internal create rr @ NS ins1.internal.test.
+ndcli modify zone-profile internal create rr @ NS ins2.internal.test.
+ndcli modify zone-profile internal set primary ins1.internal.test.
+ndcli modify zone-profile internal set mail dnsadmins@example.com
+ndcli modify zone-profile internal set minimum 60
+ndcli modify zone-profile internal set ttl 86400
+```
 
-For an enterprise environment we recommend to analyse how many zone-profiles are needed.
+create zones
+```
+ndcli create zone example.com profile public
+ndcli create zone internal.test profile internal
+ndcli create zone 10.in-addr.arpa profile internal
+```
 
-create zone-profile public::
+Map zones to zone-groups to PowerDNS databases.
+```
+ndcli create zone-group internal
+ndcli create zone-group public
 
- ndcli create zone-profile public
- ndcli modify zone-profile public create rr @ NS ns1.company.com.
- ndcli modify zone-profile public create rr @ NS ns2.company.com.
- ndcli modify zone-profile public set ttl 86400
- ndcli modify zone-profile public set primary ns1.company.com.
- ndcli modify zone-profile public set mail dnadmins@company.com
- ndcli modify zone-profile public set minimum 600
- ndcli modify zone-profile public set refresh 3600
- ndcli modify zone-profile public set expire 2592000
+ndcli modify zone-group internal add zone internal\.test
+ndcli modify zone-group internal add zone 10.in-addr.arpa
+ndcli modify zone-group internal add zone example\.com
+ndcli modify zone-group public add zone example\.com 
 
-create zone-profile internal::
+ndcli create output pdns-int plugin pdns-db db-uri mysql://dim_pdns_int_user:SuperSecret1@127.0.0.1:3306/pdns_int
+ndcli create output pdns-pub plugin pdns-db db-uri mysql://dim_pdns_pub_user:SuperSecret2@127.0.0.1:3306/pdns_pub
 
- ndcli create zone-profile internal
- ndcli modify zone-profile internal create rr @ NS ins1.internal.local.
- ndcli modify zone-profile internal create rr @ NS ins2.internal.local.
- ndcli modify zone-profile internal set primary ins1.internal.local.
- ndcli modify zone-profile internal set mail int-dnsadmins@example.com
- ndcli modify zone-profile internal set minimum 600
- ndcli modify zone-profile internal set ttl 86400
+ndcli modify output pdns-int add zone-group internal 
+ndcli modify output pdns-pub add zone-group public
+```
+This looks complicated but allows you to have the same zone in multiple pdns dbs.
+```
+$ dig NS internal.test @127.1.0.1
 
-Setup your IP Space - Containers
-================================
-You manage your IP-Space in DIM with the following objects: ``containers``, ``pools`` and ``subnets``. For a minimal layer 2 Management you can tag your pools with ``vlan`` information.
+; <<>> DiG 9.11.26-RedHat-9.11.26-4.el8_4 <<>> NS internal.test @127.1.0.1
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 3217
+;; flags: qr aa rd; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 1
+;; WARNING: recursion requested but not available
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1220
+;; QUESTION SECTION:
+;internal.test.			IN	NS
+
+;; ANSWER SECTION:
+internal.test.		86400	IN	NS	ins1.internal.test.
+internal.test.		86400	IN	NS	ins2.internal.test.
+
+;; Query time: 2 msec
+;; SERVER: 127.1.0.1#53(127.1.0.1)
+;; WHEN: Tue Jun 22 17:31:44 CEST 2021
+;; MSG SIZE  rcvd: 80
+```
+
+### Setup your IP Space - Containers
+
+You manage your IP-Space in DIM with the following objects: `containers`, `pools` and `subnets`. For a minimal layer 2 Management you can tag your pools with `vlan` information.
 
 For an enterprise environment where you have several v4 /16 and v6 /32 aggregates to manage, you typically add these directly as containers.
 
-All IP objects are uniquely identified by prefix and length. It is not possible to have a /24 container and a /24 subnet of the same prefix. In this case please create two /25.
+All IP objects are uniquely identified by prefix, length and layer3domain. It is not possible to have a /24 container and a /24 subnet of the same prefix. In this case please create two /25 subnets.
 
 In a home user environment I recommend to just add rfc1918 v4 and 2000::/3 v6
-containers::
+containers:
+```
+ndcli create container 10.0.0.0/8 origin:rfc1918 reverse_dns_profile:internal
+ndcli create container 192.168.0.0/16 origin:rfc1918 reverse_dns_profile:internal
+ndcli create container 172.16.0.0/12 origin:rfc1918 reverse_dns_profile:internal
+ndcli create container 100.64.0.0/10 origin:rfc6598 reverse_dns_profile:internal
+ndcli create container 2000::/3 origin:rfc4291 reverse_dns_profile:public
+ndcli create container 2001:db8::/32 origin:rfc3849 "comment:Documentation Prefix"
+ndcli create container fc00::/7 origin:rfc4193 "comment:Unique Local Unicast" reverse_dns_profile:internal
+ndcli create container fe80::/10 origin:rfc4291 "comment:Link-Scoped Unicast"
+ndcli create container ff00::/8 origin:rfc4291 "comment:Multicast"
+ndcli create container 9.0.0.0/8 origin:IBM-DEMO "comment:IBM - DEMO only"
+```
+	
+### Setup your IP Space - IP Pools (v4)
 
- ndcli create container 10.0.0.0/8 origin:rfc1918 reverse_dns_profile:internal
- ndcli create container 192.168.0.0/16 origin:rfc1918 reverse_dns_profile:internal
- ndcli create container 172.16.0.0/12 origin:rfc1918 reverse_dns_profile:internal
- ndcli create container 100.64.0.0/10 origin:rfc6598 reverse_dns_profile:internal
- ndcli create container 2000::/3 origin:rfc4291 reverse_dns_profile:public
- ndcli create container 2001:db8::/32 origin:rfc3849 "comment:Documentation Prefix"
- ndcli create container fc00::/7 origin:rfc4193 "comment:Unique Local Unicast" reverse_dns_profile:internal
- ndcli create container fe80::/10 origin:rfc4291 "comment:Link-Scoped Unicast"
- ndcli create container ff00::/8 origin:rfc4291 "comment:Multicast"
- ndcli create container 9.0.0.0/8 origin:IBM "comment:mostly unused - Demo ONLY" reverse_dns_profile:public
-
-Setup your IP Space - IP Pools
-==============================
-If you already operate a large scale network then you will have a elaborated naming convention for your subnet objects in your routers. I recommend to use the same or a slightly adapted naming convention for DIM pools.
-
+IP Pools help you as an abstraction between prefixes and consumers. The consumers receive the pool name and use the api to allocate and free ip addresses.
+If the pool runs out of free ip addresses, the network team can add another prefix to the pool and the consumers do not need to change anything.
+	
 This documentation composes pool names from the following information
- * location - 2 letter country, 3 letter UN - LOC code, 2 letter street abbreviation
- * short description of use
- * vlan
+- location - 2 letter country, 3 letter UN - LOC code, 2 letter street abbreviation
+- short description of use
+- vlan
+- ip version
+- Scope (live, non-live)
 
-create ip pool::
+create ip pools
+```
+ndcli create container 10.10.0.0/16 "comment:Data Center Networks"
+ndcli create container 10.10.0.0/20 "comment:Database Servers Networks"
+ndcli create pool de-fuh-bar-pg-600 vlan 600
+ndcli modify pool de-fuh-bar-pg-600 add subnet 10.10.0.0/28 gw 10.10.0.1
+```
+The reverse zone `0.10.10.in-addr.arpa` was automatically created. It was automatically added to all zone-groups where the next less specific zone resides.
+```
+dig SOA 0.10.10.in-addr.arpa @127.1.0.1
+```
+just works.
+	
+Give the router ip a DNS name `ndcli create rr v600.net.example.com. a 10.10.0.1`.
 
- ndcli create container 10.10.0.0/16 "comment:Data Center Networks"
- ndcli create container 10.10.0.0/20 "comment:Database Servers Networks"
- ndcli create pool de-wzt-bs-dcn-db-600 vlan 600
- ndcli modify pool de-wzt-bs-dcn-db-600 add subnet 10.10.0.0/24 gw 10.10.0.1
- ndcli create pool de-bwi-ur-dcn-db-601 vlan 601 
- ndcli modify pool de-wzt-bs-dcn-db-601 add subnet 10.10.1.0/24 gw 10.10.1.1
- ndcli create container 10.20.0.0/20 "comment:knx gateways"
- ndcli create pool de-wzt-bs-knx-1023 vlan 1023
- ndcli modify pool de-wzt-bs-knx-1023 add subnet 10.20.0.0/28 gw 10.20.0.1
- ndcli create container 10.24.0.0/13 "comment: all WLAN networks"
- ndcli create container 10.30.0.0/15 "comment: all internal WLAN networks"
- ndcli create pool de-wzt-bs-wlan-1023 vlan 1023
- ndcli modify pool de-wzt-bs-wlan-1023 add subnet 10.31.0.0/25 gw 10.31.0.1
- ndcli create container 2001:db8:776c::/48 "comment:all v6 WLAN networks"
- ndcli create container 2001:db8:776c::/49 "comment:internal v6 WLAN networks"
- ndcli create pool de-wzt-bs-wlan-1023_v6 vlan 1023
- ndcli modify pool de-wzt-bs-wlan-1023_v6 add subnet 2001:db8:776c:1023::/64 gw 2001:db8:776c:1023::1
- ndcli create container 10.24.0.0/16 "comment: all guest WLAN networks"
- ndcli create pool de-wzt-bs-guest-wlan-1032 vlan 1032
- ndcli modify pool de-wzt-bs-guest-wlan-1032 add subnet 10.24.12.128/25 gw 10.24.12.129
- ndcli create container 2001:db8:776c:8000::/49 "comment: all guest v6 WLAN networks"
- ndcli create pool de-wzt-bs-guest-wlan-1032_v6 vlan 1032
- ndcli modify pool de-wzt-bs-guest-wlan-1032_v6 add subnet 2001:db8:776c:8032::/64 gw 2001:db8:776c:8032::1
- ndcli create pool de-wzt-bs-web-2001 vlan 2001
- ndcli modify pool de-wzt-bs-web-2001 add subnet 9.2.1.0/25 gw 9.2.1.1
+```
+dig v600.net.example.com @127.1.0.1
+dig -x 10.10.0.1 @127.1.0.1
+```
+just work
 
+### using IP-Pools (v4)
+The ip-pool can now be used like this:
+```
+ndcli create rr db1234.db.internal.test. from de-fuh-bar-pg-600
+INFO - Marked IP 10.10.0.2 from layer3domain default as static
+INFO - Creating RR db1234.db A 10.10.0.2 in zone internal.test
+INFO - Creating RR 2 PTR db1234.db.internal.test. in zone 0.10.10.in-addr.arpa
+created:2021-06-22 17:43:53.546471
+gateway:10.10.0.1
+ip:10.10.0.2
+layer3domain:default
+mask:255.255.255.240
+modified:2021-06-22 17:43:53.546509
+modified_by:user
+pool:de-fuh-bar-pg-600
+ptr_target:db1234.db.internal.test.
+reverse_zone:0.10.10.in-addr.arpa
+status:Static
+subnet:10.10.0.0/28
+```
+The user gets the DNS entries and all information needed for OS installation. And the new name start resolving practically immediately.
+
+### using only IP funtionality of IP-Pools (v4
+
+
+### Setup your IP Space - IP Pools (v6)
+
+### using IP-Pools (v6)
+
+
+ndcli create pool de-bwi-ur-dcn-db-601 vlan 601 
+ndcli modify pool de-wzt-bs-dcn-db-601 add subnet 10.10.1.0/24 gw 10.10.1.1
+	
+ndcli create container 10.20.0.0/20 "comment:knx gateways"
+ndcli create pool de-wzt-bs-knx-1023 vlan 1023
+ndcli modify pool de-wzt-bs-knx-1023 add subnet 10.20.0.0/28 gw 10.20.0.1
+ 
+ndcli create container 10.24.0.0/13 "comment: all WLAN networks"
+ndcli create container 10.30.0.0/15 "comment: all internal WLAN networks"
+ndcli create pool de-wzt-bs-wlan-1023 vlan 1023
+ndcli modify pool de-wzt-bs-wlan-1023 add subnet 10.31.0.0/25 gw 10.31.0.1
+ndcli create container 2001:db8:776c::/48 "comment:all v6 WLAN networks"
+ndcli create container 2001:db8:776c::/49 "comment:internal v6 WLAN networks"
+ndcli create pool de-wzt-bs-wlan-1023_v6 vlan 1023
+ndcli modify pool de-wzt-bs-wlan-1023_v6 add subnet 2001:db8:776c:1023::/64 gw 2001:db8:776c:1023::1
+ndcli create container 10.24.0.0/16 "comment: all guest WLAN networks"
+ndcli create pool de-wzt-bs-guest-wlan-1032 vlan 1032
+ndcli modify pool de-wzt-bs-guest-wlan-1032 add subnet 10.24.12.128/25 gw 10.24.12.129
+ndcli create container 2001:db8:776c:8000::/49 "comment: all guest v6 WLAN networks"
+ndcli create pool de-wzt-bs-guest-wlan-1032_v6 vlan 1032
+ndcli modify pool de-wzt-bs-guest-wlan-1032_v6 add subnet 2001:db8:776c:8032::/64 gw 2001:db8:776c:8032::1
+ndcli create pool de-wzt-bs-web-2001 vlan 2001
+ndcli modify pool de-wzt-bs-web-2001 add subnet 9.2.1.0/25 gw 9.2.1.1
+```
 If ``guest-wlan`` is to small, then you can just add another subnet::
 
  ndcli modify pool de-wzt-bs-wlan-1023 add subnet 10.31.0.128/25 gw 10.31.0.129
@@ -622,7 +705,16 @@ dig knx.example.com @127.3.0.1
 
 
 
-Monitoring Pool usage
-=====================
+# Monitoring Pool usage
 
 
+# Background
+	
+	Back in 2010-2011 we started using [https://github.com/cvicente/Netdot](Netdot) but it
+	was in perl, there was no cli, it was not focused enough on DNS. So <insert name after permit received>
+	rewrote the need core functionallity needed for us "over the weekend" in 2011.
+	
+	DIM was designed in a ~10000 Person hosting company to support 100s of products with IPv4 and IPv6 Addresses
+and help ~400 technical people to store and retrieve accurat technical information. If you are used to the processes
+in a 10 Person company you will probably scratch your head why this is so complex.
+People used to the processes in a 100000 Person company will probably just scartch their head and look for a real Tool... :-)
