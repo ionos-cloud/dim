@@ -70,6 +70,8 @@ ndcli modify output pdns-int add zone-group internal
 ndcli modify output pdns-pub add zone-group public
 ```
 This looks complicated but allows you to have the same zone in multiple pdns dbs.
+
+Verify that DNS resolution is now working
 ```
 $ dig NS internal.test @127.1.0.1
 
