@@ -18,3 +18,11 @@ Read [Quickstart](QUICKSTART.md) to see how DIM can be used to document Prefixes
 
 # Docker
 not yet available
+
+# Future
+There is an effort going on here <insert link> to rewrite the middleware in go. It is planed to be a drop-in replacement.
+Main Goals:
+  - replace MySQL with PostgreSQL
+  - do not use an ORM
+  - remove properties tables, use jsonb field instead
+  - introduce generic log for all actions
