@@ -175,8 +175,8 @@ subnet:10.10.0.0/28
 ```
 The user gets the DNS entries and all information needed for OS installation. And the new name start resolving practically immediately.
 
-### using only IP funtionality of IP-Pools (v4
-
+### using only IP funtionality of IP-Pools (v4)
+For the cases where you need to reserve an IP Address but you do not know the DNS Name you can 
 
 ### Setup your IP Space - IP Pools (v6)
 
