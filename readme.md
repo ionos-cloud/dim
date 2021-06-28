@@ -11,7 +11,7 @@ DIM simplifies the steps "mark ip as used, create forward record, create reverse
 DIM provides an API to allow products to consume and return single IPv4 addresses or whole /64 or /56 prefixes for IPv6.
 
 # Quickstart / Tutorial
-Download VM ([Documentation](QUICKSTART-SETUP.md) how the VM was created). The VM is preconfigured including PowerDNS and PowerDNS recursor so that you
+Download [VM](https://github.com/1and1/dim/releases/download/vm-1.0/dim-4-0-9.qcow2) ([Documentation](QUICKSTART-SETUP.md) how the VM was created). The VM is preconfigured including PowerDNS and PowerDNS recursor so that you
 can immediately check whether your commands had effects.
 
 Read [Tutorial](TUTORIAL.md) to see how DIM can be used to document Prefixes and manage DNS Records.
@@ -26,4 +26,6 @@ Main Goals:
   - replace MySQL with PostgreSQL
   - do not use an ORM
   - remove properties tables, use jsonb field instead
+  - put more logic in the database to avoid transfering large datasets to the application code
   - introduce generic log for all actions
+  - get rid of the global lock for transaction synchronization
