@@ -1,4 +1,4 @@
-# Quick Start Guide
+# Tutorial
 
 ### `ndcli`
 
@@ -151,7 +151,7 @@ Give the router ip a DNS name `ndcli create rr v600.net.example.com. a 10.10.0.1
 dig v600.net.example.com @127.1.0.1
 dig -x 10.10.0.1 @127.1.0.1
 ```
-just work
+alos just work
 
 ### using IP-Pools (v4)
 The ip-pool can now be used like this:
@@ -175,13 +175,197 @@ subnet:10.10.0.0/28
 ```
 The user gets the DNS entries and all information needed for OS installation. And the new name start resolving practically immediately.
 
-### using only IP funtionality of IP-Pools (v4)
-For the cases where you need to reserve an IP Address but you do not know the DNS Name you can 
+### using only IP functionality of IP-Pools (v4)
+For the cases where you need to reserve an IP Address but you do not know the DNS Name you can allocate/free IPs like this
+```
+ndcli modify pool de-fuh-bar-pg-600 get ip comment:"this is a test for the Tutorial" ticket:your-ticket-id whatever:"you want"
+comment:this is a test for the Tutorial
+created:2021-06-28 12:23:15.761298
+gateway:10.10.0.1
+ip:10.10.0.3
+layer3domain:default
+mask:255.255.255.240
+modified:2021-06-28 12:23:15.806782
+modified_by:user
+pool:de-fuh-bar-pg-600
+reverse_zone:0.10.10.in-addr.arpa
+status:Static
+subnet:10.10.0.0/28
+ticket:your-ticket-id
+whatever:you want
+```
+DIM allows free form porperties on pools and ips.
+
+Freeing an IP works like this:
+```
+ndcli modify pool de-fuh-bar-pg-600 free ip 10.10.0.3
+```
+If the ip is used in a DNS entry, the DNS entry is also deleted. Use `-n` for a dryrun.
 
 ### Setup your IP Space - IP Pools (v6)
+The  demo VM already has `2001:db8::/32` configured. Use `ndcli list containers 2000::/3`to see what is there.
+
+
+### Setup reverse DNS
+```
+ndcli create zone 8.b.d.0.1.0.0.2.in-addr.arpa profile public 
+ndcli modify zone-group internal add zone 8\.b\.d\.0\.1\.0\.0\.2\.in-addr\.arpa 
+ndcli modify zone-group public add zone 8\.b\.d\.0\.1\.0\.0\.2\.in-addr\.arpa 
+```
 
 ### using IP-Pools (v6)
+Setup a large space where prefixes can be allocated to hand out
+```
+ndcli create container 2001:db8:c00::/38
+ndcli create pool de-fuh-bar-room-1_v6
+ndcli modify pool de-fuh-bar-room-1_v6 add subnet 2001:db8:c10::/44
+INFO - Created subnet 2001:db8:c10::/44 in layer3domain default
+INFO - Creating zone 1.c.0.8.b.d.0.1.0.0.2.ip6.arpa with profile public
+```
 
+Now products can allocate for example /64 or /56 like this
+```
+ndcli modify pool de-fuh-bar-room-1_v6 get delegation 64
+created:2021-06-28 17:02:13.079736
+ip:2001:db8:c10:1::/64
+layer3domain:default
+modified:2021-06-28 17:02:13.079760
+modified_by:user
+pool:de-fuh-bar-room-1_v6
+prefixlength:44
+reverse_zone:1.c.0.8.b.d.0.1.0.0.2.ip6.arpa
+status:Delegation
+subnet:2001:db8:c10::/44
+
+ndcli modify pool de-fuh-bar-room-1_v6 get delegation 56
+created:2021-06-28 17:02:34.763005
+ip:2001:db8:c10:100::/56
+layer3domain:default
+modified:2021-06-28 17:02:34.763024
+modified_by:user
+pool:de-fuh-bar-room-1_v6
+prefixlength:44
+reverse_zone:1.c.0.8.b.d.0.1.0.0.2.ip6.arpa
+status:Delegation
+subnet:2001:db8:c10::/44
+```
+	
+Network- and Sysadmkins probaly use DIM for v6 more like this:
+```
+ndcli create pool de-fuh-bar-infra_v6
+
+ndcli modify pool de-fuh-bar-infra_v6 add subnet 2001:db8:c00::/64 gw 2001:db8:c00::1
+INFO - Created subnet 2001:db8:c00::/64 in layer3domain default
+INFO - Creating zone 0.0.0.0.0.0.c.0.8.b.d.0.1.0.0.2.ip6.arpa with profile public
+
+ndcli modify pool de-fuh-bar-infra_v6 mark delegation 2001:db8:c00::/112 -f
+created:2021-06-28 17:10:44.119599
+gateway:2001:db8:c00::1
+ip:2001:db8:c00::/112
+layer3domain:default
+modified:2021-06-28 17:10:44.119623
+modified_by:user
+pool:de-fuh-bar-infra_v6
+prefixlength:64
+reverse_zone:0.0.0.0.0.0.c.0.8.b.d.0.1.0.0.2.ip6.arpa
+status:Delegation
+subnet:2001:db8:c00::/64
+
+ndcli create rr infra.net.example.com. aaaa 2001:db8:c00::1
+INFO - Marked IP 2001:db8:c00::1 from layer3domain default as static
+INFO - Creating RR infra.net AAAA 2001:db8:c00::1 in zone example.com
+INFO - Creating RR 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0 PTR infra.net.example.com. in zone 0.0.0.0.0.0.c.0.8.b.d.0.1.0.0.2.ip6.arpa
+
+ndcli create rr infra-a.net.example.com. aaaa 2001:db8:c00::a
+INFO - Marked IP 2001:db8:c00::a from layer3domain default as static
+INFO - Creating RR infra-a.net AAAA 2001:db8:c00::a in zone example.com
+INFO - Creating RR a.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0 PTR infra-a.net.example.com. in zone 0.0.0.0.0.0.c.0.8.b.d.0.1.0.0.2.ip6.arpa
+
+ndcli create rr infra-b.net.example.com. aaaa 2001:db8:c00::b
+INFO - Marked IP 2001:db8:c00::b from layer3domain default as static
+INFO - Creating RR infra-b.net AAAA 2001:db8:c00::b in zone example.com
+INFO - Creating RR b.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0 PTR infra-b.net.example.com. in zone 0.0.0.0.0.0.c.0.8.b.d.0.1.0.0.2.ip6.arpa
+```
+Now the network guys have their IPs in the first /112. A sysadmin typing
+```
+ndcli create rr coolv6service.internal.test. from de-fuh-bar-infra_v6
+INFO - Marked IP 2001:db8:c00::1:0 from layer3domain default as static
+INFO - Creating RR coolv6service AAAA 2001:db8:c00::1:0 in zone internal.test
+INFO - Creating RR 0.0.0.0.1.0.0.0.0.0.0.0.0.0.0.0 PTR coolv6service.internal.test. in zone 0.0.0.0.0.0.c.0.8.b.d.0.1.0.0.2.ip6.arpa
+created:2021-06-28 17:18:01.548342
+gateway:2001:db8:c00::1
+ip:2001:db8:c00::1:0
+layer3domain:default
+modified:2021-06-28 17:18:01.548376
+modified_by:user
+pool:de-fuh-bar-infra_v6
+prefixlength:64
+ptr_target:coolv6service.internal.test.
+reverse_zone:0.0.0.0.0.0.c.0.8.b.d.0.1.0.0.2.ip6.arpa
+status:Static
+subnet:2001:db8:c00::/64
+```
+
+gets the first free ip.
+
+Because the IPv6 address room is so huge DIM can automaticaly hide ips. This can be enabled by setting the attribute `allocation_strategy:random` This works for single ips and prefixes.
+
+```
+ndcli modify pool de-fuh-bar-infra_v6 set attrs allocation_strategy:random
+ndcli create rr coolv7service.internal.test. from de-fuh-bar-infra_v6
+INFO - Marked IP 2001:db8:c00:0:5367:ce8a:d648:3c01 from layer3domain default as static
+INFO - Creating RR coolv7service AAAA 2001:db8:c00:0:5367:ce8a:d648:3c01 in zone internal.test
+INFO - Creating RR 1.0.c.3.8.4.6.d.a.8.e.c.7.6.3.5 PTR coolv7service.internal.test. in zone 0.0.0.0.0.0.c.0.8.b.d.0.1.0.0.2.ip6.arpa
+created:2021-06-28 17:21:49.298789
+gateway:2001:db8:c00::1
+ip:2001:db8:c00:0:5367:ce8a:d648:3c01
+layer3domain:default
+modified:2021-06-28 17:21:49.298813
+modified_by:user
+pool:de-fuh-bar-infra_v6
+prefixlength:64
+ptr_target:coolv7service.internal.test.
+reverse_zone:0.0.0.0.0.0.c.0.8.b.d.0.1.0.0.2.ip6.arpa
+status:Static
+subnet:2001:db8:c00::/64
+```
+
+# DNS Zone management
+
+### import forward zone
+RRSIG etc are automatically discarded
+```
+dig axfr iks-jena.de @avalon.iks-jena.de. | ndcli import zone iks-jena.de
+ndcli modify zone-group public add zone iks-jena.de
+```
+
+### modify NS and SOA records
+```
+ndcli list rrs iks-jena.de NS
+INFO - Result for list rrs iks-jena.de
+record zone        view    ttl type value
+@      iks-jena.de default     NS   avalon.iks-jena.de.
+@      iks-jena.de default     NS   broceliande.iks-jena.de.
+
+ndcli create rr iks-jena.de. NS ns1.example.com.
+ndcli create rr iks-jena.de. NS ns2.example.com.
+ndcli delete rr iks-jena.de. NS avalon.iks-jena.de.
+ndcli delete rr iks-jena.de. NS broceliande.iks-jena.de.
+
+ndcli modify zone iks-jena\.de set mail dnsadmin@example.com primary ns1.example.com. minimum 600
+```
+
+### import reverse zone
+```
+broken ATM
+```
+	
+	
+	
+	
+	
+	
+	
 
 ndcli create pool de-bwi-ur-dcn-db-601 vlan 601 
 ndcli modify pool de-wzt-bs-dcn-db-601 add subnet 10.10.1.0/24 gw 10.10.1.1
