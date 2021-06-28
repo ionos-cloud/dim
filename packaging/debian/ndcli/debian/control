@@ -5,8 +5,9 @@ Priority: optional
 Build-Depends: dh-python, python3-setuptools, python3-all, python3-dimclient (>= 0.3.0), debhelper (>= 9), python3-dnspython, bash-completion
 Standards-Version: 3.9.6
 
-Package: python3-ndcli
+Package: ndcli
 Architecture: all
 Depends: ${misc:Depends}, ${python3:Depends}
-Description: UNKNOWN
+Provides: python3-dimcli
+Description: DNS and IP management CLI client
 
