@@ -122,15 +122,10 @@ ndcli create container 9.0.0.0/8 origin:IBM-DEMO "comment:IBM - DEMO only"
 	
 ### Setup your IP Space - IP Pools (v4)
 
-IP Pools help you as an abstraction between prefixes and consumers. The consumers receive the pool name and use the api to allocate and free ip addresses.
-If the pool runs out of free ip addresses, the network team can add another prefix to the pool and the consumers do not need to change anything.
-	
-This documentation composes pool names from the following information
-- location - 2 letter country, 3 letter UN - LOC code, 2 letter street abbreviation
-- short description of use
-- vlan
-- ip version
-- Scope (live, non-live)
+IP Pools help you as an abstraction between prefixes and consumers. The consumers receive the pool name and
+use the api to allocate and free ip addresses.
+If the pool runs out of free ip addresses, the network team can add another prefix to the pool and the
+consumers do not need to change anything.
 
 create ip pools
 ```
@@ -151,7 +146,7 @@ Give the router ip a DNS name `ndcli create rr v600.net.example.com. a 10.10.0.1
 dig v600.net.example.com @127.1.0.1
 dig -x 10.10.0.1 @127.1.0.1
 ```
-alos just work
+also just work
 
 ### using IP-Pools (v4)
 The ip-pool can now be used like this:
@@ -306,9 +301,9 @@ status:Static
 subnet:2001:db8:c00::/64
 ```
 
-gets the first free ip.
+gets the first free ip after the initial /112 in the /64.
 
-Because the IPv6 address room is so huge DIM can automaticaly hide ips. This can be enabled by setting the attribute `allocation_strategy:random` This works for single ips and prefixes.
+Because the IPv6 address room is so huge DIM can automaticaly hide ips. This can be enabled by setting the attribute `allocation_strategy:random`. This works for single ips and prefixes.
 
 ```
 ndcli modify pool de-fuh-bar-infra_v6 set attrs allocation_strategy:random
@@ -329,6 +324,36 @@ reverse_zone:0.0.0.0.0.0.c.0.8.b.d.0.1.0.0.2.ip6.arpa
 status:Static
 subnet:2001:db8:c00::/64
 ```
+### Pool life cycle
+To see if pool runs out of space use:
+```
+ndcli list pool de-fuh-bar-pg-600
+prio subnet       gateway   free total
+   1 10.10.0.0/28 10.10.0.1   11    16
+INFO - Total free IPs: 11
+```
+add a subnet
+```
+ndcli modify pool de-fuh-bar-pg-600 add subnet 10.10.4.0/24 gw 10.10.4.1
+INFO - Created subnet 10.10.4.0/24 in layer3domain default
+INFO - Creating zone 4.10.10.in-addr.arpa with profile internal
+INFO - Creating views default for zone 4.10.10.in-addr.arpa
+```
+change subnet priority so that new allocations are done with the /24
+```
+ndcli modify pool de-fuh-bar-pg-600 subnet 10\.10\.4\.0/24 set prio 1
+ndcli list pool de-fuh-bar-pg-600
+prio subnet       gateway   free total
+   2 10.10.0.0/28 10.10.0.1   11    16
+   1 10.10.4.0/24 10.10.4.1  254   256
+INFO - Total free IPs: 265
+```
+alternatively you can directly change the /28 to a /24 like this
+```
+ndcli modify pool de-fuh-bar-pg-600 remove subnet 10.10.0.0/28 -f
+ndcli modify pool de-fuh-bar-pg-600 add subnet 10.10.0.0/24 gw 10.10.0.1
+```
+`--force` without `--cleanup` just removes the subnet definition, all DNS and used IPs stays untouched.
 
 # DNS Zone management
 
@@ -357,7 +382,7 @@ ndcli modify zone iks-jena\.de set mail dnsadmin@example.com primary ns1.example
 
 ### import reverse zone
 ```
-broken ATM
+broken as of 2021-06-30
 ```
 	
 	
