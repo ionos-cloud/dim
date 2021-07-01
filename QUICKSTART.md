@@ -200,15 +200,13 @@ If the ip is used in a DNS entry, the DNS entry is also deleted. Use `-n` for a 
 ### Setup your IP Space - IP Pools (v6)
 The  demo VM already has `2001:db8::/32` configured. Use `ndcli list containers 2000::/3`to see what is there.
 
-
-### Setup reverse DNS
+### using IP-Pools (v6)
 ```
 ndcli create zone 8.b.d.0.1.0.0.2.in-addr.arpa profile public 
 ndcli modify zone-group internal add zone 8\.b\.d\.0\.1\.0\.0\.2\.in-addr\.arpa 
 ndcli modify zone-group public add zone 8\.b\.d\.0\.1\.0\.0\.2\.in-addr\.arpa 
 ```
-
-### using IP-Pools (v6)
+	
 Setup a large space where prefixes can be allocated to hand out
 ```
 ndcli create container 2001:db8:c00::/38
@@ -245,7 +243,7 @@ status:Delegation
 subnet:2001:db8:c10::/44
 ```
 	
-Network- and Sysadmkins probaly use DIM for v6 more like this:
+Network- and Sysadmkins probably use DIM for v6 more like this:
 ```
 ndcli create pool de-fuh-bar-infra_v6
 
@@ -324,6 +322,40 @@ reverse_zone:0.0.0.0.0.0.c.0.8.b.d.0.1.0.0.2.ip6.arpa
 status:Static
 subnet:2001:db8:c00::/64
 ```
+
+### list vlans
+```
+ndcli list vlans
+vlan pools
+     de-fuh-bar-infra_v6 de-fuh-bar-room-1_v6
+ 600 de-fuh-bar-pg-600
+```
+	
+### finding pools
+- list by vlan id
+```
+ndcli list pools 600
+INFO - Result for list pools 600
+name              vlan subnets
+de-fuh-bar-pg-600 600  10.10.4.0/24 10.10.0.0/24
+```
+
+- list by pool name pattern
+```
+ndcli list pools \*pg\*
+INFO - Result for list pools *pg*
+name              vlan subnets
+de-fuh-bar-pg-600 600  10.10.4.0/24 10.10.0.0/24
+```
+
+- list pools having at least one subnet from a prefix
+```
+ndcli list pools 10.10.0.0/23
+INFO - Result for list pools 10.10.0.0/23
+name              vlan subnets
+de-fuh-bar-pg-600 600  10.10.4.0/24 10.10.0.0/24
+```
+	
 ### Pool life cycle
 To see if pool runs out of space use:
 ```
@@ -384,236 +416,90 @@ ndcli modify zone iks-jena\.de set mail dnsadmin@example.com primary ns1.example
 ```
 broken as of 2021-06-30
 ```
-	
-	
-	
-	
-	
-	
-	
 
-ndcli create pool de-bwi-ur-dcn-db-601 vlan 601 
-ndcli modify pool de-wzt-bs-dcn-db-601 add subnet 10.10.1.0/24 gw 10.10.1.1
-	
-ndcli create container 10.20.0.0/20 "comment:knx gateways"
-ndcli create pool de-wzt-bs-knx-1023 vlan 1023
-ndcli modify pool de-wzt-bs-knx-1023 add subnet 10.20.0.0/28 gw 10.20.0.1
- 
-ndcli create container 10.24.0.0/13 "comment: all WLAN networks"
-ndcli create container 10.30.0.0/15 "comment: all internal WLAN networks"
-ndcli create pool de-wzt-bs-wlan-1023 vlan 1023
-ndcli modify pool de-wzt-bs-wlan-1023 add subnet 10.31.0.0/25 gw 10.31.0.1
-ndcli create container 2001:db8:776c::/48 "comment:all v6 WLAN networks"
-ndcli create container 2001:db8:776c::/49 "comment:internal v6 WLAN networks"
-ndcli create pool de-wzt-bs-wlan-1023_v6 vlan 1023
-ndcli modify pool de-wzt-bs-wlan-1023_v6 add subnet 2001:db8:776c:1023::/64 gw 2001:db8:776c:1023::1
-ndcli create container 10.24.0.0/16 "comment: all guest WLAN networks"
-ndcli create pool de-wzt-bs-guest-wlan-1032 vlan 1032
-ndcli modify pool de-wzt-bs-guest-wlan-1032 add subnet 10.24.12.128/25 gw 10.24.12.129
-ndcli create container 2001:db8:776c:8000::/49 "comment: all guest v6 WLAN networks"
-ndcli create pool de-wzt-bs-guest-wlan-1032_v6 vlan 1032
-ndcli modify pool de-wzt-bs-guest-wlan-1032_v6 add subnet 2001:db8:776c:8032::/64 gw 2001:db8:776c:8032::1
-ndcli create pool de-wzt-bs-web-2001 vlan 2001
-ndcli modify pool de-wzt-bs-web-2001 add subnet 9.2.1.0/25 gw 9.2.1.1
+### "Most specific zone"
+
+DIM has the idea to put DNS records in the most specific zones. DIM takes care of automatically rearranging records.
+
+Lets create `net.example.com`
 ```
-If ``guest-wlan`` is to small, then you can just add another subnet::
+ndcli create zone net.example.com profile public
+INFO - Creating zone net.example.com with profile public
+INFO - Creating views default for zone net.example.com
+INFO - Moving RR v600.net A 10.10.0.1 in zone net.example.com from zone example.com
+INFO - Moving RR infra.net AAAA 2001:db8:c00::1 in zone net.example.com from zone example.com
+INFO - Moving RR infra-a.net AAAA 2001:db8:c00::a in zone net.example.com from zone example.com
+INFO - Moving RR infra-b.net AAAA 2001:db8:c00::b in zone net.example.com from zone example.com
+INFO - Creating RR net NS ns1.example.com. in zone example.com
+WARNING - ns1.example.com. does not exist.
+WARNING - The name net.example.com. already existed, creating round robin record
+INFO - Creating RR net NS ns2.example.com. in zone example.com
+WARNING - ns2.example.com. does not exist.
+```
+Records are automatically moved to the new zone and delegating records are added to the parent zone.
 
- ndcli modify pool de-wzt-bs-wlan-1023 add subnet 10.31.0.128/25 gw 10.31.0.129
+More options are available, please see help. The records moved experience a little downtime, please be careful.
 
-(Yes, you need to manually adapt router and dhcp configuration.) (For DHCP a collegaue will release config generator and some tools)
+Delegating records can be modified like this:
+```
+ndcli modify zone example.com create rr net ns some.thing.
+```
 
-Resizing subnets is also supported, described in the power user documentation (tbw).
+# DNS Views
 
-Please do a ``ndcli list containers`` to verify that the structure created is correct.
 
-Setup DNS zones
-===============
+# DNSSec
 
-public zone::
+DIM makes it easy to use DNSSec. Switch on DNSSec for example.com (remember: there is tab completion and -h)
+	
+`ndcli modify zone example\.com dnssec enable 8 ksk 4096 zsk 2048 nsec3 7 salted`
 
- ndcli create zone company.com profile public
+(Sign Zone example.com with algorithm 8 (RSA/SHA-256) 4096 bit key signing key, 2048 bit zone signing key, with NSEC3 7 iterations, salted. Salt is generated automatically.)
 
-create a resource record for the router::
+Check with dig
 
- ndcli create rr gw.company.com. a 9.2.1.1
+`dig +dnssec example.com @127.2.0.1`
 
-you also just use the next free ip from a pool::
-
- ndcli create rr www.company.com. from de-wzt-bs-web-2001
-
-you also just use the next free ip from a vlan (if the vlan number only matches one pool)::
-
- ndcli create rr mail.company.com. from 2001
- ndcli create rr openfire.company.com. from 2001
-
-The public zone should also have a MX and some obvious CNAMES::
-
- ndcli create rr company.com. MX 10 mail.company.com.
- ndcli create rr imap.company.com. cname mail.company.com.
- ndcli create rr smtp.company.com. cname mail.company.com.
- ndcli create rr chat.company.com. cname openfire.company.com.
- ndcli create rr _xmpp-client._tcp.company.com. SRV 5 0 5222 openfire.company.com.
- ndcli create rr _xmpp-server._tcp.company.com. SRV 5 0 5269 openfire.company.com.
-
-internal zone::
-
- ndcli create zone internal.local profile internal
- ndcli create rr ins1.internal.local. a 127.1.0.1
- ndcli create rr ins1.internal.local. a 127.1.0.2
- ndcli create rr knx-gw.internal.local. a 10.20.0.1
- ndcli create rr wlan-gw.internal.local. a 10.31.0.1
- ndcli create rr wlan-gw.internal.local. aaaa 2001:db8:776c:1023::1
- ndcli create rr wlan-guest-gw.internal.local. a 10.24.12.129
- ndcli create rr wlan-guest-gw.internal.local. aaaa 2001:db8:8000:1032::1
- ndcli create rr wlan-guest-gw2.internal.local. a 10.31.0.129
- ndcli create rr vl600.bs.wzt.de.net.internal.local. a 10.10.0.1
- ndcli create rr vl601.ur.bwi.de.net.internal.local. a 10.10.1.1
- 
-zone with a internal and a public view::
-
- ndcli create zone example.com profile public
- ndcli modify zone example.com create view internal profile internal
- ndcli modify zone example.com rename view default to public
- ndcli create rr www.example.com. a 9.2.1.13 view internal public
- ndcli create rr knx.example.com. a 10.20.0.3 view internal
-
-As you can these from the command output dim takes care of marking IPs as used and creating reverse zone entries.
-
-Using ``ndcli list zone example.com view public`` you can see the records which will be published on public name server. Listing zones company.com, internal.local and example.com view internal left as an exercise to the reader. You can use ``ndcli list zones`` to get an overview.
-
-Using sub-zones with DIM
-========================
-
-First create some records to demonstrate how sub-zone work in DIM::
-
- ndcli create rr dbs001.db.internal.local. from 600
- ndcli create rr dbs002.db.internal.local. from 600
-
-DIM has automatically selected the "most specific zone" for you to place the record there.
-
-Now create a sub-zone::
-
- ndcli create zone db.internal.local profile internal
-
-The commands output shows you that the dbs001 and 2 records are automatically moved. If the parent-zone is member of a zone-group and/or has user-groups assigned, these are automatically inherited.
-
-Create another record::
-
- ndcli create rr dbs003.db.internal.local. from 601
-
-record is created in most specific zone.
-
-If you need to get the delegations right between zones where both parent- and sub-zone are managed in DIM, please use the ``ndcli modify zone Z create rr R`` syntax documented in the man page.
-
-sub-zones are mostly used to grant other rights on the sub-zone than on the parent-zone.
-
-Setup zone-groups
-=================
-
-Zone groups are needed simplify the process of assigning the all correct outputs to a zone. I you design your zone-goup setup once carefully, you'll probably have never to touch it again::
-
- ndcli create zone-group internal-global
- ndcli create zone-group public-global
-
- ndcli create zone-group view-internal-global
- ndcli create zone-group view-public-global
-
-assign the zones to zone-groups::
-
- ndcli modify zone-group internal-global add zone internal.local
- ndcli modify zone-group internal-global add zone db.internal.local
- ndcli modify zone-group internal-global add zone 0.20.10.in-addr.arpa
- ndcli modify zone-group internal-global add zone 0.31.10.in-addr.arpa
- ndcli modify zone-group internal-global add zone 12.24.10.in-addr.arpa
- ndcli modify zone-group public-global add zone company.com
- ndcli modify zone-group public-global add zone 1.2.9.in-addr.arpa
- ndcli modify zone-group public-global add zone 2.3.0.8.c.6.7.7.8.b.d.0.1.0.0.2.ip6.arpa
- ndcli modify zone-group public-global add zone 3.2.0.1.c.6.7.7.8.b.d.0.1.0.0.2.ip6.arpa
- ndcli modify zone-group view-internal-global add zone example.com view internal
- ndcli modify zone-group view-public-global add zone example.com view public
-
-Setup outputs
-=============
-
-outputs::
-
- ndcli create output pdns_int plugin pdns-db db-uri mysql://dim_pdns_int_user:SuperSecret1@localhost:3306/pdns_int
- ndcli create output pdns_pub plugin pdns-db db-uri mysql://dim_pdns_pub_user:SuperSecret2@localhost:3306/pdns_pub
-
-assign zone-groups::
-
- ndcli modify output pdns_int add zone-group internal-global
- ndcli modify output pdns_pub add zone-group public-global
- ndcli modify output pdns_int add zone-group view-internal-global
- ndcli modify output pdns_pub add zone-group view-public-global
-
-Use ``ndcli list outputs -t`` to see output plugins transfering records.
-
-Once ``pending_records`` is zero you should try and query 127.1.0.1 and 127.2.0.1 for example.com. ``dig`` should return different values.
-
-Please review the Operations Guide for hints on monitoring the transport of DNS Resource records to PowerDNS.
-
-In a typical setup you will now also need to provide dns recursive service for your internal computers.
-
-Below there are 2 more sections on pdns-recursor and dim-bind-file-agent.
-
-DNSSec
-======
-
-DIM makes it easy to use DNSSec. Switch on DNSSec for example.com (remember: there is tab completion and -h)::
-
- ndcli modify zone example\.com dnssec enable 8 ksk 4096 zsk 2048 nsec3 31 salted
-
-(Sign Zone example.com with algorithm 8 (RSA/SHA-256) 4096 bit key signing key, 2048 bit zone signing key, with NSEC3 31 iterations, salted. Salt is generated automatically.
-
-Check with dig::
-
- dig +dnssec example.com @127.2.0.1
-
-DNSSec parameters can be seen with ``ndcli show zone example.com``. You can modify these parameters with ``ndcli modify zone Z set attr P:V``.
+DNSSec parameters can be seen with `ndcli show zone example.com`. You can modify these parameters with `ndcli modify zone Z set attr P:V`.
 
 To see DS records::
 
- ndcli list zone example.com ds
+`ndcli list zone example.com ds`
 
-Example ZSK key roll::
+### Example ZSK key roll
 
- ndcli modify zone example\.com dnssec new zsk
+`ndcli modify zone example\.com dnssec new zsk`
 
 Wait at minimum 24h.
 
-Identify and delete old ZSK::
-
- ndcli list zone example.com keys
- ndcli modify zone example\.com dnssec delete key example.com_zsk_20180827_132749335059
-
+Identify and delete old ZSK
+```
+ndcli list zone example.com keys
+ndcli modify zone example\.com dnssec delete key example.com_zsk_20180827_132749335059
+```
 KSK roll works identical.
 
-setting/updating DS with AutoDNS3 API at registry
-_________________________________________________
+### setting/updating DS with AutoDNS3 API at registry
 
 If your domain is registered at internetX you can use the AutoDNS3 API adapter to update DS records::
-
- ndcli create registrar-account ad3-example.com plugin autodns3 url http://autodns.com user USER password PASSWORD subaccount SUBACCOUNT
- ndcli modify registrar-account ad3-example\.com add example\.com
- ndcli list zone example\.com registrar-actions
-
-Run ``/opt/dim/bin/manage_dim autodns3`` to process the registrar actions. Creating a systemd-unit file to start this daemon at boot time is left as an exercise to the reader. In ``/etc/dim/dim-autodns3-plugin.cfg`` you can set a http proxy to connect to autodns3 url.
+```
+ndcli create registrar-account ad3-example.com plugin autodns3 url http://autodns.com user USER password PASSWORD subaccount SUBACCOUNT
+ndcli modify registrar-account ad3-example\.com add example\.com
+ndcli list zone example\.com registrar-actions
+```
+Run `/opt/dim/bin/manage_dim autodns3` to process the registrar actions. Creating a systemd-unit file to start this daemon at boot time is left as an exercise to the reader. In `/etc/dim/dim-autodns3-plugin.cfg` you can set a http proxy to connect to autodns3 url.
 
 At the moment the only DS records can be set. If this works for us we plan to implement functions to update delegations, create and delete domains.
 
-SOME BIG FAT WARNINGS:
-______________________
+## SOME BIG FAT WARNINGS:
 
 Read RFC4641 and/or RFC6781.
 
-You must run ``/opt/dim/bin/manage_dim update_validity`` every day to make sure that RRSIGs are kept up to date.
+You must run `/opt/dim/bin/manage_dim update_validity` every day to make sure that RRSIGs are kept up to date.
 
 You must create a cron job that regularly checks your signed zones for validity. Check dnssec_mon script on github.
 
-===============
-User Management
-===============
+# User Management
 
 DIM does not implement password store. If it is configured to use LDAP, it simply checks that the provided username/password can login to the provided LDAP configuration.
 
@@ -621,11 +507,11 @@ DIM does implement a authorization system.
 
 DIM comes with a preconfigured admin user. It should be deleted in a live system.
 
-A user with ``user_type_id`` in ``user`` table set to 1 is a super-admin. No restrictions apply for this user. This value is only read when a user session is created, so if you change a user_type_id, the user needs to login again.
+A user with `user_type_id` in `user` table set to 1 is a super-admin. No restrictions apply for this user. This value is only read when a user session is created, so if you change a user_type_id, the user needs to login again.
 
-Normal users have ``user_type_id`` 3. 2 is unused.
+Normal users have `user_type_id` 3. 2 is unused.
 
-Entries in the user table are created after the first successful login. With ``/opt/dim/bin/manage_dim ldap_sync`` you can sync all users in configured ``LDAP_URL`` into DIM.
+Entries in the user table are created after the first successful login. With `/opt/dim/bin/manage_dim ldap_sync` you can sync all users in configured `LDAP_URL` into DIM.
 
 With ndcli rights in DIM can only be granted to user groups not to individual users.
 
@@ -639,32 +525,32 @@ Both types of admins can create user-groups.
 
 In our organization we DNS admins create user-groups prefixed with 'DNS' and grant DNS related rights o them. Network admins have unprefixed user-groups and grant rights to them.
 
-==========
-Audit logs
-==========
+# Audit logs
 
 DIM keeps history of all data changing transactions in the system. Yon can query the history records with ndcli::
- ndcli history -h
- Usage: ndcli history [<subcommand>]
+```
+ndcli history -h
+Usage: ndcli history [<subcommand>]
  
- Subcommands:
-  [any]                any
-  ipblock              ipblock
-  output               output
-  outputs              outputs
-  pool                 pool
-  registrar-account    registrar-account
-  rr                   rr
-  rrs                  rrs
-  user                 user
-  user-group           user-group
-  user-groups          user-groups
-  zone                 zone
-  zone-group           zone-group
-  zone-groups          zone-groups
-  zone-profile         zone-profile
-  zone-profiles        zone-profiles
-  zones                zones
+Subcommands:
+ [any]                any
+ ipblock              ipblock
+ layer3domain         layer3domain
+ output               output
+ outputs              outputs
+ pool                 pool
+ registrar-account    registrar-account
+ rr                   rr
+ rrs                  rrs
+ user                 user
+ user-group           user-group
+ user-groups          user-groups
+ zone                 zone
+ zone-group           zone-group
+ zone-groups          zone-groups
+ zone-profile         zone-profile
+ zone-profiles        zone-profiles
+ zones                zones
  
  Options for ndcli history:
   -b --begin              begin timestamp (default: None)
@@ -682,46 +568,34 @@ DIM keeps history of all data changing transactions in the system. Yon can query
   -u --username           Dim username
   -V --version            print version and exit
   -w --warnings           don't print INFO messages
+```
 
-
-
-========
-Appendix
-========
-
-Importing Zones
-===============
-
-``dig axfr some.zone @some.host | ndcli import zone some.zone``
 
 Graphical Frontend
 ==================
 
 Please wait for this document to be updated for DIM 3.0
 
-Multiple RFC1918 IP Spaces
-==========================
+# Multiple RFC1918 IP Spaces / Layer3domains
 
 Please wait for this document to be updated for DIM 3.0
 
-Proxied user authentication
-===========================
+# Proxied user authentication
 
 See developer Guide for this feature that allows easy integration with other tools.
 
-dim-bind-file-agent
-===================
+# dim-bind-file-agent
 
-Yes, it is a only a proof of concept. But it works fine and solves problems.
+This is a only a proof of concept. But it works fine and solves problems.
 
 DNSSec signed zones are not possible with dim-bind-file-agent.
 
-retrieve code from git::
-
- yum install git
- cd /opt
- GIT_SSL_NO_VERIFY=true git clone https://bitbucket.1and1.org/scm/dim/dim-bind-file-agent.git
-
+retrieve code from git
+```
+yum install git
+cd /opt
+GIT_SSL_NO_VERIFY=true git clone https://bitbucket.1and1.org/scm/dim/dim-bind-file-agent.git
+```
 Setup a new output and assign zone-group::
 
  ndcli create output bind-int plugin bind
@@ -919,13 +793,14 @@ dig knx.example.com @127.3.0.1
 # Monitoring Pool usage
 
 
+
 # Background
 	
-	Back in 2010-2011 we started using [https://github.com/cvicente/Netdot](Netdot) but it
-	was in perl, there was no cli, it was not focused enough on DNS. So <insert name after permit received>
-	rewrote the need core functionallity needed for us "over the weekend" in 2011.
+Back in 2010-2011 we started using [https://github.com/cvicente/Netdot](Netdot) but it
+was in perl, there was no cli, it was not focused enough on DNS. So <insert name after permit received>
+rewrote the need core functionallity needed for us "over the weekend" in 2011.
 	
-	DIM was designed in a ~10000 Person hosting company to support 100s of products with IPv4 and IPv6 Addresses
+DIM was designed in a ~10000 Person hosting company to support 100s of products with IPv4 and IPv6 Addresses
 and help ~400 technical people to store and retrieve accurat technical information. If you are used to the processes
 in a 10 Person company you will probably scratch your head why this is so complex.
 People used to the processes in a 100000 Person company will probably just scartch their head and look for a real Tool... :-)
