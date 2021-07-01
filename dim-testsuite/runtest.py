@@ -364,7 +364,7 @@ def run_test(testfile, outfile, stop_on_error=False, auto_pdns_check=False):
 
                         ok = output == expected_result
                         if not ok:
-                            print(f"results didn't match:\nexpected: {expected_result}\nbut got: {output}")
+                            print("results didn't match:\nexpected: {}\nbut got: {}".format(expected_result, output))
                         if auto_pdns_check and not check_pdns_output(line, out):
                             ok = False
                     else:

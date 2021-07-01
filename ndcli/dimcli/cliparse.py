@@ -467,7 +467,7 @@ class Command(object):
                 usage += ' [<subcommand>]'
             else:
                 usage += ' <subcommand>'
-        print(f"Usage: {usage}")
+        print("Usage: {}".format(usage))
         if last.description or last.help:
             print("\n", last.description or last.help)
 
