@@ -41,14 +41,14 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'dim'
-copyright = '2013, 1&1'
+copyright = '2013-2019, 1&1; 2019-2021 IONOS and contributors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '2.4.0'
+version = '4.0.9'
 # The full version, including alpha/beta/rc tags.
 release = version
 
