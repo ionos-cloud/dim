@@ -24,50 +24,50 @@ For a small setup which only has internal and public zones, two zone-profiles ar
 	
 create zone-profile public
 ```
-ndcli create zone-profile public
-ndcli modify zone-profile public create rr @ NS ns1.example.com.
-ndcli modify zone-profile public create rr @ NS ns2.example.com.
-ndcli modify zone-profile public set ttl 86400
-ndcli modify zone-profile public set primary ns1.example.com.
-ndcli modify zone-profile public set mail dnadmins@example.com
-ndcli modify zone-profile public set minimum 600
-ndcli modify zone-profile public set refresh 3600
-ndcli modify zone-profile public set expire 2592000
+$ ndcli create zone-profile public
+$ ndcli modify zone-profile public create rr @ NS ns1.example.com.
+$ ndcli modify zone-profile public create rr @ NS ns2.example.com.
+$ ndcli modify zone-profile public set ttl 86400
+$ ndcli modify zone-profile public set primary ns1.example.com.
+$ ndcli modify zone-profile public set mail dnadmins@example.com
+$ ndcli modify zone-profile public set minimum 600
+$ ndcli modify zone-profile public set refresh 3600
+$ ndcli modify zone-profile public set expire 2592000
 ```
 	
 create zone-profile internal
 ```
-ndcli create zone-profile internal
-ndcli modify zone-profile internal create rr @ NS ins1.internal.test.
-ndcli modify zone-profile internal create rr @ NS ins2.internal.test.
-ndcli modify zone-profile internal set primary ins1.internal.test.
-ndcli modify zone-profile internal set mail dnsadmins@example.com
-ndcli modify zone-profile internal set minimum 60
-ndcli modify zone-profile internal set ttl 86400
+$ ndcli create zone-profile internal
+$ ndcli modify zone-profile internal create rr @ NS ins1.internal.test.
+$ ndcli modify zone-profile internal create rr @ NS ins2.internal.test.
+$ ndcli modify zone-profile internal set primary ins1.internal.test.
+$ ndcli modify zone-profile internal set mail dnsadmins@example.com
+$ ndcli modify zone-profile internal set minimum 60
+$ ndcli modify zone-profile internal set ttl 86400
 ```
 
 create zones
 ```
-ndcli create zone example.com profile public
-ndcli create zone internal.test profile internal
-ndcli create zone 10.in-addr.arpa profile internal
+$ ndcli create zone example.com profile public
+$ ndcli create zone internal.test profile internal
+$ ndcli create zone 10.in-addr.arpa profile internal
 ```
 
 Map zones to zone-groups to PowerDNS databases.
 ```
-ndcli create zone-group internal
-ndcli create zone-group public
+$ ndcli create zone-group internal
+$ ndcli create zone-group public
 
-ndcli modify zone-group internal add zone internal\.test
-ndcli modify zone-group internal add zone 10.in-addr.arpa
-ndcli modify zone-group internal add zone example\.com
-ndcli modify zone-group public add zone example\.com 
+$ ndcli modify zone-group internal add zone internal\.test
+$ ndcli modify zone-group internal add zone 10.in-addr.arpa
+$ ndcli modify zone-group internal add zone example\.com
+$ ndcli modify zone-group public add zone example\.com 
 
-ndcli create output pdns-int plugin pdns-db db-uri mysql://dim_pdns_int_user:SuperSecret1@127.0.0.1:3306/pdns_int
-ndcli create output pdns-pub plugin pdns-db db-uri mysql://dim_pdns_pub_user:SuperSecret2@127.0.0.1:3306/pdns_pub
+$ ndcli create output pdns-int plugin pdns-db db-uri mysql://dim_pdns_int_user:SuperSecret1@127.0.0.1:3306/pdns_int
+$ ndcli create output pdns-pub plugin pdns-db db-uri mysql://dim_pdns_pub_user:SuperSecret2@127.0.0.1:3306/pdns_pub
 
-ndcli modify output pdns-int add zone-group internal 
-ndcli modify output pdns-pub add zone-group public
+$ ndcli modify output pdns-int add zone-group internal 
+$ ndcli modify output pdns-pub add zone-group public
 ```
 This looks complicated but allows you to have the same zone in multiple pdns dbs.
 
@@ -108,16 +108,16 @@ All IP objects are uniquely identified by prefix, length and layer3domain. It is
 In a home user environment I recommend to just add rfc1918 v4 and 2000::/3 v6
 containers:
 ```
-ndcli create container 10.0.0.0/8 origin:rfc1918 reverse_dns_profile:internal
-ndcli create container 192.168.0.0/16 origin:rfc1918 reverse_dns_profile:internal
-ndcli create container 172.16.0.0/12 origin:rfc1918 reverse_dns_profile:internal
-ndcli create container 100.64.0.0/10 origin:rfc6598 reverse_dns_profile:internal
-ndcli create container 2000::/3 origin:rfc4291 reverse_dns_profile:public
-ndcli create container 2001:db8::/32 origin:rfc3849 "comment:Documentation Prefix"
-ndcli create container fc00::/7 origin:rfc4193 "comment:Unique Local Unicast" reverse_dns_profile:internal
-ndcli create container fe80::/10 origin:rfc4291 "comment:Link-Scoped Unicast"
-ndcli create container ff00::/8 origin:rfc4291 "comment:Multicast"
-ndcli create container 9.0.0.0/8 origin:IBM-DEMO "comment:IBM - DEMO only"
+$ ndcli create container 10.0.0.0/8 origin:rfc1918 reverse_dns_profile:internal
+$ ndcli create container 192.168.0.0/16 origin:rfc1918 reverse_dns_profile:internal
+$ ndcli create container 172.16.0.0/12 origin:rfc1918 reverse_dns_profile:internal
+$ ndcli create container 100.64.0.0/10 origin:rfc6598 reverse_dns_profile:internal
+$ ndcli create container 2000::/3 origin:rfc4291 reverse_dns_profile:public
+$ ndcli create container 2001:db8::/32 origin:rfc3849 "comment:Documentation Prefix"
+$ ndcli create container fc00::/7 origin:rfc4193 "comment:Unique Local Unicast" reverse_dns_profile:internal
+$ ndcli create container fe80::/10 origin:rfc4291 "comment:Link-Scoped Unicast"
+$ ndcli create container ff00::/8 origin:rfc4291 "comment:Multicast"
+$ ndcli create container 9.0.0.0/8 origin:IBM-DEMO "comment:IBM - DEMO only"
 ```
 	
 ### Setup your IP Space - IP Pools (v4)
