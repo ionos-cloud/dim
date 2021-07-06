@@ -549,9 +549,9 @@ def dnskey_tag(rdata):
 
 def ds_hash(owner, rdata, digest_function):
     if type(owner) != bytes:
-        raise TypeError(f"owner must be of type bytes, got {type(owner)}")
+        raise TypeError("owner must be of type bytes, got {}".format(type(owner)))
     if type(rdata) != bytes:
-        raise TypeError(f"rdata must be of type bytes, got {type(owner)}")
+        raise TypeError("rdata must be of type bytes, got {}".format(type(rdata)))
 
     parts = owner.lower().split(b'.')
     canon = []
