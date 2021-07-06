@@ -5,9 +5,9 @@ The following steps assume that you have a minimal CentOS 8 installed.
 ### Disable SELINUX
 
 ```
-$ echo -e "SELINUX=disabled\nSELINUXTYPE=targeted" >/etc/sysconfig/selinux
-$ systemctl stop firewalld
-$ systemctl disable firewalld
+# echo -e "SELINUX=disabled\nSELINUXTYPE=targeted" >/etc/sysconfig/selinux
+# systemctl stop firewalld
+# systemctl disable firewalld
 ```
 This is not a tutorial on Linux Security Technologies, so just disable it.
 
@@ -95,7 +95,7 @@ EOF
 # systemctl enable mariadb
 # systemctl start mariadb
 
-$ mysql -u root
+# mysql -u root
 create database dim;
 create database pdns_int;
 create database pdns_pub;
@@ -109,8 +109,8 @@ grant select on pdns_int.* to pdns_int_user@localhost identified by 'SuperSecret
 
 ### create tables for pdns
 ```
-$ wget -O - https://raw.githubusercontent.com/miesi/dim/master/dim/pdns.sql | mysql -u root pdns_int
-$ wget -O - https://raw.githubusercontent.com/miesi/dim/master/dim/pdns.sql | mysql -u root pdns_pub
+# wget -O - https://raw.githubusercontent.com/miesi/dim/master/dim/pdns.sql | mysql -u root pdns_int
+# wget -O - https://raw.githubusercontent.com/miesi/dim/master/dim/pdns.sql | mysql -u root pdns_pub
 ```
 
 # PowerDNS
@@ -331,15 +331,15 @@ pdns-output needs to be build manually at the moment (any volunteers?)
 
 ```
 # dnf install git java-1.8.0-openjdk-devel
-$ git clone https://github.com/1and1/dim
-$ cd dim
-$ cd jdnssec-dnsjava && ../gradlew build -x test && ../gradlew publishToMavenLocal; cd ..
-$ cd jdnssec-tools && ../gradlew build -x test && ../gradlew publishToMavenLocal; cd ..
-$ cd gmp-rsa && ../gradlew build -x test && ../gradlew publishToMavenLocal; cd ..
-$ cd pdns-output && ../gradlew shadowJar -x test; cd ..
-$ cp pdns-output/build/libs/pdns-output-4.0.0-all.jar /opt/dim
-$ cd ..
-$ rm -rf dim
+# git clone https://github.com/1and1/dim
+# cd dim
+# cd jdnssec-dnsjava && ../gradlew build -x test && ../gradlew publishToMavenLocal; cd ..
+# cd jdnssec-tools && ../gradlew build -x test && ../gradlew publishToMavenLocal; cd ..
+# cd gmp-rsa && ../gradlew build -x test && ../gradlew publishToMavenLocal; cd ..
+# cd pdns-output && ../gradlew shadowJar -x test; cd ..
+# cp pdns-output/build/libs/pdns-output-4.0.0-all.jar /opt/dim
+# cd ..
+# rm -rf dim
 
 # cat <<EOF >/etc/dim/pdns-output.properties
 # dim database connection parameters
@@ -396,9 +396,10 @@ WantedBy=multi-user.target
 EOF
 ```
 
-modify database and ldap in `/etc/dim/dim.cfg`, set secret key
+configure `dim.cfg`
 
 ```
+# cat <<EOF >/etc/dim/dim.cfg
 DB_USERNAME = 'dim_user'
 DB_PASSWORD = 'dim_pass'
 DB_HOST     = 'localhost'
@@ -441,7 +442,7 @@ DNS_DEFAULT_ZONE_TTL = 86400  # 1 day (Default. TTL)
 # list of ipspaces which are allowed to exist multiple times in dim (layer3domains)
 # in general only rfc1918 ip should be allowed
 LAYER3DOMAIN_WHITELIST = ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16', '100.64.0.0/10']
-
+EOF
 ```
 
 Install apache httpd and mod_wsgi
@@ -453,7 +454,6 @@ Install apache httpd and mod_wsgi
 setup /opt/dim/dim.wsgi
 ```
 # cat <<EOF >/opt/dim/dim.wsgi
-#managed by puppet
 from dim import create_app
 application = create_app()
 EOF
