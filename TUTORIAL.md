@@ -242,7 +242,17 @@ reverse_zone:1.c.0.8.b.d.0.1.0.0.2.ip6.arpa
 status:Delegation
 subnet:2001:db8:c10::/44
 ```
-	
+
+To see how many more delegations can be allocated in the pool, set `assignmentsize` to change the output format
+```
+ndcli modify pool de-fuh-bar-room-1_v6 set attrs assignmentsize:56
+
+ndcli list pool de-fuh-bar-room-1_v6
+prio subnet            gateway free(/56) total(/56)
+   1 2001:db8:c10::/44              4094       4096
+INFO - Total free IPs: 4094
+```
+
 Network- and Sysadmkins probably use DIM for v6 more like this:
 ```
 ndcli create pool de-fuh-bar-infra_v6
@@ -413,6 +423,7 @@ ndcli modify zone iks-jena\.de set mail dnsadmin@example.com primary ns1.example
 ```
 
 ### import reverse zone
+see #84
 ```
 broken as of 2021-06-30
 ```
@@ -446,7 +457,55 @@ ndcli modify zone example.com create rr net ns some.thing.
 ```
 
 # DNS Views
+DIM can manage different contents for the same zone, called views. A typical usecase is that a zone contains more
+records for internal use than visible to the public.
 
+```
+ndcli create zone views.test profile internal
+
+ndcli modify zone views.test create view public profile public
+
+ndcli modify zone views.test rename view default to internal
+
+ndcli create rr internal-db.views.test. a 10.10.0.21 view internal
+
+ndcli create rr www.views.test. a 9.1.1.2 view internal public
+
+ndcli list zone views.test view internal
+record      zone       ttl   type value
+@           views.test 86400 SOA  ins1.internal.test. dnsadmins.example.com.
+                                  2021070603 14400 3600 605000 60
+@           views.test       NS   ins1.internal.test.
+@           views.test       NS   ins2.internal.test.
+internal-db views.test       A    10.10.0.21
+www         views.test       A    9.1.1.2
+
+ndcli list zone views.test view public
+record zone       ttl   type value
+@      views.test 86400 SOA  ns1.example.com. dnadmins.example.com. 2021070602
+                             3600 3600 2592000 600
+@      views.test       NS   ns1.example.com.
+@      views.test       NS   ns2.example.com.
+www    views.test       A    9.1.1.2
+```
+
+Now the zone-views need to go in the right zone-group to get visible.
+
+```
+ndcli modify zone-group internal add zone views.test view internal
+
+ndcli modify zone-group public add zone views.test view public
+```
+
+Please use `dig` to check. E.g. for internal
+```
+dig internal-db.views.test @127.1.0.1
+```
+
+for public
+```
+dig internal-db.views.test @127.2.0.1
+```
 
 # DNSSec
 
@@ -497,7 +556,7 @@ Read RFC4641 and/or RFC6781.
 
 You must run `/opt/dim/bin/manage_dim update_validity` every day to make sure that RRSIGs are kept up to date.
 
-You must create a cron job that regularly checks your signed zones for validity. Check dnssec_mon script on github.
+You must create a cron job that regularly checks your signed zones for validity. Check `dnssec_mon script on github.
 
 # User Management
 
@@ -527,7 +586,7 @@ In our organization we DNS admins create user-groups prefixed with 'DNS' and gra
 
 # Audit logs
 
-DIM keeps history of all data changing transactions in the system. Yon can query the history records with ndcli::
+DIM keeps history of all data changing transactions in the system. Yon can query the history records with ndcli:
 ```
 ndcli history -h
 Usage: ndcli history [<subcommand>]
@@ -570,237 +629,24 @@ Subcommands:
   -w --warnings           don't print INFO messages
 ```
 
-
-Graphical Frontend
-==================
-
-Please wait for this document to be updated for DIM 3.0
-
 # Multiple RFC1918 IP Spaces / Layer3domains
 
-Please wait for this document to be updated for DIM 3.0
+TBD
 
 # Proxied user authentication
 
 See developer Guide for this feature that allows easy integration with other tools.
 
-# dim-bind-file-agent
+# Graphical Frontend
 
-This is a only a proof of concept. But it works fine and solves problems.
+See [WEB-UI](WEB-UI.md). Anyway, help wanted, this pile of aged node-js is not maintainable/extendable.
 
-DNSSec signed zones are not possible with dim-bind-file-agent.
-
-retrieve code from git
-```
-yum install git
-cd /opt
-GIT_SSL_NO_VERIFY=true git clone https://bitbucket.1and1.org/scm/dim/dim-bind-file-agent.git
-```
-Setup a new output and assign zone-group::
-
- ndcli create output bind-int plugin bind
- ndcli modify output bind-int add zone-group internal-global
- ndcli modify output bind-int add zone-group view-internal-global
-
-install bind and create config::
-
- yum install bind
- mkdir -p /var/named/dim-zones
- cat <<EOF >/etc/named.conf
- options {
-	listen-on port 53 { 127.4.0.1; };
-	listen-on-v6 port 53 { ::1; };
-	directory 	"/var/named";
-	dump-file 	"/var/named/data/cache_dump.db";
-	statistics-file "/var/named/data/named_stats.txt";
-	memstatistics-file "/var/named/data/named_mem_stats.txt";
-	allow-query     { localhost; };
-
-	/*
-	 - If you are building an AUTHORITATIVE DNS server, do NOT enable recursion.
-	 - If you are building a RECURSIVE (caching) DNS server, you need to enable 
-	   recursion.
-	 - If your recursive DNS server has a public IP address, you MUST enable access 
-	   control to limit queries to your legitimate users. Failing to do so will
-	   cause your server to become part of large scale DNS amplification 
-	   attacks. Implementing BCP38 within your network would greatly
-	   reduce such attack surface
-	*/
-	recursion yes;
-
-	dnssec-enable yes;
-	dnssec-validation yes;
-
-	/* Path to ISC DLV key */
-	bindkeys-file "/etc/named.iscdlv.key";
-
-	managed-keys-directory "/var/named/dynamic";
-
-	pid-file "/run/named/named.pid";
-	session-keyfile "/run/named/session.key";
- };
- 
- logging {
-        channel default_debug {
-                file "data/named.run";
-                severity dynamic;
-        };
- };
- 
- zone "." IN {
-	type hint;
-	file "named.ca";
- };
- include "/var/named/dim.zones";
- /*include "/etc/named.rfc1912.zones";*/
- include "/etc/named.root.key";
- EOF
-
-and now run the zone exporter::
-
- /opt/dim-bind-file-agent/dim-bind-file-agent -s http://localhost/dim -u admin -p '' -o bind-int -i /srv/named/dim.zones -z /srv/named/zones
-
-Please take a look into srv/named/dim.zones and the generated zone files in /srv/named/zones.
-
-Start bind and check::
-
- setenforce 0 # disable SELinux to allow bind to load files
- systemctl start named
- dig internal.local @127.4.0.1
-
-Planed features after opensourcing
-__________________________________
-
-* define a set of zone properties to control ``also-notify``, ``allow-transfer`` from DIM
-* trigger ``rndc reload <zone>`` only for changed zones
-* provide systemd unit file
-
-pdns-recursor
-=============
-
-Install pdns-recursor software from epel repository::
-
- yum install pdns-recursor
- cat <<EOF >/etc/systemd/system/pdns-recursor@.service
- [Unit]
- Description=PowerDNS Recursor %i
- Documentation=man:pdns_recursor(1) man:rec_control(1)
- Documentation=https://doc.powerdns.com
- Wants=network-online.target nss-lookup.target
- Before=nss-lookup.target
- After=network-online.target
- 
- [Service]
- Type=notify
- ExecStart=/usr/sbin/pdns_recursor --config-dir=/etc/pdns-recursor/%i --config-name=%i --daemon=no
- Restart=on-failure
- StartLimitInterval=0
- PrivateTmp=true
- PrivateDevices=true
- CapabilityBoundingSet=CAP_NET_BIND_SERVICE CAP_SETGID CAP_SETUID CAP_CHOWN CAP_SYS_CHROOT
- NoNewPrivileges=true
- ProtectSystem=full
- ProtectHome=true
- LimitNOFILE=40000
- 
- [Install]
- WantedBy=multi-user.target
- EOF
- 
- rm -f /etc/pdns-recursor/recursor.conf
- 
- mkdir /etc/pdns-recursor/int
- 
- cat <<EOF  >/etc/pdns-recursor/int/recursor-int.conf
- allow-from=0.0.0.0/0, ::/0
- any-to-tcp=no
- client-tcp-timeout=5
- disable-packetcache=no
- dnssec=process
- dont-query=127.0.0.0/8,100.64.0.0/10,169.254.0.0/16,192.0.0.0/24,192.0.2.0/24,198.51.100.0/24,203.0.113.0/24,240.0.0.0/4,::1/128,::ffff:0:0/96,100::/64,2001:db8::/32
- entropy-source=/dev/urandom
- export-etc-hosts=no
- forward-zones-file=/etc/pdns-recursor/int/forward.zones
- latency-statistic-size=10000
- local-address=127.3.0.1
- local-port=53
- logging-facility=6
- loglevel=4
- lua-config-file=/etc/pdns-recursor/int/nta.lua
- log-common-errors=no
- max-cache-entries=8000
- max-cache-ttl=86400
- max-mthreads=2048
- max-negative-ttl=600
- max-packetcache-entries=8000
- max-qperq=50
- max-tcp-clients=300
- max-tcp-per-client=0
- max-total-msec=7000
- minimum-ttl-override=0
- network-timeout=1970
- no-shuffle=off
- packetcache-ttl=120
- packetcache-servfail-ttl=15
- pdns-distributes-queries=no
- processes=1
- query-local-address=0.0.0.0
- query-local-address6=::
- quiet=on
- root-nx-trust=off
- serve-rfc1918=on
- server-down-max-fails=64
- server-down-throttle-time=60
- server-id=rec-int
- setgid=pdns-recursor
- setuid=pdns-recursor
- single-socket=off
- spoof-nearmiss-max=20
- stack-size=200000
- stats-ringbuffer-entries=200000
- trace=off
- threads=8
- udp-truncation-threshold=1680
- version-string=PowerDNS-Recursor
- EOF
-
- cat <<EOF >/etc/pdns-recursor/int/forward.zones
- +example.com=127.1.0.1
- +internal.local=127.1.0.1
- EOF
- 
- cat <<EOF >/etc/pdns-recursor/int/nta.lua
- addNTA('internal.local')
- addNTA('example.com')
- EOF
-
- systemctl enable pdns-recursor@int
- systemctl start pdns-recursor@int
-
-And now test that you can
- * resolve public names
- * resolve the internal zone internal.local
- * resolve the internal view of example.com
-
-dig google.de @127.3.0.1
-
-dig internal.local @127.3.0.1
-
-dig knx.example.com @127.3.0.1
-
-
-
-# Monitoring Pool usage
-
-
-
-# Background
+# History
 	
 Back in 2010-2011 we started using [https://github.com/cvicente/Netdot](Netdot) but it
-was in perl, there was no cli, it was not focused enough on DNS. So <insert name after permit received>
-rewrote the need core functionallity needed for us "over the weekend" in 2011.
+was in perl, there was no cli, it was not focused enough on DNS. So @abenea
+rewrote the core functionallity needed for us "over the weekend" in python 2 back in 2011.
 	
 DIM was designed in a ~10000 Person hosting company to support 100s of products with IPv4 and IPv6 Addresses
-and help ~400 technical people to store and retrieve accurat technical information. If you are used to the processes
-in a 10 Person company you will probably scratch your head why this is so complex.
-People used to the processes in a 100000 Person company will probably just scartch their head and look for a real Tool... :-)
+and help ~400 technical people to store and retrieve accurat technical information. 
+
