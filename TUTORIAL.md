@@ -12,7 +12,7 @@ Use `-d` to see API calls made.
 
 Use `-H` to get a parsing friendly output.
 
-To limit memory usage on the server machine many commands are limit the result set. Please use `-L` to override.
+To limit memory usage on the server machine many commands limit the result set. Please use `-L` to override.
 
 # Setup templates
 
@@ -146,7 +146,7 @@ Give the router ip a DNS name `ndcli create rr v600.net.example.com. a 10.10.0.1
 dig v600.net.example.com @127.1.0.1
 dig -x 10.10.0.1 @127.1.0.1
 ```
-also just work
+also just works
 
 ### using IP-Pools (v4)
 The ip-pool can now be used like this:
@@ -564,7 +564,7 @@ DIM does not implement password store. If it is configured to use LDAP, it simpl
 
 DIM does implement a authorization system.
 
-DIM comes with a preconfigured admin user. It should be deleted in a live system.
+DIM comes with a preconfigured admin user. It should be deleted in a live system. As there is no `ndcli delete user` you need to login to the MySQL Database and use SQL.
 
 A user with `user_type_id` in `user` table set to 1 is a super-admin. No restrictions apply for this user. This value is only read when a user session is created, so if you change a user_type_id, the user needs to login again.
 
