@@ -1,6 +1,6 @@
 ## DIM - DNS and IP Management (and also DHCP)
 
-DIM can be used as IP Management for a companies whole IP address space (RFC1918, public IPv4, ULA IPv6 and public IPv6).
+DIM can be used as IP Management for a companies whole IP address space (e.g. RFC1918, public IPv4, ULA IPv6, public IPv6 (GUA), Multicast IPs, ...).
 
 DIM can be used to manage all DNS reverse entries for all IP address space.
 
@@ -10,38 +10,24 @@ DIM simplifies the steps "mark ip as used, create forward record, create reverse
 
 DIM provides an API to allow products to consume and return single IPv4 addresses or whole /64 or /56 prefixes for IPv6.
 
+# Quickstart / Tutorial
+Download [VM](https://github.com/1and1/dim/releases/download/vm-1.0/dim-4-0-9.qcow2) ([Documentation](VM-SETUP.md) how the VM was created). The VM is preconfigured including PowerDNS and PowerDNS recursor so that you
+can immediately check whether your commands had effects.
+
+Read [Tutorial](TUTORIAL.md) to see how DIM can be used to document Prefixes and manage DNS Records.
 
 
-# What needs to be done next
-* explain/advertise what DNS and IP Management (DIM) does
-* rework internal documentation and publish
-* automate .rpm and .deb creation for dim-client, ndcli, pdns-output and dim (/) (wip)
-* rework internal testcases and add/publish (/)
-* port internal automated testing to travis or something else (wip)
-* rethink graphical interface of DIM
-* publish internal bugs and feature requests to github issue tracker
-* evaluate if there is interest for our DIM driven DHCP management
+# Docker
+not yet available. Pull requests welcome.
 
-# Running dim & pdns-output in docker
-The setup needs a mysql database for dim.
-The pdns databases written by **pdns-output** must be initialized with the schema in `./dim/pdns.sql` (these databases are required when running `ndcli create output`)
+# Future
+There is an effort going on to rewrite the middleware in go. It is planed to be a drop-in replacement.
+Main Goals:
+  - replace MySQL with PostgreSQL
+  - do not use an ORM
+  - remove properties tables, use jsonb field instead
+  - put more logic in the database to avoid transfering large datasets to the application code
+  - introduce generic log for all actions
+  - get rid of the global lock for transaction synchronization
 
-# Configure
-Set the dim mysql database details:
-* for **dim** edit `dimcfg/dim.cfg` key `SQLALCHEMY_DATABASE_URI`
-* for **pdns-output** edit `dimcfg/pdns-output.properties` to set the `db.` properties
-
-# Run
-Start **dim**
-```bash
-docker build -t dim . && docker run --name dim -d -v `pwd`/dimcfg:/etc/dim:ro dim
-```
-Start **pdns-output**
-```bash
-docker build -t dim-pdnsoutput -f Dockerfile-pdnsoutput . && docker run --name dim-pdnsoutput -v `pwd`/dimcfg:/etc/dim:ro -d dim-pdnsoutput
-```
-To use **ndcli**, exec into the dim docker and login with user admin (any password is fine)
-```bash
-docker exec -ti dim bash
-$ ndcli login -u admin -p admin
-```
+A link to the project will be added once the developer declares it to be ready for the public.
