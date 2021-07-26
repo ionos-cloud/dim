@@ -374,6 +374,9 @@ def delete_with_references(query, free_ips, references, user):
     for rr in sorted(to_delete, key=lambda rr: (rr.type, rr.name, rr.target, rr.value, rr.id)):
         Messages.info("Deleting RR %s from %s" % (rr.bind_str(relative=True), rr.view))
         if free_ips and rr.ipblock_id:
+            subnet = Ipblock.query.get(rr.ipblock_id).subnet
+            if subnet and subnet.pool:
+                user.can_allocate(subnet.pool)
             ipblocks.add(rr.ipblock_id)
         delete_single_rr(rr, user)
     if free_ips and ipblocks:
