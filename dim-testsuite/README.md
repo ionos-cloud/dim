@@ -9,18 +9,19 @@ ndcli, dimclient, dim itself, the output and some more.
 requirements
 ------------
 
-You need a running mysql instance with the following users:
+You need a running mysql instance with the following databases:
 
-```
-grant all on 'pdns*'.'*' to 'pdns'@'localhost' identified by 'pdns';
-grant all on 'dim'.'*' to 'dim'@'localhost' identified by 'dim';
-```
-
-and the following databases:
 ```
 create database dim;
 create database pdns1;
 create database pdns2;
+```
+
+and the following users:
+```
+grant all on pdns1.* to 'pdns'@'localhost' identified by 'pdns';
+grant all on pdns2.* to 'pdns'@'localhost' identified by 'pdns';
+grant all on dim.* to 'dim'@'localhost' identified by 'dim';
 ```
 
 Then create the file `/etc/dim/dim.cfg` with a production like configuration.
