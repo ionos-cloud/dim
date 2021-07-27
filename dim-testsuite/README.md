@@ -30,9 +30,11 @@ database.
 
 The following programs need to be installed:
 
-* python3
+* python3-devel
 * colordiff
 * make
+* mariadb-devel
+* openldap-devel
 
 how to run the test suite?
 --------------------------
