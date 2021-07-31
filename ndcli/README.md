@@ -19,7 +19,7 @@ configuration
 -------------
 
 You need to point ndcli to DIM. This can be done using the `-s` or `--server`
-switch on every call or create a file `~/.ndcli` with the content
+switch on every call or create a file `~/.ndclirc` with the content
 
 ```
 server = https://your.server.here/dim
