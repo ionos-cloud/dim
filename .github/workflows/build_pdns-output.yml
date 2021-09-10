@@ -25,6 +25,9 @@ jobs:
     - name: Build gmp-rsa
       run: gradle build -x test && gradle publishToMavenLocal
       working-directory: gmp-rsa
+    - name: Build pdns-output
+      run: gradle shadowJar -x test
+      working-directory: pdns-output
       
 #    - uses: actions/upload-artifact@v2
 #      with:
