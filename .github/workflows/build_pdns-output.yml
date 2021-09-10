@@ -17,13 +17,13 @@ jobs:
         distribution: 'adopt'
         java-version: 8
     - name: Build jdnssec-dnsjava
-      run: gradle build -x test && gralde publishToMavenLocal
+      run: gradle build -x test && gradle publishToMavenLocal
       working-directory: jdnssec-dnsjava
     - name: Build jdnssec-tools
-      run: gradle build -x test && gralde publishToMavenLocal
+      run: gradle build -x test && gradle publishToMavenLocal
       working-directory: jdnssec-tools
     - name: Build gmp-rsa
-      run: gradle build -x test && gralde publishToMavenLocal
+      run: gradle build -x test && gradle publishToMavenLocal
       working-directory: gmp-rsa
       
 #    - uses: actions/upload-artifact@v2
