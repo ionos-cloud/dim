@@ -1,0 +1,35 @@
+name: Build PDNS-Output
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 8
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: 8
+    - name: Build jdnssec-dnsjava
+      run: gradle build -x test && gradle publishToMavenLocal
+      working-directory: jdnssec-dnsjava
+    - name: Build jdnssec-tools
+      run: gradle build -x test && gradle publishToMavenLocal
+      working-directory: jdnssec-tools
+    - name: Build gmp-rsa
+      run: gradle build -x test && gradle publishToMavenLocal
+      working-directory: gmp-rsa
+    - name: Build pdns-output
+      run: gradle shadowJar -x test
+      working-directory: pdns-output
+      
+    - uses: actions/upload-artifact@v2
+      with:
+        name: pdns-output
+        path: pdns-output/build/libs/pdns-output*-all.jar
