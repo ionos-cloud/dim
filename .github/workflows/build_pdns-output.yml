@@ -31,5 +31,5 @@ jobs:
       
     - uses: actions/upload-artifact@v2
       with:
-        name: artifact-jdk-${{ matrix.java }}
+        name: pdns-output
         path: pdns-output/build/libs/pdns-output*-all.jar
