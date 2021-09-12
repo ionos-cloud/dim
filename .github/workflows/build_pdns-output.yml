@@ -13,16 +13,16 @@ jobs:
         distribution: 'adopt'
         java-version: 8
     - name: Build jdnssec-dnsjava
-      run: gradle build -x test && gradle publishToMavenLocal
+      run: gradle build && gradle publishToMavenLocal
       working-directory: jdnssec-dnsjava
     - name: Build jdnssec-tools
-      run: gradle build -x test && gradle publishToMavenLocal
+      run: gradle build && gradle publishToMavenLocal
       working-directory: jdnssec-tools
     - name: Build gmp-rsa
-      run: gradle build -x test && gradle publishToMavenLocal
+      run: gradle build && gradle publishToMavenLocal
       working-directory: gmp-rsa
     - name: Build pdns-output
-      run: gradle shadowJar -x test
+      run: gradle shadowJar
       working-directory: pdns-output
       
     - uses: actions/upload-artifact@v2
