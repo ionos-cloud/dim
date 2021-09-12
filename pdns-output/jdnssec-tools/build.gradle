@@ -14,8 +14,8 @@ repositories {
 }
 
 dependencies {
+    implementation project(':jdnssec-dnsjava')
     implementation 'commons-cli:commons-cli:1.2'
-    implementation 'dim:jdnssec-dnsjava:2.1.7'
     testImplementation 'junit:junit:3.8.1'
 }
 

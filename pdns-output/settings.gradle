@@ -1,0 +1,5 @@
+rootProject.name = 'pdns-output'
+include 'gmp-rsa'
+include 'jdnssec-dnsjava'
+include 'jdnssec-tools'
+include 'pdns-output'

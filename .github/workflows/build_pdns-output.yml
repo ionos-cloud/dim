@@ -12,15 +12,6 @@ jobs:
       with:
         distribution: 'adopt'
         java-version: 8
-    - name: Build jdnssec-dnsjava
-      run: gradle build && gradle publishToMavenLocal
-      working-directory: jdnssec-dnsjava
-    - name: Build jdnssec-tools
-      run: gradle build && gradle publishToMavenLocal
-      working-directory: jdnssec-tools
-    - name: Build gmp-rsa
-      run: gradle build && gradle publishToMavenLocal
-      working-directory: gmp-rsa
     - name: Build pdns-output
       run: gradle shadowJar
       working-directory: pdns-output
@@ -28,4 +19,4 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: pdns-output
-        path: pdns-output/build/libs/pdns-output*-all.jar
+        path: pdns-output/pdns-output/build/libs/pdns-output*-all.jar

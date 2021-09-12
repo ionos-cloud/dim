@@ -23,19 +23,19 @@ repositories {
 }
 
 dependencies {
+    implementation project(':jdnssec-tools')
+    implementation project(':jdnssec-dnsjava')
+    implementation project(':gmp-rsa')
+
     implementation 'org.jooq:jooq:3.8.2'
     implementation 'mysql:mysql-connector-java:5.1.39'
     implementation 'com.zaxxer:HikariCP:2.4.5'
 
     implementation 'commons-cli:commons-cli:1.2'
-    implementation 'dim:jdnssec-tools:0.13'
-    implementation 'dim:jdnssec-dnsjava:2.1.7'
 
     implementation 'org.apache.logging.log4j:log4j-core:2.8'
     implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.8'
     implementation 'org.slf4j:jul-to-slf4j:1.7.21'
-
-    implementation 'dim:gmp-rsa:0.1'
 
     testImplementation 'commons-io:commons-io:2.5'
     testImplementation 'junit:junit:4.12'
