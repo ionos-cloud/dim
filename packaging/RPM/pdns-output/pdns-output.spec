@@ -1,6 +1,6 @@
 Name:       pdns-output
 Version:    4.0.0
-Release:    1
+Release:    2
 Summary:    DIM PDNS Output Service
 License:    MIT
 URL:        https://github.com/1and1/dim
@@ -20,35 +20,23 @@ Connects to DIM Database and reads configuration of outputs and events for Power
 %setup -q -n dim-%{version}
 
 %build
-pushd jdnssec-dnsjava
-ls
-ls ..
-../gradlew build -x test
-../gradlew publishToMavenLocal
-popd
-pushd jdnssec-tools
-../gradlew build -x test
-../gradlew publishToMavenLocal
-popd
-pushd gmp-rsa
-../gradlew build -x test
-../gradlew publishToMavenLocal
-popd
 pushd pdns-output
-../gradlew build -x test
-../gradlew publishToMavenLocal
+../gradlew shadowJar
 popd
 
 %install
-install -Dm 644 pdns-output/build/libs/pdns-output-4.0.0-all.jar %{buildroot}%{_libexecdir}/pdns-output.jar
+install -Dm 644 pdns-output/pdns-output/build/libs/pdns-output-4.0.0-all.jar %{buildroot}%{_libexecdir}/pdns-output.jar
 install -Dm 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/dim/pdns-output.properties
 install -Dm 644 %{SOURCE2} %{buildroot}%{_unitdir}/pdns-output.service
 
 %files
 %{_libexecdir}/pdns-output.jar
 %{_sysconfdir}/dim/pdns-output.properties
-%{_unitdir}/pdns-output.service
+/usr/lib/systemd/system/pdns-output.service
 
 %changelog
-* Thu Jul 15 2021 Christoph Maser <christoph.maser@gmail.com> - 4.0.0
+* Thu Oct 07 2021 Christoph Maser <christoph.maser@gmail.com> - 4.0.0-2
+- Update build
+
+* Thu Jul 15 2021 Christoph Maser <christoph.maser@gmail.com> - 4.0.0-1
 - Initial package
