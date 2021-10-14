@@ -1,11 +1,13 @@
 Name:       pdns-output
 Version:    4.0.0
-Release:    2
+Release:    3
 Summary:    DIM PDNS Output Service
 License:    MIT
 URL:        https://github.com/1and1/dim
 Requires:   java-1.8.0-openjdk-headless
-BuildRequires:   java-1.8.0-openjdk-devel
+BuildRequires: java-1.8.0-openjdk-devel
+BuildRequires: systemd-units
+
 
 Source0: dim-%{version}.tar.gz
 Source1: pdns-output.properties
@@ -32,9 +34,12 @@ install -Dm 644 %{SOURCE2} %{buildroot}%{_unitdir}/pdns-output.service
 %files
 %{_libexecdir}/pdns-output.jar
 %{_sysconfdir}/dim/pdns-output.properties
-/usr/lib/systemd/system/pdns-output.service
+%{_unitdir}/pdns-output.service
 
 %changelog
+* Thu Oct 14 2021 Christoph Maser <christoph.maser@gmail.com> - 4.0.0-3
+- Fix for %{_unitdir}
+
 * Thu Oct 07 2021 Christoph Maser <christoph.maser@gmail.com> - 4.0.0-2
 - Update build
 
