@@ -289,11 +289,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: apt-get update
-      - run: apt-get install --yes build-essential python3 python3-dnspython bash-completion dh-python python3-setuptools python3-all debhelper devscripts python3-simplejson
+      - run: apt-get install --yes build-essential python3 python3-dnspython bash-completion dh-python python3-setuptools python3-all debhelper devscripts python3-simplejson python3-sphinx
       - run: |
           curl --location "https://github.com/${{ github.repository }}/releases/download/dimclient-${_DIMCLIENT}/python3-dimclient_${_DIMCLIENT}_all.deb" > ./python3-dimclient_${_DIMCLIENT}_all.deb
           dpkg -i ./python3-dimclient_${_DIMCLIENT}_all.deb
           apt-get install -fy
+      - run: python3 gendoc.py > gendoc.txt
+        working-directory: ndcli/doc
+      - run: sphinx-build -b man doc doc/_build/man
+        working-directory: ndcli
       - run: cp -vr packaging/debian/ndcli/* ndcli/
       - run: dch --create --package ndcli --newversion ${{ needs.build.outputs.version }} --distribution unstable 'release update'
         working-directory: ndcli
