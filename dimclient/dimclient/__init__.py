@@ -62,13 +62,7 @@ class DimClient(object):
                                              password=password,
                                              permanent_session=permanent_session)).encode('utf8'))
             self.check_protocol_version()
-            if self.cookie_jar.filename and self.save_cookie:
-                # Use umask when saving cookie
-                if self.cookie_umask is not None:
-                    old_mask = os.umask(self.cookie_umask)
-                self.cookie_jar.save()
-                if self.cookie_umask is not None:
-                    os.umask(old_mask)
+            self._update_cookie_file()
             return True
         except HTTPError as e:
             logger.error("Login failed: " + str(e))
@@ -78,12 +72,24 @@ class DimClient(object):
     def logged_in(self):
         try:
             self.session.open(self.server_url + '/index.html')
+            # update cookie file with refreshed cookie(s) from response
+            self._update_cookie_file()
             return True
         except HTTPError as e:
             if e.code == 403:
                 return False
             else:
                 raise
+
+    def _update_cookie_file(self):
+        if self.cookie_jar.filename and self.save_cookie:
+            # Use umask when saving cookie
+            if self.cookie_umask is not None:
+                old_mask = os.umask(self.cookie_umask)
+            self.cookie_jar.save()
+            if self.cookie_umask is not None:
+                os.umask(old_mask)
+
 
     def _use_cookie_file(self, cookie_file, cookie_umask, save_cookie=True):
         self.cookie_jar.filename = cookie_file
