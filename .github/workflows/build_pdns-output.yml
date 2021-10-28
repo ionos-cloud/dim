@@ -1,6 +1,9 @@
 name: Build PDNS-Output
 
-on: [ push, pull_request ]
+on:
+  push:
+    tags:
+      - 'pdns-output-*'
 
 jobs:
   build:
