@@ -342,34 +342,6 @@ pdns-output needs to be build manually at the moment (any volunteers?)
 # cd ..
 # rm -rf dim
 
-# cat <<EOF >/etc/dim/pdns-output.properties
-# dim database connection parameters
-db.serverName=127.0.0.1
-db.portNumber=3306
-db.databaseName=dim
-db.user=dim_user
-db.password=dim_pass
- 
-# Timeout in seconds for getting the pdns_poller lock which prevents multiple pdns-output instances from running
-lockTimeout=120
- 
-# Delay in seconds used when polling the dim outputupdate table
-pollDelay=1
- 
-# Delay in seconds before retrying a failed update
-retryInterval=60
- 
-# Debug option to print to stdout transaction ids after processing them
-printTxn=false
- 
-# Max size of a sql query in bytes
-# should be less than the configured max_allowed_packet in mysql
-maxQuerySize=4000000
- 
-useNativeCrypto=true
-EOF
-```
-
 systemd unit file
 
 ```
@@ -554,33 +526,7 @@ useNativeCrypto=true
 EOF
 ```
 
-Create systemd unit
-```
-# cat <<EOF >/etc/systemd/system/pdns-output.service
-[Unit]
-Description=DIM to PowerDNS DB
-After=network.target mysql.target
-
-[Service]
-Type=simple
-ExecStart=/bin/java -jar /opt/dim/pdns-output-4.0.0-all.jar
-Restart=on-failure
-StartLimitInterval=0
-PrivateTmp=true
-PrivateDevices=true
-CapabilityBoundingSet=CAP_NET_BIND_SERVICE CAP_SETGID CAP_SETUID CAP_CHOWN CAP_SYS_CHROOT
-NoNewPrivileges=true
-ProtectSystem=full
-ProtectHome=true
-RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
-LimitNOFILE=40000
- 
-[Install]
-WantedBy=multi-user.target
-EOF
-```
-
-Eenable and start service
+Enable and start service pdns-output
 ```
 # systemctl enable pdns-output
 # systemctl start pdns-output
