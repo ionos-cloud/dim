@@ -323,8 +323,8 @@ Install rpms of dim, dimclient, ndcli and jdk::
 ```
 # mkdir -p /etc/dim /srv/http/dim.example.com
 # dnf install https://github.com/1and1/dim/releases/download/dim-4.0.9/dim-4.0.9-1.el8.x86_64.rpm
-# dnf install https://github.com/1and1/dim/releases/download/dimclient-0.4.3/python3-dimclient-0.4.5-1.el8.x86_64.rpm
-# dnf install https://github.com/1and1/dim/releases/download/ndcli-4.0.0/python3-ndcli-4.0.3-1.el8.x86_64.rpm
+# dnf install https://github.com/1and1/dim/releases/download/dimclient-0.4.5/python3-dimclient-0.4.5-1.el8.x86_64.rpm
+# dnf install https://github.com/1and1/dim/releases/download/ndcli-4.0.3/python3-ndcli-4.0.3-1.el8.x86_64.rpm
 # dnf install https://github.com/1and1/dim/releases/download/dim-web-0.1/python3-dim-web-0.1-1.el8.x86_64.rpm
 ```
 
