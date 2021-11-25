@@ -5,6 +5,7 @@ The following steps assume that you have a minimal CentOS 8 installed.
 ### Disable SELINUX
 
 ```
+# setenforce 0
 # echo -e "SELINUX=disabled\nSELINUXTYPE=targeted" >/etc/sysconfig/selinux
 # systemctl stop firewalld
 # systemctl disable firewalld
@@ -109,8 +110,8 @@ grant select on pdns_int.* to pdns_int_user@localhost identified by 'SuperSecret
 
 ### create tables for pdns
 ```
-# wget -O - https://raw.githubusercontent.com/miesi/dim/master/dim/pdns.sql | mysql -u root pdns_int
-# wget -O - https://raw.githubusercontent.com/miesi/dim/master/dim/pdns.sql | mysql -u root pdns_pub
+# wget -O - https://raw.githubusercontent.com/1and1/dim/master/dim/pdns.sql | mysql -u root pdns_int
+# wget -O - https://raw.githubusercontent.com/1and1/dim/master/dim/pdns.sql | mysql -u root pdns_pub
 ```
 
 # PowerDNS
@@ -132,7 +133,7 @@ internal pdns
 ```
 # mkdir -p /etc/pdns/{int,pub}
  
-# cat <<EOF >/etc/pdns/int/pdns-int.conf
+# cat <<EOF >/etc/pdns/pdns-int.conf
 setgid=pdns
 setuid=pdns
 version-string=powerdns
@@ -175,7 +176,7 @@ EOF
 
 public pdns
 ```
-# cat <<EOF >/etc/pdns/pub/pdns-pub.conf
+# cat <<EOF >/etc/pdns/pdns-pub.conf
 setgid=pdns
 setuid=pdns
 version-string=powerdns
@@ -322,8 +323,8 @@ Install rpms of dim, dimclient, ndcli and jdk::
 ```
 # mkdir -p /etc/dim /srv/http/dim.example.com
 # dnf install https://github.com/1and1/dim/releases/download/dim-4.0.9/dim-4.0.9-1.el8.x86_64.rpm
-# dnf install https://github.com/1and1/dim/releases/download/dimclient-0.4.3/python3-dimclient-0.4.3-1.el8.x86_64.rpm
-# dnf install https://github.com/1and1/dim/releases/download/ndcli-4.0.0/python3-ndcli-4.0.0-1.el8.x86_64.rpm
+# dnf install https://github.com/1and1/dim/releases/download/dimclient-0.4.3/python3-dimclient-0.4.5-1.el8.x86_64.rpm
+# dnf install https://github.com/1and1/dim/releases/download/ndcli-4.0.0/python3-ndcli-4.0.3-1.el8.x86_64.rpm
 # dnf install https://github.com/1and1/dim/releases/download/dim-web-0.1/python3-dim-web-0.1-1.el8.x86_64.rpm
 ```
 
