@@ -88,7 +88,7 @@ def is_pdns_query(line):
 
 
 def _ndcli(cmd: str, cmd_input=None):
-    proc = Popen(['ndcli'] + cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+    proc = Popen(['ndcli' , '-s', 'http://localhost:5000/'] + cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
     out, err = proc.communicate(input=cmd_input if cmd_input != None else None)
     return out
 
