@@ -15,6 +15,8 @@ from . import zoneimport
 from .cliparse import Command, Option, Group, Argument, Token
 from . import version
 
+from dimclient import DimClient
+
 __version__ = version.VERSION
 
 logger = logging.getLogger('ndcli')
@@ -37,10 +39,16 @@ config = _readconfig(os.path.expanduser('~/.ndclirc'))
 
 
 def dim_client(args):
-    from dimclient import DimClient
-    server_url = args.server or config['server']
+    server_url = args.server or os.getenv('NDCLI_SERVER', config['server'])
+    username = args.username or os.getenv('NDCLI_USERNAME', config['username'])
+    cookie_path = os.path.expanduser(os.getenv('NDCLI_COOKIEPATH', f'~/.ndcli.cookie.{username}'))
     logger.debug("Dim server URL: %s" % server_url)
-    return DimClient(server_url, cookie_file=os.path.expanduser('~/.ndcli.cookie'), cookie_umask=0o077)
+    logger.debug("Username: %s" % username)
+    client = DimClient(server_url, cookie_file=cookie_path, cookie_umask=0o077)
+    if not client.logged_in:
+        if not client.login_prompt(username=username, password=args.password, ignore_cookie=True):
+            raise Exception('Could not log in')
+    return client
 
 
 def email2fqdn(string):
@@ -834,10 +842,6 @@ class CLI(object):
     def client(self):
         if self._client is None:
             self._client = dim_client(self.args)
-            username = self.args.username or config['username']
-            logger.debug("Username: %s" % username)
-            if not self._client.login_prompt(username=username, password=self.args.password, ignore_cookie=self.args.username):
-                raise Exception('Could not log in')
         return self._client
 
     def run(self, argv):
