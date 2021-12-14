@@ -327,6 +327,14 @@ class RPC(object):
         if layer3domain.type == Layer3Domain.VRF:
             set_rd(layer3domain, rd)
 
+    @updating
+    def layer3domain_set_type(self, layer3domain, type, rd=None):
+        self.user.can_network_admin()
+        layer3domain = get_layer3domain(layer3domain)
+        layer3domain.type = type
+        if layer3domain.type == Layer3Domain.VRF:
+            set_rd(layer3domain, rd)
+
     @readonly
     def layer3domain_get_attrs(self, layer3domain):
         layer3domain = get_layer3domain(layer3domain)

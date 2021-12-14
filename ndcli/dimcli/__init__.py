@@ -1005,6 +1005,17 @@ class CLI(object):
         options.set_if(rd=args.rd)
         self.client.layer3domain_set_attrs(args.layer3domain, **options)
 
+    @cmd.register('modify layer3domain set type',
+                    Argument('type'),
+                    Group(Token('rd'), Argument('rd'), nargs='?'))
+    def modify_layer3domain_set_type(self, args):
+        '''
+        Set the type for LAYER3DOMAIN.
+        '''
+        options = OptionDict()
+        options.set_if(rd=args.rd)
+        self.client.layer3domain_set_type(args.layer3domain, args.type, **options)
+
     @cmd.register('delete layer3domain',
                   layer3domain_arg)
     def delete_layer3domain(self, args):
@@ -1035,7 +1046,7 @@ class CLI(object):
                       'comment', {}],
                      [{'name': l['name'],
                        'type': l['type'],
-                       'properties': ' '.join('%s:%s' % (k, v) for k, v in l['properties'].items()),
+                       'properties': ' '.join('%s:%s' % (k, v) for k, v in l['properties'].items()) if 'properties' in l else '',
                        'comment': l['comment']} for l in self.client.layer3domain_list()],
                      script=args.script)
 
