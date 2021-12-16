@@ -355,6 +355,8 @@ class RPC(object):
     def layer3domain_delete(self, name):
         self.user.can_network_admin()
         layer3domain = get_layer3domain(name)
+        if Pool.query.filter_by(layer3domain=layer3domain).count() > 0:
+            raise DimError('layer3domain %s still contains pools' % layer3domain.name)
         if Ipblock.query.filter_by(layer3domain=layer3domain).count() > 0:
             raise DimError('layer3domain %s still contains objects' % layer3domain.name)
         db.session.delete(layer3domain)
