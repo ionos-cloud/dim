@@ -1563,12 +1563,21 @@ class CLI(object):
                 print('  ' * level + '%s %s' % (node['ip'], ' '.join(attributes)))
                 if 'children' in node:
                     print_tree(node['children'], level + 1)
-        options = OptionDict(include_messages=True)
-        options.set_if(container=args.container)
-        options.set_if(layer3domain=args.layer3domain)
-        result = self.client.container_list(**options)
-        _print_messages(result)
-        print_tree(result['containers'], 0)
+        layer3domains = [args.layer3domain]
+        if args.layer3domain == "all":
+            layer3domains = [l['name'] for l in self.client.layer3domain_list()]
+
+        for idx, layer3domain in enumerate(layer3domains):
+            if len(layer3domains) > 1:
+                if idx > 0:
+                    print()
+                print('layer3domain: ' + layer3domain)
+            options = OptionDict(include_messages=True)
+            options.set_if(container=args.container)
+            options.set_if(layer3domain=layer3domain)
+            result = self.client.container_list(**options)
+            _print_messages(result)
+            print_tree(result['containers'], 0)
 
     @cmd.register('list ips',
                   Argument('query', metavar='VLANID|CIDR|POOL'),
