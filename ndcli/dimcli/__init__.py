@@ -35,6 +35,11 @@ def _readconfig(config_file):
 
 config = _readconfig(os.path.expanduser('~/.ndclirc'))
 
+# get_layer3domain returns from_args or the layer3domain from ndclirc.
+def get_layer3domain(from_args):
+    if from_args is None:
+        return config['layer3domain']
+    return from_args
 
 def dim_client(args):
     from dimclient import DimClient
@@ -1044,7 +1049,7 @@ class CLI(object):
         options = OptionDict()
         options.set_if(dryrun=args.dryrun,
                        owner=args.group,
-                       layer3domain=args.layer3domain)
+                       layer3domain=get_layer3domain(args.layer3domain))
         options.set_attributes(args.attributes)
         if args.vlan is not None:
             options['vlan'] = int(args.vlan)
@@ -1060,7 +1065,7 @@ class CLI(object):
         '''
         options = OptionDict(status='Container')
         options.set_if(dryrun=args.dryrun)
-        options.set_if(layer3domain=args.layer3domain)
+        options.set_if(layer3domain=get_layer3domain(args.layer3domain))
         options.set_attributes(args.attributes)
         attrs = self.client.ipblock_create(args.container, **options)
         logger.log(logging.INFO, 'Creating container %s in layer3domain %s' % (attrs['ip'], attrs['layer3domain']))
@@ -1432,7 +1437,7 @@ class CLI(object):
         '''
         options = OptionDict(include_messages=True)
         options.set_if(dryrun=args.dryrun)
-        options.set_if(layer3domain=args.layer3domain)
+        options.set_if(layer3domain=get_layer3domain(args.layer3domain))
         result = self.client.ipblock_remove(args.container, force=True, status='Container', **options)
         _print_messages(result)
 
@@ -1563,6 +1568,7 @@ class CLI(object):
                 print('  ' * level + '%s %s' % (node['ip'], ' '.join(attributes)))
                 if 'children' in node:
                     print_tree(node['children'], level + 1)
+                    
         layer3domains = [args.layer3domain]
         if args.layer3domain == "all":
             layer3domains = [l['name'] for l in self.client.layer3domain_list()]
@@ -1606,7 +1612,7 @@ delegation).''')
         attr_names = args.attr_names.split(',')
         options = OptionDict(type=args.status or 'all',
                              limit=int(args.limit) + 1,
-                             layer3domain=args.layer3domain,
+                             layer3domain=get_layer3domain(args.layer3domain),
                              attributes=attr_names)
         options.set_if(full=args.full)
         options.update(_parse_query(args.query))
@@ -2858,7 +2864,7 @@ register_history('ipblock', arg_meta='IPBLOCK', cmd_args=(Argument('ipblock'), )
 register_history('registrar-account', arg_meta='REGISTRAR_ACCOUNT', cmd_args=(registrar_account_arg, ),
                  f='history_registrar_account', fargs=lambda args: [args.registrar_account])
 register_history('layer3domain', arg_meta='LAYER3DOMAIN', cmd_args=(layer3domain_arg, ),
-                 f='history_layer3domain', fargs=lambda args: [args.layer3domain])
+                 f='history_layer3domain', fargs=lambda args: [get_layer3domain(args.layer3domain)])
 
 
 def main():
