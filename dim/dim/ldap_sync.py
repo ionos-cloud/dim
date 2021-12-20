@@ -3,7 +3,7 @@
 import logging
 import sys
 
-import ldap
+import ldap3
 from flask import current_app as app
 
 from dim import db
@@ -13,23 +13,19 @@ from dim.transaction import time_function, transaction
 
 class LDAP(object):
     def __init__(self):
-        ldap_server = app.config['LDAP_SERVER']
-        try:
-            self.conn = ldap.initialize(ldap_server, bytes_mode=False)
-            self.conn.set_option(ldap.OPT_TIMEOUT, app.config['LDAP_OPT_TIMEOUT'])
-            self.conn.set_option(ldap.OPT_TIMELIMIT, app.config['LDAP_OPT_TIMELIMIT'])
-            self.conn.set_option(ldap.OPT_NETWORK_TIMEOUT, app.config['LDAP_OPT_NETWORK_TIMEOUT'])
-            self.conn.simple_bind_s()
-        except:
-            logging.exception('Error connecting to ldap server %s', ldap_server)
+        ldap_server = ldap3.Server(app.config['LDAP_SERVER'])
+        conn = ldap3.Connection(ldap_server, read_only=True)
+        if not conn.bind():
+            logging.exception('Error connecting to ldap server %s: %s', ldap_server, conn.result)
             raise
+        self.conn = conn
 
     def query(self, base, filter):
         try:
             if filter:
-                return self.conn.search_s(base, filterstr=filter, scope=ldap.SCOPE_ONELEVEL)
+                return self.conn.search(base, filter, search_scope=ldap.LEVEL)
             else:
-                return self.conn.search_s(base, scope=ldap.SCOPE_ONELEVEL)
+                return self.conn.search(base, '()', scope=ldap3.LEVEL)
         except:
             logging.exception('Error in LDAP query %s %s', base, filter)
             raise

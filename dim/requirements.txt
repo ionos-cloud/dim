@@ -1,6 +1,6 @@
 mysqlclient>=1.4.6
 SQLAlchemy~=1.4
-pyldap>=2.4.25.1
+ldap3~=2.9
 Werkzeug>=0.15.3
 Flask~=1.1
 Flask-SQLAlchemy~=2.5
