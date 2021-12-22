@@ -978,8 +978,7 @@ class CLI(object):
                   Argument('name'),
                   Token('type'),
                   Argument('type'),
-                  Token('rd'),
-                  Argument('rd'),
+                  Group(Token('rd'), Argument('rd'), nargs='?'),
                   Group(Token('comment'), Argument('comment'), nargs='?'))
     def create_layer3domain(self, args):
         options = OptionDict()
