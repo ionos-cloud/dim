@@ -303,11 +303,12 @@ class RPC(object):
         self.user.can_network_admin()
         if Layer3Domain.query.filter_by(name=name).count():
             raise AlreadyExistsError("A layer3domain named '%s' already exists" % name)
-        if type not in Layer3Domain.TYPES:
-            raise InvalidParameterError('Type must be one of: %s' % ' '.join(list(Layer3Domain.TYPES.keys())))
-        for attr_name in Layer3Domain.TYPES[type]:
-            if options.get(attr_name) is None:
-                raise InvalidParameterError('Type %s requires a %s' % (type, attr_name))
+        if type in Layer3Domain.TYPES:
+            for attr_name in Layer3Domain.TYPES[type]:
+                if options.get(attr_name) is None:
+                    raise InvalidParameterError('Type %s requires a %s' % (type, attr_name))
+        elif type not in Layer3Domain.TYPES and len(options) > 0:
+            raise InvalidParameterError('Type %s does not support attributes' % (type))
 
         layer3domain = Layer3Domain(name=name, type=type, comment=comment)
         if type == Layer3Domain.VRF:
@@ -324,6 +325,14 @@ class RPC(object):
     def layer3domain_set_attrs(self, layer3domain, rd=None):
         self.user.can_network_admin()
         layer3domain = get_layer3domain(layer3domain)
+        if layer3domain.type == Layer3Domain.VRF:
+            set_rd(layer3domain, rd)
+
+    @updating
+    def layer3domain_set_type(self, layer3domain, type, rd=None):
+        self.user.can_network_admin()
+        layer3domain = get_layer3domain(layer3domain)
+        layer3domain.type = type
         if layer3domain.type == Layer3Domain.VRF:
             set_rd(layer3domain, rd)
 
