@@ -22,6 +22,8 @@ $ ndcli create layer3domain test type vrf rd 256:256
 $ ndcli create pool somepool layer3domain test
 $ ndcli delete layer3domain test
 ERROR - layer3domain test still contains pools
+$ ndcli create layer3domain all type vrf rd 25:25
+ERROR - Name 'all' is reserved
 $ ndcli create layer3domain test2 type customtype
 $ ndcli create layer3domain test3 type customtype rd 22:22
 ERROR - Type customtype does not support attributes

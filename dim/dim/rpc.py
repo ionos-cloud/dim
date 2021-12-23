@@ -301,6 +301,8 @@ class RPC(object):
     @updating
     def layer3domain_create(self, name, type, comment=None, **options):
         self.user.can_network_admin()
+        if name == "all":
+            raise InvalidParameterError("Name 'all' is reserved")
         if Layer3Domain.query.filter_by(name=name).count():
             raise AlreadyExistsError("A layer3domain named '%s' already exists" % name)
         if type in Layer3Domain.TYPES:
