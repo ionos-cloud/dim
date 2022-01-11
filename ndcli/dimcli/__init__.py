@@ -1118,6 +1118,23 @@ class CLI(object):
         '''
         self.client.ippool_set_owner(args.poolname, args.group)
 
+    @cmd.register('modify pool set owning-user-group',
+            group_arg,
+            help='set owner group for POOLNAME')
+    def modify_pool_set_owning_user_group(self, args):
+        '''
+        Sets the pool owning user group.
+        '''
+        self.client.ippool_set_owner(args.poolname, args.group)
+
+    @cmd.register('modify pool remove owning-user-group',
+            help='unset owner group for POOLNAME')
+    def modify_pool_set_owning_user_group(self, args):
+        '''
+        Unsets the pool owning user group.
+        '''
+        self.client.ippool_unset_owner(args.poolname)
+
     @cmd.register('modify pool remove attrs',
                   attr_names_arg,
                   help='remove attributes from POOLNAME')
@@ -1572,7 +1589,7 @@ class CLI(object):
                 print('  ' * level + '%s %s' % (node['ip'], ' '.join(attributes)))
                 if 'children' in node:
                     print_tree(node['children'], level + 1)
-                    
+
         layer3domains = [args.layer3domain]
         if args.layer3domain == "all":
             layer3domains = [l['name'] for l in self.client.layer3domain_list()]
