@@ -7,6 +7,7 @@ LDIR          ?= log
 SRVLOG        ?= ${LDIR}/server.log
 NDCLI_USERNAME ?= admin
 NDCLI_SERVER   ?= http://localhost:5000
+NDCLI_CONFIG  ?= /dev/null
 
 all: install db test
 	mkdir ${VDIR}
@@ -34,6 +35,7 @@ test:
   	   TEST_OUTPUT_DIR="${ODIR}" \
 			 SRVLOG="${SRVLOG}" \
        NDCLI_USERNAME="${NDCLI_USERNAME}" \
+			 NDCLI_CONFIG="${NDCLI_CONFIG}" \
 			 NDCLI_SERVER="${NDCLI_SERVER}" ${VPYTHON} runtest.py -d
 
 .PHONY: db test install clean

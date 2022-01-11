@@ -35,13 +35,20 @@ def _readconfig(config_file):
         logger.debug('Configuration file cannot be read: %s' % e)
     return config
 
-config = _readconfig(os.path.expanduser('~/.ndclirc'))
+config_path = os.getenv('NDCLI_CONFIG', '~/ndclirc')
+config = _readconfig(os.path.expanduser(config_path))
 
-# get_layer3domain returns from_args or the layer3domain from ndclirc.
+# get_layer3domain returns from_args, from the environment variable or the
+# layer3domain from ndclirc.
 def get_layer3domain(from_args):
-    if from_args is None:
+    if from_args is not None:
+        return from_args
+    env_l3 = os.getenv('NDCLI_LAYER3DOMAIN', None)
+    if env_l3 is not None:
+        return env_l3
+    if 'layer3domain' in config:
         return config['layer3domain']
-    return from_args
+    return None
 
 def dim_client(args):
     server_url = args.server or os.getenv('NDCLI_SERVER', config['server'])
