@@ -26,8 +26,13 @@ class LDAP(object):
 
         ldap_server = ldap3.Server(app.config['LDAP_SERVER'], **server_kwargs)
         conn = ldap3.Connection(ldap_server, read_only=True, client_strategy=ldap3.SAFE_SYNC)
-        if not conn.bind():
-            logging.exception('Error connecting to ldap server %s: %s', ldap_server, conn.result)
+        try:
+            (status, result, response, request) = conn.bind()
+        except ldap3.core.exceptions.LDAPExceptionError as e:
+            logging.exception('Error connecting to ldap server %s: %s', ldap_server, e)
+            raise
+        if not status:
+            logging.exception('Error connecting to ldap server %s: %s', ldap_server, result)
             raise
         self.conn = conn
 
