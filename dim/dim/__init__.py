@@ -5,7 +5,6 @@ import sys
 from datetime import datetime, timedelta
 
 import flask_sqlalchemy
-import six
 import sqlalchemy.orm
 import sqlalchemy.pool
 from flask import Flask, g
@@ -178,7 +177,7 @@ def check_string_length(cls, key, inst):
             max_length = col.type.length
 
             def set_(instance, value, oldvalue, initiator):
-                if isinstance(value, six.string_types) and len(value) > max_length:
+                if isinstance(value, str) and len(value) > max_length:
                     raise InvalidParameterError("Field %s exceeds maximum length %d" % (col.name, max_length))
             event.listen(inst, 'set', set_)
 

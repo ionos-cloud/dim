@@ -1,12 +1,11 @@
 
 
-import six
 from ipaddress import ip_address, IPv4Address, IPv6Address, ip_network
 
 
 def valid_block(addr):
     try:
-        ip_network(six.text_type(addr))
+        ip_network(str(addr))
         return True
     except ValueError:
         return False
@@ -19,8 +18,7 @@ class IP(object):
         '''
         :param auto_correct: if the address has bits set outside its netmask they will be cleared
         '''
-        if isinstance(address, six.string_types):
-            address = six.text_type(address)
+        if isinstance(address, str):
             s = address.split('/')
             if len(s) > 2:
                 raise ValueError('Bad prefix')

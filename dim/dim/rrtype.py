@@ -3,10 +3,10 @@
 import re
 
 import dns.rdata
-from six import int2byte
 from dim.errors import InvalidParameterError
 from dim.messages import Messages
 from dim.util import make_fqdn
+from typing import Tuple, List, Union
 
 
 def label_is_valid(label):
@@ -136,7 +136,7 @@ def validate_property_tag(self, key, value):
     return value
 
 
-def _unescapify_from(value, offset):
+def _unescapify_from(value, offset: int) -> Tuple[bytes, int]:
     '''
     Unescape dns character string in value[offset:]. Returns a tuple of (bytearray unescaped_string,
     the position where the processing of value stopped).
@@ -150,7 +150,7 @@ def _unescapify_from(value, offset):
     The processing of value stops at the first unescaped double quote. This position is returned
     along with the unescaped string created thus far.
     '''
-    string = ''
+    string = b''
     i = offset
     while i < len(value):
         if value[i] == '"':
@@ -161,18 +161,21 @@ def _unescapify_from(value, offset):
             try:
                 escape_sequence = value[i]
                 if value[i + 1] in ('"', '\\'):
+                    # escaped " or /
                     escape_sequence = value[i:i + 2]
-                    string += str(value[i + 1])
+                    string += str(value[i + 1]).encode('utf-8')
                     i += 2
                 else:
+                    # assume escaped ordinal value (int) with a fixed length of 3
+                    # e.g. \097 for the character a
                     escape_sequence = value[i:i + 4]
-                    string += int2byte(int(value[i + 1:i + 4]))
+                    string += bytes((int(value[i + 1:i + 4]),))
                     i += 4
             except:
                 raise ValueError('Invalid escape sequence: %s' % escape_sequence)
         else:
             if 32 <= ord(value[i]) <= 126:
-                string += value[i]
+                string += value[i].encode('utf-8')
                 i += 1
             else:
                 raise ValueError('Invalid character at position %d in: %s' % (i, value))
@@ -201,7 +204,7 @@ def _parse_strings(value):
     return strings
 
 
-def validate_strings(self, key, value):
+def validate_strings(self, key, value: Union[str, List[str]]):
     if isinstance(value, str):
         strings = _parse_strings(value)
     elif isinstance(value, list):
