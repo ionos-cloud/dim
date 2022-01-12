@@ -65,7 +65,7 @@ class LDAP(object):
                     for dept in res]
 
 
-def sync_departments(ldap: LDAP):
+def sync_departments(ldap: LDAP, deletion_threshold: int = -1, ignore_deletion_threshold: bool = False):
     '''Update the department table'''
     db_departments = Department.query.all()
     ldap_departments = dict((dep.department_number, dep) for dep in ldap.departments())
@@ -80,6 +80,8 @@ def sync_departments(ldap: LDAP):
         else:
             logging.info('Deleting department %s' % ddep.name)
             db.session.delete(ddep)
+    if not ignore_deletion_threshold:
+        check_deletion_threshold(Department, deletion_threshold)
     # handle new departments
     for ldep in list(ldap_departments.values()):
         logging.info('Creating department %s' % ldep.name)
@@ -91,7 +93,16 @@ def log_stdout(message: str):
     print(message)
 
 
-def sync_users(ldap: LDAP):
+def check_deletion_threshold(instance_type: type, threshold: int = -1):
+    if threshold >= 0:
+        deleted_elements = [e for e in db.session.deleted if isinstance(e, instance_type)]
+        if len(deleted_elements) > threshold:
+            msg = 'Number of %s deletions (%s) above threshold (%s), aborting sync.' % (instance_type.__name__, len(deleted_elements), threshold)
+            logging.exception(msg)
+            raise Exception(msg)
+
+
+def sync_users(ldap: LDAP, deletion_threshold: int = -1, ignore_deletion_threshold: bool = False):
     '''Update the user table ldap_cn, ldap_uid and department_number fields'''
     db_users = User.query.all()
     ldap_users = dict((u.username, u)
@@ -120,19 +131,22 @@ def sync_users(ldap: LDAP):
         elif db_user.ldap_uid:
             log_stdout('Deleting user %s' % db_user.username)
             db.session.delete(db_user)
+    if not ignore_deletion_threshold:
+        check_deletion_threshold(User, deletion_threshold)
 
 
 @time_function
 @transaction
-def ldap_sync():
+def ldap_sync(ignore_deletion_threshold: bool = False):
     '''Update Users, Group, and Departments from LDAP'''
     ldap = LDAP()
+    deletion_thresholds = app.config.get_namespace('LDAP_SYNC_DELETION_THRESHOLD_')
 
     if sys.stdout.isatty():
         logging.getLogger().addHandler(logging.StreamHandler(sys.stderr))
 
-    sync_departments(ldap)
-    sync_users(ldap)
+    sync_departments(ldap, int(deletion_thresholds.get('departments', -1)), ignore_deletion_threshold)
+    sync_users(ldap, int(deletion_thresholds.get('users', -1)), ignore_deletion_threshold)
 
     # Synchronize group members
     ldap_users = {}  # map department_number to list of usernames

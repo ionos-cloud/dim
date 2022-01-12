@@ -54,15 +54,17 @@ def update_validity():
 
 
 @manager.option('-n', '--dry-run', dest='dryrun', action='store_true')
-def ldap_sync(dryrun):
+@manager.option('-f', '--ignore-deletion-threshold', dest='ignore_deletion_threshold', action='store_true')
+def ldap_sync(dryrun, ignore_deletion_threshold):
     '''Update Users, Group, and Departments from LDAP'''
-    dim.ldap_sync.ldap_sync(dryrun=dryrun)
+    dim.ldap_sync.ldap_sync(dryrun=dryrun, ignore_deletion_threshold=ignore_deletion_threshold)
 
 
 @manager.option('-n', '--dry-run', dest='dryrun', action='store_true')
-def sync_ldap(dryrun):
+@manager.option('-f', '--ignore-deletion-threshold', dest='ignore_deletion_threshold', action='store_true')
+def sync_ldap(dryrun, ignore_deletion_threshold):
     '''Update Users, Group, and Departments from LDAP'''
-    dim.ldap_sync.ldap_sync(dryrun=dryrun)
+    dim.ldap_sync.ldap_sync(dryrun=dryrun, ignore_deletion_threshold=ignore_deletion_threshold)
 
 
 @manager.command
