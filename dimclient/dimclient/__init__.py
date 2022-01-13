@@ -29,10 +29,6 @@ logger = logging.getLogger('dimclient')
 PROTOCOL_VERSION = 17
 
 
-def agnostic_input():
-    return eval(input())
-
-
 class DimError(Exception):
     def __init__(self, message, code=1):
         Exception.__init__(self, message)
@@ -105,8 +101,7 @@ class DimClient(object):
             return True
         else:
             if username is None:
-                print("Username:", end=' ')
-                username = agnostic_input()
+                username = input('Username: ')
             if password is None:
                 password = getpass.getpass()
             return self.login(username, password, permanent_session)
