@@ -21,6 +21,10 @@ LDAP_DEPARTMENT_BASE = ""
 LDAP_OPT_TIMEOUT = 60
 LDAP_OPT_TIMELIMIT = 60
 LDAP_OPT_NETWORK_TIMEOUT = 60
+# thresholds for deletions during sync, to help catch configuration/ldap issues
+LDAP_SYNC_DELETION_THRESHOLD_USERS = -1
+LDAP_SYNC_DELETION_THRESHOLD_DEPARTMENTS = -1
+
 
 # Set SECRET_KEY to a random string
 # The security of this application is compromised if SECRET_KEY is leaked
