@@ -35,7 +35,7 @@ public class PdnsOutput {
     static {
         options.addOption("h", "help", false, "print usage information");
         options.addOption("c", "config", true, String.format("configuration file (default: %s)", defaultConfigFile));
-        Configurator.initialize(null, defaultLogConfigFile);
+        options.addOption("l", "logconfig", true, String.format("log configuration file (default: %s)", defaultLogConfigFile));
     }
 
     private final Properties config = new Properties();
