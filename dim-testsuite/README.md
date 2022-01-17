@@ -6,6 +6,10 @@ ndcli, dimclient, dim itself, the output and some more.
 
 **DO NOT USE THE TEST SUITE ON YOUR PRODUCTION DATA!**
 
+As of now, make sure that your home *does not* contain a vaild `.ndclirc` and `.ndcli.cookie`.
+If ndcli finds valid login information these might get use. In consequence the tests will be
+run on the production DIM.
+
 requirements
 ------------
 
@@ -24,6 +28,18 @@ grant all on pdns2.* to 'pdns'@'localhost' identified by 'pdns';
 grant all on dim.* to 'dim'@'localhost' identified by 'dim';
 ```
 
+You also need to grant the user running the tests full rights on the databases:
+```
+create user 'janedoe'@'localhost';
+grant all on pdns1.* to 'janedoe'@'localhost';
+grant all on pdns2.* to 'janedoe'@'localhost';
+grant all on dim.* to 'janedoe'@'localhost';
+```
+
+If MariaDB does not startup please try to disable SELinux and try again.
+
+The database files should be on a tmpfs to have a bit better performance for testing.
+
 Then create the file `/etc/dim/dim.cfg` with a production like configuration.
 It must contain the database credentials, so that the server can connect to the
 database.
@@ -35,6 +51,7 @@ The following programs need to be installed:
 * make
 * mariadb-devel
 * openldap-devel
+* gcc
 
 how to run the test suite?
 --------------------------

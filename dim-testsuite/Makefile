@@ -5,6 +5,8 @@ VPIP          ?= ${VDIR}/bin/pip3
 VPYTHON       ?= ${VDIR}/bin/python3
 LDIR          ?= log
 SRVLOG        ?= ${LDIR}/server.log
+NDCLI_USERNAME ?= admin
+NDCLI_SERVER   ?= http://localhost:5000
 
 all: install db test
 	mkdir ${VDIR}
@@ -27,6 +29,11 @@ db:
 test:
 	-mkdir ${ODIR}
 	${VDIR}/bin/manage_db clear
-	PATH="${VDIR}/bin:${PATH}" SRVLOG="${SRVLOG}" TEST_OUTPUT_DIR="${ODIR}" ${VPYTHON} runtest.py -d
+
+	PATH="${VDIR}/bin:${PATH}" \
+  	   TEST_OUTPUT_DIR="${ODIR}" \
+			 SRVLOG="${SRVLOG}" \
+       NDCLI_USERNAME="${NDCLI_USERNAME}" \
+			 NDCLI_SERVER="${NDCLI_SERVER}" ${VPYTHON} runtest.py -d
 
 .PHONY: db test install clean

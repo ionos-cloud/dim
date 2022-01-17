@@ -21,6 +21,7 @@ import os.path
 import re
 import shlex
 import sys
+import urllib
 from io import StringIO
 from itertools import zip_longest
 from subprocess import Popen, PIPE, DEVNULL, STDOUT
@@ -89,7 +90,7 @@ def is_pdns_query(line):
 
 
 def _ndcli(cmd: str, cmd_input=None):
-    proc = Popen(['ndcli'] + cmd + ['-s',' http://127.0.0.1:5000'], stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+    proc = Popen(['ndcli' , '-s', 'http://localhost:5000/'] + cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
     out, err = proc.communicate(input=cmd_input if cmd_input != None else None)
     return out
 
@@ -378,10 +379,14 @@ def run_test(testfile, outfile, stop_on_error=False, auto_pdns_check=False):
                         return False
         return not os.system('diff %s %s >/dev/null' % (testfile, outfile))
 
-
 if __name__ == '__main__':
     # start the server process
-    server = Popen(['manage_dim', 'runserver'], stderr=SRVLOG, stdout=SRVLOG)
+
+    parsed =urllib.parse.urlparse(os.getenv('NDCLI_SERVER', 'http://localhost:5000'))
+    host = parsed.hostname
+    port = parsed.port
+
+    server = Popen(['manage_dim', 'runserver', '--port', str(port), '--host', host], stderr=SRVLOG, stdout=SRVLOG)
 
     stop_on_error = False
     auto_pdns_check = False

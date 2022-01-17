@@ -5,6 +5,7 @@ The following steps assume that you have a minimal CentOS 8 installed.
 ### Disable SELINUX
 
 ```
+# setenforce 0
 # echo -e "SELINUX=disabled\nSELINUXTYPE=targeted" >/etc/sysconfig/selinux
 # systemctl stop firewalld
 # systemctl disable firewalld
@@ -109,8 +110,8 @@ grant select on pdns_int.* to pdns_int_user@localhost identified by 'SuperSecret
 
 ### create tables for pdns
 ```
-# wget -O - https://raw.githubusercontent.com/miesi/dim/master/dim/pdns.sql | mysql -u root pdns_int
-# wget -O - https://raw.githubusercontent.com/miesi/dim/master/dim/pdns.sql | mysql -u root pdns_pub
+# wget -O - https://raw.githubusercontent.com/1and1/dim/master/dim/pdns.sql | mysql -u root pdns_int
+# wget -O - https://raw.githubusercontent.com/1and1/dim/master/dim/pdns.sql | mysql -u root pdns_pub
 ```
 
 # PowerDNS
@@ -132,7 +133,7 @@ internal pdns
 ```
 # mkdir -p /etc/pdns/{int,pub}
  
-# cat <<EOF >/etc/pdns/int/pdns-int.conf
+# cat <<EOF >/etc/pdns/pdns-int.conf
 setgid=pdns
 setuid=pdns
 version-string=powerdns
@@ -175,7 +176,7 @@ EOF
 
 public pdns
 ```
-# cat <<EOF >/etc/pdns/pub/pdns-pub.conf
+# cat <<EOF >/etc/pdns/pdns-pub.conf
 setgid=pdns
 setuid=pdns
 version-string=powerdns
@@ -322,8 +323,8 @@ Install rpms of dim, dimclient, ndcli and jdk::
 ```
 # mkdir -p /etc/dim /srv/http/dim.example.com
 # dnf install https://github.com/1and1/dim/releases/download/dim-4.0.9/dim-4.0.9-1.el8.x86_64.rpm
-# dnf install https://github.com/1and1/dim/releases/download/dimclient-0.4.3/python3-dimclient-0.4.3-1.el8.x86_64.rpm
-# dnf install https://github.com/1and1/dim/releases/download/ndcli-4.0.0/python3-ndcli-4.0.0-1.el8.x86_64.rpm
+# dnf install https://github.com/1and1/dim/releases/download/dimclient-0.4.5/python3-dimclient-0.4.5-1.el8.x86_64.rpm
+# dnf install https://github.com/1and1/dim/releases/download/ndcli-4.0.3/python3-ndcli-4.0.3-1.el8.x86_64.rpm
 # dnf install https://github.com/1and1/dim/releases/download/dim-web-0.1/python3-dim-web-0.1-1.el8.x86_64.rpm
 ```
 
@@ -340,33 +341,6 @@ pdns-output needs to be build manually at the moment (any volunteers?)
 # cp pdns-output/build/libs/pdns-output-4.0.0-all.jar /opt/dim
 # cd ..
 # rm -rf dim
-
-# cat <<EOF >/etc/dim/pdns-output.properties
-# dim database connection parameters
-db.serverName=127.0.0.1
-db.portNumber=3306
-db.databaseName=dim
-db.user=dim_user
-db.password=dim_pass
- 
-# Timeout in seconds for getting the pdns_poller lock which prevents multiple pdns-output instances from running
-lockTimeout=120
- 
-# Delay in seconds used when polling the dim outputupdate table
-pollDelay=1
- 
-# Delay in seconds before retrying a failed update
-retryInterval=60
- 
-# Debug option to print to stdout transaction ids after processing them
-printTxn=false
- 
-# Max size of a sql query in bytes
-# should be less than the configured max_allowed_packet in mysql
-maxQuerySize=4000000
- 
-useNativeCrypto=true
-EOF
 ```
 
 systemd unit file
@@ -553,33 +527,7 @@ useNativeCrypto=true
 EOF
 ```
 
-Create systemd unit
-```
-# cat <<EOF >/etc/systemd/system/pdns-output.service
-[Unit]
-Description=DIM to PowerDNS DB
-After=network.target mysql.target
-
-[Service]
-Type=simple
-ExecStart=/bin/java -jar /opt/dim/pdns-output-4.0.0-all.jar
-Restart=on-failure
-StartLimitInterval=0
-PrivateTmp=true
-PrivateDevices=true
-CapabilityBoundingSet=CAP_NET_BIND_SERVICE CAP_SETGID CAP_SETUID CAP_CHOWN CAP_SYS_CHROOT
-NoNewPrivileges=true
-ProtectSystem=full
-ProtectHome=true
-RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
-LimitNOFILE=40000
- 
-[Install]
-WantedBy=multi-user.target
-EOF
-```
-
-Eenable and start service
+Enable and start service pdns-output
 ```
 # systemctl enable pdns-output
 # systemctl start pdns-output

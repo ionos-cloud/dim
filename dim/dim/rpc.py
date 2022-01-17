@@ -301,13 +301,16 @@ class RPC(object):
     @updating
     def layer3domain_create(self, name, type, comment=None, **options):
         self.user.can_network_admin()
+        if name == "all":
+            raise InvalidParameterError("Name 'all' is reserved")
         if Layer3Domain.query.filter_by(name=name).count():
             raise AlreadyExistsError("A layer3domain named '%s' already exists" % name)
-        if type not in Layer3Domain.TYPES:
-            raise InvalidParameterError('Type must be one of: %s' % ' '.join(list(Layer3Domain.TYPES.keys())))
-        for attr_name in Layer3Domain.TYPES[type]:
-            if options.get(attr_name) is None:
-                raise InvalidParameterError('Type %s requires a %s' % (type, attr_name))
+        if type in Layer3Domain.TYPES:
+            for attr_name in Layer3Domain.TYPES[type]:
+                if options.get(attr_name) is None:
+                    raise InvalidParameterError('Type %s requires a %s' % (type, attr_name))
+        elif type not in Layer3Domain.TYPES and len(options) > 0:
+            raise InvalidParameterError('Type %s does not support attributes' % (type))
 
         layer3domain = Layer3Domain(name=name, type=type, comment=comment)
         if type == Layer3Domain.VRF:
@@ -324,6 +327,14 @@ class RPC(object):
     def layer3domain_set_attrs(self, layer3domain, rd=None):
         self.user.can_network_admin()
         layer3domain = get_layer3domain(layer3domain)
+        if layer3domain.type == Layer3Domain.VRF:
+            set_rd(layer3domain, rd)
+
+    @updating
+    def layer3domain_set_type(self, layer3domain, type, rd=None):
+        self.user.can_network_admin()
+        layer3domain = get_layer3domain(layer3domain)
+        layer3domain.type = type
         if layer3domain.type == Layer3Domain.VRF:
             set_rd(layer3domain, rd)
 
@@ -355,6 +366,8 @@ class RPC(object):
     def layer3domain_delete(self, name):
         self.user.can_network_admin()
         layer3domain = get_layer3domain(name)
+        if Pool.query.filter_by(layer3domain=layer3domain).count() > 0:
+            raise DimError('layer3domain %s still contains pools' % layer3domain.name)
         if Ipblock.query.filter_by(layer3domain=layer3domain).count() > 0:
             raise DimError('layer3domain %s still contains objects' % layer3domain.name)
         db.session.delete(layer3domain)
@@ -1220,6 +1233,11 @@ class RPC(object):
     def ippool_set_owner(self, poolname, owner):
         self.user.can_modify_pool_attributes()
         get_pool(poolname).owner = get_group(owner)
+
+    @updating
+    def ippool_unset_owner(self, poolname):
+        self.user.can_modify_pool_attributes()
+        get_pool(poolname).owner = None
 
     @updating
     def ippool_delete_attrs(self, name, attribute_names):

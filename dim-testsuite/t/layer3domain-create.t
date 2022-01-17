@@ -14,3 +14,18 @@ vrf  default rd:8560:1
 vrf  max     rd:65535:65535
 vrf  min     rd:0:0
 $ ndcli delete layer3domain max
+$ ndcli create container 192.168.0.0/16 layer3domain min
+INFO - Creating container 192.168.0.0/16 in layer3domain min
+$ ndcli delete layer3domain min
+ERROR - layer3domain min still contains objects
+$ ndcli create layer3domain test type vrf rd 256:256
+$ ndcli create pool somepool layer3domain test
+$ ndcli delete layer3domain test
+ERROR - layer3domain test still contains pools
+$ ndcli create layer3domain all type vrf rd 25:25
+ERROR - Name 'all' is reserved
+$ ndcli create layer3domain test2 type customtype
+$ ndcli create layer3domain test3 type customtype rd 22:22
+ERROR - Type customtype does not support attributes
+$ ndcli create layer3domain test4 type vrf
+ERROR - Type vrf requires a rd

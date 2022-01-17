@@ -29,7 +29,7 @@ Example::
 
 A cookie will be set in the response::
 
-    Set-Cookie: Apache2::SiteControl_Netdot=55ef6879eabe31d4b9f8f4f121c9b454; expires=Thu, 22 Dec 2011 13:39:15 GMT; path=/dim/
+    Set-Cookie: session=eyJfcGVybWFuZW50IjpmYWxzZSwidXNlcm5hbWUiOiJkaW0ifQ.YSTEnQ.OPsFMPoZD7SsLmuAJNvRXH-MZZs; HttpOnly; Path=/
 
 
 Tools
@@ -78,7 +78,7 @@ Example request for the call ``ipblock_get_attrs("12.0.0.1")``::
     POST /dim/jsonrpc HTTP/1.1
     Host: example.com
     Content-Type: application/json-rpc; charset=utf-8
-    Cookie: Apache2::SiteControl_Netdot=55ef6879eabe31d4b9f8f4f121c9b454
+    Cookie: session=eyJfcGVybWFuZW50IjpmYWxzZSwidXNlcm5hbWUiOiJkaW0ifQ.YSTEnQ.OPsFMPoZD7SsLmuAJNvRXH-MZZs
     Content-Length: 78
 
     {"jsonrpc":"2.0","id":null,"method":"ipblock_get_attrs","params":["12.0.0.1"]}
