@@ -9,7 +9,7 @@ ndcli, dimclient, dim itself, the output and some more.
 requirements
 ------------
 
-You need a running mysql instance with the following databases:
+You need a running mysql instance listening on 127.0.0.1:3307 with the following databases:
 
 ```
 create database dim;
