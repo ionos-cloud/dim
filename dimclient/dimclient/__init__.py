@@ -1,11 +1,3 @@
-'''
-Usage example::
-
-    from dimclient import script_client
-    client = script_client('http://localhost:5000')
-    print(client.ip_list(pool='*', type='all', limit=2))
-'''
-
 try:
     import simplejson as json
 except:
@@ -165,12 +157,3 @@ class DimClient(object):
             options['after'] = batch[-1]['ip']
         return result
 
-
-def script_client(server_url, username=None, password=None):
-    '''
-    Return a client object authenticated with a permanent session and configured
-    to use ~/.ndcli.cookie.
-    '''
-    client = DimClient(server_url, cookie_file=os.path.expanduser('~/.ndcli.cookie'))
-    client.login_prompt(username, password, permanent_session=True)
-    return client
