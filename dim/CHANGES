@@ -1,3 +1,23 @@
+5.0.0-rc1
+---------
+* also bump dimclient-lib to 1.0.0-rc1 and ndcli to 5.0.0-rc1
+* dimclient removed feature script_client
+* ndcli now understands the Environment variables NDCLI_USERNAME, NDCLI_SERVER, NDCLI_CONFIG, NDCLI_COOKIEPATH, NDCLI_LAYER3DOMAIN (see man page)
+* default layer3domain can be set in .ndclirc
+* add option to view all containers in all layer3domains
+* adjust error message when deleting a layer3domain
+* migrate to ldap3 python library
+* allow modifying the type of layer3domains
+* make layer3domain rd option optional
+* do not allow layer3domain named all
+* fix ldap_sync and ldap_auth for ldap3
+* allow unsetting the owning group of pools
+* dimclient: fix username prompt on Python 3
+* minor fixes to testsuite
+* add ldapsync dryrun and delete limit option
+* support running on python3.6
+* DIM Server process configfile can now be passed by ENV DIM_CONFIG
+
 4.0.9
 -----
 * restore old behavoir and send http status 403 on reject request
