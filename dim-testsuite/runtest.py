@@ -34,6 +34,7 @@ from tests.pdns_util import diff_files, test_pdns_output_process, setup_pdns_out
 topdir = os.path.dirname(os.path.abspath(__file__))
 T_DIR = os.path.join(topdir, 't')
 OUT_DIR = os.getenv('TEST_OUTPUT_DIR', os.path.join(topdir, 'out'))
+SRVLOG = os.getenv('SRVLOG', os.path.join(topdir, 'log/server.log'))
 PDNS_ADDRESS = '127.1.1.1'
 PDNS_DB_URI = 'mysql://pdns:pdns@127.0.0.1:3307/pdns1'
 DIM_MYSQL_OPTIONS = '-h127.0.0.1 -P3307 -udim -pdim dim'
@@ -88,7 +89,7 @@ def is_pdns_query(line):
 
 
 def _ndcli(cmd: str, cmd_input=None):
-    proc = Popen(['ndcli'] + cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+    proc = Popen(['ndcli'] + cmd + ['-s',' http://127.0.0.1:5000'], stdin=PIPE, stdout=PIPE, stderr=STDOUT)
     out, err = proc.communicate(input=cmd_input if cmd_input != None else None)
     return out
 
@@ -380,7 +381,7 @@ def run_test(testfile, outfile, stop_on_error=False, auto_pdns_check=False):
 
 if __name__ == '__main__':
     # start the server process
-    server = Popen(['manage_dim', 'runserver'], stderr=DEVNULL, stdout=DEVNULL)
+    server = Popen(['manage_dim', 'runserver'], stderr=SRVLOG, stdout=SRVLOG)
 
     stop_on_error = False
     auto_pdns_check = False
