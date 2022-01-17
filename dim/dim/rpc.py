@@ -1235,6 +1235,11 @@ class RPC(object):
         get_pool(poolname).owner = get_group(owner)
 
     @updating
+    def ippool_unset_owner(self, poolname):
+        self.user.can_modify_pool_attributes()
+        get_pool(poolname).owner = None
+
+    @updating
     def ippool_delete_attrs(self, name, attribute_names):
         self.user.can_modify_pool_attributes()
         get_pool(name).delete_attrs(attribute_names)
