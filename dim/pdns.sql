@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS records (
   content               VARCHAR(64000) DEFAULT NULL,
   ttl                   INTEGER DEFAULT NULL,
   prio                  SMALLINT UNSIGNED DEFAULT NULL,
+  change_date           TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   disabled              TINYINT(1) NOT NULL DEFAULT 0,
   ordername             VARCHAR(255) BINARY DEFAULT NULL,
   auth                  TINYINT(1) NOT NULL DEFAULT 1,
