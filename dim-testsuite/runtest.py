@@ -31,6 +31,8 @@ from dimclient import DimClient
 
 from tests.pdns_util import diff_files, test_pdns_output_process, setup_pdns_output, compare_dim_pdns_zones
 
+from typing import List
+
 
 topdir = os.path.dirname(os.path.abspath(__file__))
 T_DIR = os.path.join(topdir, 't')
@@ -72,24 +74,24 @@ class PDNSOutputProcess(object):
                     os.read(self.proc.stdout.fileno(), 1024)
 
 
-def is_ignorable(line: str):
+def is_ignorable(line: bytes):
     return len(line.strip()) == 0 or line.startswith(b'#')
 
 
-def generates_table(line):
+def generates_table(line: bytes):
     return line.startswith(b'$ ndcli list') or line.startswith(b'$ ndcli dump zone') or line.startswith(b'$ ndcli history')
 
 
-def generates_map(line):
+def generates_map(line: bytes):
     return line.startswith(b'$ ndcli show') or line.startswith(b'$ ndcli modify rr') \
         or re.search(b'(get|mark) (ip|delegation)', line) or re.search(b'ndcli create rr .* from', line)
 
 
-def is_pdns_query(line):
+def is_pdns_query(line: bytes):
     return any(cmd in line for cmd in (b'dig', b'drill'))
 
 
-def _ndcli(cmd: str, cmd_input=None):
+def _ndcli(cmd: List[str], cmd_input=None):
     proc = Popen(['ndcli' , '-s', 'http://localhost:5000/'] + cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
     out, err = proc.communicate(input=cmd_input if cmd_input != None else None)
     return out
@@ -112,7 +114,7 @@ def clean_database():
         sys.exit(1)
 
 
-def run_command(line, cmd_input=None):
+def run_command(line: bytes, cmd_input=None):
     cmd = shlex.split(line[7:].decode('utf-8'))
     out = _ndcli(cmd, cmd_input)
     return out
@@ -148,7 +150,7 @@ def process_command(actual_output, expected_output, out, sort_before=False):
     return passed
 
 
-def table_from_lines(lines: list[bytes], cmd: str) -> list[bytes]:
+def table_from_lines(lines: List[bytes], cmd: bytes) -> List[List[bytes]]:
     if generates_map(cmd):
         result = []
         for line in lines:
@@ -171,7 +173,7 @@ def table_from_lines(lines: list[bytes], cmd: str) -> list[bytes]:
         while lines and re.match(b'^(INFO|WARNING)', lines[0]):
             result.append([lines.pop(0)])
         headers = lines[0].split()
-        offsets = []
+        offsets: List[int] = []
         for header in headers:
             # some headers are substrings of others
             start_find = offsets[-1] + 1 if offsets else 0
@@ -251,7 +253,7 @@ def add_regex(table, cmd):
     return table
 
 
-def match_table(actual_table, expected_table, actual_raw, expected_raw) -> list[str]:
+def match_table(actual_table, expected_table, actual_raw, expected_raw) -> List[str]:
     def match(row, info):
         if len(row) != len(info):
             return False
@@ -362,7 +364,7 @@ def run_test(testfile, outfile, stop_on_error=False, auto_pdns_check=False):
                                              expected_table,
                                              result.splitlines(True),
                                              expected_result)
-                        out.writelines(list[str](output))
+                        out.writelines(output)
 
                         ok = output == expected_result
                         if not ok:
