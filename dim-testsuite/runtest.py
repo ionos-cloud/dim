@@ -35,6 +35,7 @@ from tests.pdns_util import diff_files, test_pdns_output_process, setup_pdns_out
 topdir = os.path.dirname(os.path.abspath(__file__))
 T_DIR = os.path.join(topdir, 't')
 OUT_DIR = os.getenv('TEST_OUTPUT_DIR', os.path.join(topdir, 'out'))
+SRVLOG = os.getenv('SRVLOG', os.path.join(topdir, 'log/server.log'))
 PDNS_ADDRESS = '127.1.1.1'
 PDNS_DB_URI = 'mysql://pdns:pdns@127.0.0.1:3307/pdns1'
 DIM_MYSQL_OPTIONS = '-h127.0.0.1 -P3307 -udim -pdim dim'
@@ -378,14 +379,14 @@ def run_test(testfile, outfile, stop_on_error=False, auto_pdns_check=False):
                         return False
         return not os.system('diff %s %s >/dev/null' % (testfile, outfile))
 
-
 if __name__ == '__main__':
     # start the server process
+
     parsed =urllib.parse.urlparse(os.getenv('NDCLI_SERVER', 'http://localhost:5000'))
     host = parsed.hostname
     port = parsed.port
 
-    server = Popen(['manage_dim', 'runserver', '--port', str(port), '--host', host], stderr=DEVNULL, stdout=DEVNULL)
+    server = Popen(['manage_dim', 'runserver', '--port', str(port), '--host', host], stderr=SRVLOG, stdout=SRVLOG)
 
     stop_on_error = False
     auto_pdns_check = False

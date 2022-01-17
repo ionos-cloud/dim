@@ -1,8 +1,8 @@
 ### Database
-DB_USERNAME = 'netdot_user'
-DB_PASSWORD = 'netdot_pass'
-DB_HOST     = 'localhost'
-SQLALCHEMY_DATABASE_URI = 'mysql://%s:%s@%s/netdot' % (DB_USERNAME, DB_PASSWORD, DB_HOST)
+DB_USERNAME = 'dim'
+DB_PASSWORD = 'dim'
+DB_HOST     = '127.0.0.1'
+SQLALCHEMY_DATABASE_URI = 'mysql://%s:%s@%s:3307/dim' % (DB_USERNAME, DB_PASSWORD, DB_HOST)
 DB_LOCK_TIMEOUT = 120
 
 
@@ -54,6 +54,6 @@ DNS_DEFAULT_ZONE_TTL = 86400  # 1 day (Default. TTL)
 
 
 ### Debugging
-SQLALCHEMY_DATABASE_URI_TEST = 'mysql://%s:%s@%s/netdot_test' % (DB_USERNAME, DB_PASSWORD, DB_HOST)
+SQLALCHEMY_DATABASE_URI_TEST = 'mysql://%s:%s@%s:3307/dim' % (DB_USERNAME, DB_PASSWORD, DB_HOST)
 SQLALCHEMY_LOG = False
 DEBUG = False
