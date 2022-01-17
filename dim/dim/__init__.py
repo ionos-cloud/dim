@@ -34,7 +34,7 @@ def create_app(db_mode=None, testing=False):
     app = Flask(__name__)
 
     app.config.from_pyfile('defaults.py')
-    app.config.from_pyfile('/etc/dim/dim.cfg', silent=True)
+    app.config.from_pyfile( os.getenv('DIM_CONFIG','/etc/dim/dim.cfg'), silent=True)
     app.config.from_pyfile('../etc/dim.cfg', silent=True)
     os.environ['REQUESTS_CA_BUNDLE'] = app.config['REQUESTS_CA_BUNDLE']
     app.testing = testing
