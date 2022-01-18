@@ -35,7 +35,7 @@ def _readconfig(config_file):
         logger.debug('Configuration file cannot be read: %s' % e)
     return config
 
-config_path = os.getenv('NDCLI_CONFIG', '~/ndclirc')
+config_path = os.getenv('NDCLI_CONFIG', '~/.ndclirc')
 config = _readconfig(os.path.expanduser(config_path))
 
 # get_layer3domain returns from_args, from the environment variable or the
