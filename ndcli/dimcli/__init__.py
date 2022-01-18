@@ -293,6 +293,7 @@ cmd = Command('ndcli',
                               layer3domain_group,
                               Command('remove'),
                               Command('set'),
+                              Command('move'),
                               defaults=dict(block_type='container')),
                       Command('pool',
                               Argument('poolname', completions=complete_allocate_poolname),
@@ -1313,6 +1314,14 @@ class CLI(object):
         result = self.client.ippool_add_subnet(args.poolname, args.subnet, **options)
         if result['created']:
             logger.info("Created subnet %s in layer3domain %s" % (args.subnet, result['layer3domain']))
+        _print_messages(result)
+
+    @cmd.register('modify container move to', Argument('to_layer3domain'))
+    def ipblock_move_to(self, args):
+        result = self.client.ipblock_move_to(
+			args.container,
+			get_layer3domain(args.get('layer3domain')),
+			args.get('to_layer3domain'))
         _print_messages(result)
 
     # modify [block_type] set/remove attrs

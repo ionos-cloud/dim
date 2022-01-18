@@ -251,7 +251,7 @@ generate_history_table(
      Column('vlan', Integer, info={'filler': default_filler('vlan')})] +
     generate_attr_change_columns(),
     [Ipblock.version, Ipblock.address, Ipblock.prefix, Ipblock.priority, Ipblock.gateway,
-     Ipblock.status, Ipblock.pool, Ipblock.vlan],
+     Ipblock.status, Ipblock.pool, Ipblock.vlan, Ipblock.layer3domain],
     suppress_events=[Ipblock.version, Ipblock.address, Ipblock.prefix],
     indexes=[Index('ix_address_prefix_version', 'address', 'prefix', 'version')])
 
