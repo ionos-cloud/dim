@@ -25,10 +25,19 @@ jobs:
         env:
           _REF: ${{ github.ref }}
       - run: apt-get update
-      - run: apt-get install --yes python3-dnspython python3-sphinx make git
+      - run: apt-get install --yes build-essential python3 python3-dnspython bash-completion dh-python python3-setuptools python3-all debhelper devscripts python3-simplejson python3-sphinx make git
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      - run: echo "::set-output name=version::$( git tag | grep dimclient | sort | tail -1 | cut -d'-' -f2- )"
+        id: dimclient
+        shell: bash
+      - run: |
+          curl --location "https://github.com/${{ github.repository }}/releases/download/dimclient-${_DIMCLIENT}/python3-dimclient_${_DIMCLIENT}_all.deb" > ./python3-dimclient_${_DIMCLIENT}_all.deb
+          dpkg -i ./python3-dimclient_${_DIMCLIENT}_all.deb
+          apt-get install -fy
+        env:
+          _DIMCLIENT: ${{ steps.dimclient.outputs.version }}
       - run: python3 gendoc.py > gendoc.txt
         working-directory: ndcli/doc
       - run: sphinx-build -b man doc doc/_build/man
@@ -40,9 +49,6 @@ jobs:
         with:
           name: ndcli-src-${{ steps.version.outputs.version }}.tar.gz
           path: ndcli-src-${{ steps.version.outputs.version }}.tar.gz
-      - run: echo "::set-output name=version::$( git tag | grep dimclient | sort | tail -1 | cut -d'-' -f2- )"
-        id: dimclient
-        shell: bash
       - run: echo "${_version} - ${_dimclient}"
         env:
           _dimclient: ${{ steps.dimclient.outputs.version }}
