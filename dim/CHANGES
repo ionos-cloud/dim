@@ -1,3 +1,6 @@
+5.0.0rc1
+* Version String changed due to packaging issues
+
 5.0.0-rc1
 ---------
 * also bump dimclient-lib to 1.0.0-rc1 and ndcli to 5.0.0-rc1
