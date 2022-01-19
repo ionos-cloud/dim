@@ -29,6 +29,7 @@ db:
 
 test:
 	-mkdir ${ODIR}
+	-mkdir ${LDIR}
 	${VDIR}/bin/manage_db clear
 
 	PATH="${VDIR}/bin:${PATH}" \
