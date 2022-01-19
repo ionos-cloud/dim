@@ -23,8 +23,8 @@ install:
 	${VPIP} install ../ndcli
 
 db:
-	mysql -h127.0.0.1 -P3307 -uroot pdns1 < ./testenv/pdns.sql
-	mysql -h127.0.0.1 -P3307 -uroot pdns2 < ./testenv/pdns.sql
+	mysql -h127.0.0.1 -P3307 -updns -ppdns pdns1 < ./testenv/pdns.sql
+	mysql -h127.0.0.1 -P3307 -updns -ppdns pdns2 < ./testenv/pdns.sql
 	${VDIR}/bin/manage_db clear
 
 test:
@@ -33,10 +33,11 @@ test:
 	${VDIR}/bin/manage_db clear
 
 	PATH="${VDIR}/bin:${PATH}" \
-  	   TEST_OUTPUT_DIR="${ODIR}" \
-			 SRVLOG="${SRVLOG}" \
-       NDCLI_USERNAME="${NDCLI_USERNAME}" \
-			 NDCLI_CONFIG="${NDCLI_CONFIG}" \
-			 NDCLI_SERVER="${NDCLI_SERVER}" ${VPYTHON} runtest.py -d
+	TEST_OUTPUT_DIR="${ODIR}" \
+	SRVLOG="${SRVLOG}" \
+	NDCLI_USERNAME="${NDCLI_USERNAME}" \
+	NDCLI_CONFIG="${NDCLI_CONFIG}" \
+	NDCLI_SERVER="${NDCLI_SERVER}" \
+	${VPYTHON} runtest.py -d
 
 .PHONY: db test install clean
