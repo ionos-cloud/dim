@@ -21,7 +21,7 @@ import os.path
 import re
 import shlex
 import sys
-import urllib
+from urllib.parse import urlparse
 from io import StringIO
 from itertools import zip_longest
 from subprocess import Popen, PIPE, DEVNULL, STDOUT
@@ -383,12 +383,12 @@ def run_test(testfile, outfile, stop_on_error=False, auto_pdns_check=False):
 
 if __name__ == '__main__':
     # start the server process
-
-    parsed =urllib.parse.urlparse(os.getenv('NDCLI_SERVER', 'http://localhost:5000'))
+    parsed = urlparse(os.getenv('NDCLI_SERVER', 'http://localhost:5000'))
     host = parsed.hostname
     port = parsed.port
 
-    server = Popen(['manage_dim', 'runserver', '--port', str(port), '--host', host], stderr=SRVLOG, stdout=SRVLOG)
+    logfile = open(SRVLOG, 'wb+')
+    server = Popen(['manage_dim', 'runserver', '--port', str(port), '--host', str(host)], stderr=STDOUT, stdout=logfile)
 
     stop_on_error = False
     auto_pdns_check = False
