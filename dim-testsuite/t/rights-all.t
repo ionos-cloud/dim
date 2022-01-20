@@ -1,4 +1,4 @@
-$ ndcli login -u admin -p p
+# as user admin
 $ ndcli create user-group usergroup
 $ ndcli modify user-group usergroup grant dns_update_agent
 

@@ -1,11 +1,14 @@
+# users with usertype Admin can modify user-groups
+# admin user is Admin by default
+
+# make sure the users exist
+# as user user1
+$ ndcli login -u user1 -p p
+# as user user2
+$ ndcli login -u user2 -p p
+
+# as user admin
 $ ndcli create user-group global-dns-admins
-
-# user admin has admin flag in db (set user Admin)
-
-$ ndcli login -u user1 -p testkey
-$ ndcli login -u user2 -p testkey
-$ ndcli login -u admin -p p
-
 $ ndcli modify user-group global-dns-admins add user user1
 $ ndcli modify user-group global-dns-admins add user user2
 

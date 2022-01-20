@@ -1,6 +1,9 @@
+# make sure the users exist
+# as user u
 $ ndcli login -u u -p p
+# as user u2
 $ ndcli login -u u2 -p p
-$ ndcli login -u admin -p p
+# as user admin
 $ ndcli create user-group g
 $ ndcli modify user-group g add user u
 $ ndcli create user-group g2

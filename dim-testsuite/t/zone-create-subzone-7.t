@@ -1,6 +1,8 @@
 # Test --no-inherit-*
+# make sure the user exits
+# as user u
 $ ndcli login -u u -p p
-$ ndcli login -u admin -p p
+# as user admin
 $ ndcli create user-group g
 $ ndcli modify user-group g add user u
 
