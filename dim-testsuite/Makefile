@@ -1,13 +1,13 @@
-PYTHON        ?= python3
-VDIR          ?= virtual_env
-ODIR          ?= out
-VPIP          ?= ${VDIR}/bin/pip3
-VPYTHON       ?= ${VDIR}/bin/python3
-LDIR          ?= log
-SRVLOG        ?= ${LDIR}/server.log
+PYTHON         ?= python3
+VDIR           ?= virtual_env
+ODIR           ?= out
+VPIP           ?= ${VDIR}/bin/pip3
+VPYTHON        ?= ${VDIR}/bin/python3
+LDIR           ?= log
+SRVLOG         ?= ${LDIR}/server.log
 NDCLI_USERNAME ?= admin
 NDCLI_SERVER   ?= http://localhost:5000
-NDCLI_CONFIG  ?= /dev/null
+NDCLI_CONFIG   ?= /dev/null
 
 all: install db test
 	mkdir ${VDIR}
