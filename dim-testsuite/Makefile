@@ -33,11 +33,11 @@ test:
 	${VDIR}/bin/manage_db clear
 
 	PATH="${VDIR}/bin:${PATH}" \
-	TEST_OUTPUT_DIR="${ODIR}" \
-	SRVLOG="${SRVLOG}" \
-	NDCLI_USERNAME="${NDCLI_USERNAME}" \
-	NDCLI_CONFIG="${NDCLI_CONFIG}" \
-	NDCLI_SERVER="${NDCLI_SERVER}" \
-	${VPYTHON} runtest.py -d
+		TEST_OUTPUT_DIR="${ODIR}" \
+		SRVLOG="${SRVLOG}" \
+		NDCLI_USERNAME="${NDCLI_USERNAME}" \
+		NDCLI_CONFIG="${NDCLI_CONFIG}" \
+		NDCLI_SERVER="${NDCLI_SERVER}" \
+		${VPYTHON} runtest.py -d
 
 .PHONY: db test install clean
