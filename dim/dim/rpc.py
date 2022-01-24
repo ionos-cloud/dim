@@ -94,7 +94,7 @@ class RPC(object):
 
     @readonly
     def get_username(self):
-        return self.username
+        return self.user.username
 
     @readonly
     def protocol_version(self):
