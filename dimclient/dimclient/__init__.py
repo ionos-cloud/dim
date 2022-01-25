@@ -59,12 +59,19 @@ class DimClient(object):
     @property
     def logged_in(self):
         try:
-            self.session.open(self.server_url + '/index.html')
+            self.get_username()
             # update cookie file with refreshed cookie(s) from response
             self._update_cookie_file()
             return True
         except HTTPError as e:
             if e.code == 403:
+                return False
+            else:
+                raise
+        except DimError as e:
+            # InvalidUserError
+            # valid cookie, but user is missing in DIM
+            if e.code == 8:
                 return False
             else:
                 raise
