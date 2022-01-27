@@ -1,6 +1,8 @@
-$ ndcli login -u user1 -p testkey
-$ ndcli login -u admin -p p
+# make sure the user exists
+# as user user1
+$ ndcli login -u user1 -p p
 
+# as user admin
 $ ndcli create user-group dns-group-1
 
 $ ndcli create user-group ipam-group-1
@@ -38,4 +40,3 @@ $ ndcli delete pool pool1
 $ ndcli delete user-group dns-group-1
 $ ndcli delete user-group ipam-group-1
 $ ndcli delete user-group some-group-1
-

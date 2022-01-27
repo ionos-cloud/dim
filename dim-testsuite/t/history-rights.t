@@ -1,10 +1,14 @@
+# make sure the users exist
+# as user user
+$ ndcli login -u user -p p
+# as user dns_admin
+$ ndcli login -u dns_admin -p p
+
+# as user admin
 $ ndcli create zone .
 WARNING - Creating zone . without profile
 WARNING - Primary NS for this Domain is now localhost.
 $ ndcli create pool p
-$ ndcli login -u user -p p
-$ ndcli login -u dns_admin -p p
-$ ndcli login -u admin -p p
 
 $ ndcli create user-group dns_admins
 $ ndcli modify user-group dns_admins add user dns_admin

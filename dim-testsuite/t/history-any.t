@@ -1,18 +1,21 @@
+# make sure the user exists
+# as user dnsadmin
 $ ndcli login -u dnsadmin -p p
-$ ndcli login -u admin -p p
+
+# as user admin
 $ ndcli create user-group usergroup
 $ ndcli modify user-group usergroup grant dns_admin
 $ ndcli modify user-group usergroup grant network_admin
 $ ndcli modify user-group usergroup add user dnsadmin
 
-$ ndcli login -u dnsadmin -p p
-$ ndcli create zone a.de
+# as user dnsadmin
+$ ndcli create zone a.de -u dnsadmin
 WARNING - Creating zone a.de without profile
 WARNING - Primary NS for this Domain is now localhost.
-$ ndcli create zone-profile profile
-$ ndcli modify zone-profile profile create rr @ txt "profile txt record"
+$ ndcli create zone-profile profile -u dnsadmin
+$ ndcli modify zone-profile profile create rr @ txt "profile txt record" -u dnsadmin
 INFO - Creating RR @ TXT "profile txt record" in zone profile profile
-$ ndcli modify rr profile. -c "new profile comment"
+$ ndcli modify rr profile. -c "new profile comment" -u dnsadmin
 comment:new profile comment
 created:2013-04-03 17:07:42
 created_by:dnsadmin
@@ -20,12 +23,12 @@ modified:2013-04-03 17:07:42
 modified_by:dnsadmin
 rr:@ TXT "profile txt record"
 zone:profile
-$ ndcli modify zone-profile profile set ttl 1002
-$ ndcli create container 1.0.0.0/8
+$ ndcli modify zone-profile profile set ttl 1002 -u dnsadmin
+$ ndcli create container 1.0.0.0/8 -u dnsadmin
 INFO - Creating container 1.0.0.0/8 in layer3domain default
-$ ndcli create pool p2 vlan 435 team:"IT Operations Dataservices Infrastructure"
+$ ndcli create pool p2 vlan 435 team:"IT Operations Dataservices Infrastructure" -u dnsadmin
 
-$ ndcli login -u admin -p p
+# as user admin
 $ ndcli create zone-group zg
 $ ndcli modify zone-group zg set comment "first_comment"
 $ ndcli modify zone-group zg add zone a.de view default
