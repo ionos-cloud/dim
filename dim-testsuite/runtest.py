@@ -407,7 +407,7 @@ if __name__ == '__main__':
             tests.append(test)
     if not tests:
         tests = sorted(os.listdir(T_DIR))
-    failed = 0
+    failed = []
 
     try:
         os.makedirs(OUT_DIR)
@@ -429,13 +429,21 @@ if __name__ == '__main__':
         print('ok' if ok else 'fail')
         sys.stdout.flush()
         if not ok:
-            failed += 1
-            if stop_on_error or len(tests) == 1:
-                diff_left = outfile
-                diff_right = testfile
+            failed.append((testfile, outfile))
             if stop_on_error:
                 break
-    if failed and run_diff:
-        diff_files(diff_left, diff_right)
+    if len(failed) >= 1 and run_diff:
+        # meld supports comparing multiple sets of files at once
+        if os.getenv('DIFF_TOOL') is not None and str(os.getenv('DIFF_TOOL')).endswith('meld'):
+            prog = str(os.getenv('DIFF_TOOL'))
+            params: List[str] = []
+            for reference, result in failed:
+                params += ('--diff', reference, result)
+            # open in background
+            print('starting DIFF_TOOL {} in the background'.format(prog))
+            Popen([prog] + params)
+        else:
+            for reference, result in failed:
+                diff_files(reference, result)
     server.kill()
-    sys.exit(1 if failed else 0)
+    sys.exit(1 if len(failed) >= 1 else 0)

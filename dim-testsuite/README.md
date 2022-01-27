@@ -65,38 +65,27 @@ into it.
 After that it will start the dim server and start making ndcli calls against
 the server.
 
-To control the location of the virtual environment or the output directory,
-use the variables `VDIR` and `ODIR`.
+To control the location of the virtual environment, the output directory, or
+the log directory, use the variables `VDIR`, `ODIR` and `LDIR`.
 
 ```
-make VDIR=/tmp/venv ODIR=/tmp/test_output
+make VDIR=/tmp/venv ODIR=/tmp/test_output LDIR=/tmp/test_logs
 ```
 
 If you want to skip the database initialization or installing of dependencies,
 let *make* run the tests directly by using `make test`.
 
-To run a single testfile, use the following command after you have created the
-virtual environment:
+To run only specific testfiles, use the variable `TEST` for `make test` after
+you've created the virtual environment.
 
 ```
-export VDIR=/tmp/venv
-export ODIR=/tmp/test_output
-make VDIR=$VDIR ODIR=$ODIR
-PATH="$VDIR/bin:$PATH" TEST_OUTPUT_DIR=$ODIR $VIDR/bin/python ./runtest.py -d <testfile>
+make test TESTS="<test1> <test2>"
 ```
 
-`runtest.py` will look in the t directory for the specific testcase and run
-only that single one. After the case was run, your dim environment will have
+`runtest.py` will look in the t directory for the specific testcases and run
+only the ones specified in `TESTS`. After the case was run, your dim environment will have
 exactly the state it broke in, so you can poke into it with ndcli, for example:
 
 ```
 $VDIR/bin/ndcli list pools
 ```
-
-where is the log?
------------------
-
-Currently dim is started via the runtest.py in a background process. If this is
-not enough for your use case, you can start dim yourself with the same config
-file.
-runtest.py will still work and all tests will still be done.
