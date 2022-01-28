@@ -976,10 +976,10 @@ class RPC(object):
     @readonly
     def ippool_list(self, pool=None, vlan=None, cidr=None, full=False, include_subnets=True,
                     can_allocate=None, owner=None, favorite_only=False, limit=None, offset=0,
-                    fields=False, attributes=['name', 'vlan', 'subnets']):
+                    layer3domain=None, fields=False, attributes=['name', 'vlan', 'subnets']):
         if len(attributes) == 0:
             raise DimError('no attributes selected to return')
-        ids = self._ippool_query(pool, vlan, cidr, can_allocate, owner)
+        ids = self._ippool_query(pool, vlan, cidr, can_allocate, owner, layer3domain)
         if favorite_only:
             ids = ids.join(FavoritePool).filter(FavoritePool.user_id == self.user.id)
         if limit is not None:
@@ -1044,8 +1044,9 @@ class RPC(object):
 
     @readonly
     def ippool_list2(self, pool=None, vlan=None, cidr=None, full=False, include_subnets=True, order='asc',
-                    can_allocate=None, owner=None, favorite_only=False, limit=None, offset=0, fields=False):
-        ids = self._ippool_query(pool, vlan, cidr, can_allocate, owner)
+                    can_allocate=None, owner=None, favorite_only=False, limit=None, offset=0, fields=False,
+                    layer3domain=None):
+        ids = self._ippool_query(pool, vlan, cidr, can_allocate, owner, layer3domain)
         if favorite_only:
             ids = ids.join(FavoritePool).filter(FavoritePool.user_id == self.user.id)
         total_count = ids.count()
@@ -3358,8 +3359,10 @@ class RPC(object):
             free_ipblocks(ipblocks)
         return {'messages': Messages.get()}
 
-    def _ippool_query(self, pool, vlan, cidr, can_allocate, owner):
+    def _ippool_query(self, pool, vlan, cidr, can_allocate, owner, layer3domain):
         q = db.session.query(Pool.id, Pool.name)
+        if layer3domain is not None:
+            q = q.filter(Pool.layer3domain == get_layer3domain(layer3domain))
         if cidr is not None:
             q = q.outerjoin(Pool.subnets)
         if can_allocate:

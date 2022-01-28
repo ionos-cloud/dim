@@ -1480,6 +1480,7 @@ class CLI(object):
         _print_messages(result)
 
     @cmd.register('list pools',
+                  layer3domain_group,
                   Argument('query', metavar='VLANID|CIDR|POOL', nargs='?'),
                   Option('o', 'can-allocate', help='limit results to pools where you can allocate'),
                   Option('a', 'attributes',
@@ -1496,6 +1497,9 @@ class CLI(object):
         options = OptionDict(include_subnets=True,attributes=attr_names)
         options.set_if(full=args.full)
         options.set_if(can_allocate=args['can-allocate'])
+        layer3domain = get_layer3domain(args.layer3domain)
+        if layer3domain not in ['all', None]:
+            options.set_if(layer3domain=layer3domain)
         options.update(_parse_query(args.query))
         pools = self.client.ippool_list(**options)
         for pool in pools:
