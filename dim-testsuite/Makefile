@@ -38,6 +38,6 @@ test:
 		NDCLI_USERNAME="${NDCLI_USERNAME}" \
 		NDCLI_CONFIG="${NDCLI_CONFIG}" \
 		NDCLI_SERVER="${NDCLI_SERVER}" \
-		${VPYTHON} runtest.py -d
+		${VPYTHON} runtest.py -d ${TESTS}
 
 .PHONY: db test install clean
