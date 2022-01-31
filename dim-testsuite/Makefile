@@ -17,10 +17,10 @@ all: install db test
 install:
 	${PYTHON} -m venv ${VDIR}
 	${VPIP} install -r ../dim/requirements.txt
-	${VPIP} install ../dim
-	${VPIP} install ../dimclient
+	${VPIP} install -e ../dim
+	${VPIP} install -e ../dimclient
 	${VPIP} install -r ../ndcli/requirements.txt
-	${VPIP} install ../ndcli
+	${VPIP} install -e ../ndcli
 
 db:
 	mysql -h127.0.0.1 -P3307 -updns -ppdns pdns1 < ./testenv/pdns.sql
