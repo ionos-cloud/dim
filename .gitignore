@@ -1,2 +1,6 @@
 .idea
 .gradle
+dim-testsuite/out
+dim-testsuite/log
+dim-testsuite/virtual_env
+__pycache__
