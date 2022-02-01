@@ -381,10 +381,13 @@ class Ipblock(db.Model, WithAttr, TrackChanges):
             db.session.delete(block)
 
     @staticmethod
-    def query_ip(ip, layer3domain):
+    def query_ip(ip, layer3domain, status=None):
         filters = {}
         if layer3domain is not None:
             filters['layer3domain'] = layer3domain
+        if status is not None:
+            from dim.rpc import get_status
+            filters['status'] = get_status(status)
         return Ipblock.query.filter_by(address=ip.address,
                                        prefix=ip.prefix,
                                        version=ip.version,

@@ -12,7 +12,25 @@ INFO - Creating container 10.0.0.0/8 in layer3domain one
 $ ndcli create container 11.0.0.0/8 layer3domain one
 INFO - Creating container 11.0.0.0/8 in layer3domain one
 $ ndcli list containers
-ERROR - A layer3domain is needed
+layer3domain: default
+10.0.0.0/8 (Container)
+  10.0.0.0/8 (Available)
+
+layer3domain: one
+10.0.0.0/8 (Container)
+  10.0.0.0/8 (Available)
+11.0.0.0/8 (Container)
+  11.0.0.0/8 (Available)
+$ ndcli list containers layer3domain all
+layer3domain: default
+10.0.0.0/8 (Container)
+  10.0.0.0/8 (Available)
+
+layer3domain: one
+10.0.0.0/8 (Container)
+  10.0.0.0/8 (Available)
+11.0.0.0/8 (Container)
+  11.0.0.0/8 (Available)
 $ ndcli list containers layer3domain default
 10.0.0.0/8 (Container)
   10.0.0.0/8 (Available)
@@ -20,5 +38,14 @@ $ ndcli list containers layer3domain default
 $ ndcli list containers layer3domain one
 10.0.0.0/8 (Container)
   10.0.0.0/8 (Available)
+11.0.0.0/8 (Container)
+  11.0.0.0/8 (Available)
+
+$ ndcli list containers layer3domain one 11.0.0.0/8
+11.0.0.0/8 (Container)
+  11.0.0.0/8 (Available)
+
+$ ndcli list containers layer3domain all 11.0.0.0/8
+layer3domain: one
 11.0.0.0/8 (Container)
   11.0.0.0/8 (Available)

@@ -1607,12 +1607,20 @@ class CLI(object):
                 if 'children' in node:
                     print_tree(node['children'], level + 1)
 
-        layer3domains = [args.layer3domain]
-        if args.layer3domain == "all":
-            layer3domains = [l['name'] for l in self.client.layer3domain_list()]
+        if args.layer3domain == "all" or get_layer3domain(args.layer3domain) is None:
+            force_print_layer3domain = True
+            if args.container:
+                filters = dict(status=['Container'])
+                blocks = self.client.ipblock_get_attrs_multi(args.container, filters=filters)
+                layer3domains = [block['layer3domain'] for block in blocks]
+            else:
+                layer3domains = [l['name'] for l in self.client.layer3domain_list()]
+        else:
+            force_print_layer3domain = False
+            layer3domains = [args.layer3domain]
 
         for idx, layer3domain in enumerate(layer3domains):
-            if len(layer3domains) > 1:
+            if len(layer3domains) > 1 or (len(self.client.layer3domain_list()) >1 and force_print_layer3domain):
                 if idx > 0:
                     print()
                 print('layer3domain: ' + layer3domain)
