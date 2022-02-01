@@ -1,7 +1,10 @@
 # initialize layer3domains basic setup
-$ ndcli create zone-group test
-$ ndcli create output test plugin bind
-$ ndcli modify output test add zone-group test
+$ ndcli create zone-group a
+$ ndcli create zone-group b
+$ ndcli create output a plugin bind
+$ ndcli create output b plugin bind
+$ ndcli modify output a add zone-group a
+$ ndcli modify output b add zone-group b
 $ ndcli create zone t
 WARNING - Creating zone t without profile
 WARNING - Primary NS for this Domain is now localhost.
@@ -20,7 +23,8 @@ $ ndcli modify pool a add subnet 10.23.0.0/28
 INFO - Created subnet 10.23.0.0/28 in layer3domain a
 WARNING - Creating zone 0.23.10.in-addr.arpa without profile
 WARNING - Primary NS for this Domain is now localhost.
-# TODO replace with PTR
+$ ndcli modify zone-group a add zone 5.0.10.in-addr.arpa view a
+$ ndcli modify zone-group a add zone 0.23.10.in-addr.arpa view a
 $ ndcli create rr a.t. A 10.0.5.5 layer3domain a
 INFO - Marked IP 10.0.5.5 from layer3domain a as static
 INFO - Creating RR a A 10.0.5.5 in zone t
@@ -36,7 +40,6 @@ pool:a
 reverse_zone:5.0.10.in-addr.arpa
 status:Delegation
 subnet:10.0.5.0/24
-# TODO replace with PTR
 $ ndcli create rr b.t. A 10.0.5.66 layer3domain a
 INFO - Marked IP 10.0.5.66 from layer3domain a as static
 INFO - Creating RR b A 10.0.5.66 in zone t
@@ -173,3 +176,9 @@ timestamp                  user  tool   originating_ip objclass name        acti
 2022-02-01 09:25:46.324948 admin native 127.0.0.1      ipblock  10.0.5.0/24 created in layer3domain b
 2022-02-01 09:25:45.611436 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr pool=a in layer3domain a
 2022-02-01 09:25:45.596906 admin native 127.0.0.1      ipblock  10.0.5.0/24 created in layer3domain a
+$ ndcli modify zone-group b add zone 5.0.10.in-addr.arpa view b
+$ ndcli modify zone-group b add zone 0.23.10.in-addr.arpa view b
+$ ndcli list outputs -t
+name plugin pending_records last_run status
+a    bind                 8
+b    bind                 4
