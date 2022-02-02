@@ -1151,7 +1151,9 @@ class CLI(object):
         '''
         Changes the layer3domain of a pool and all its dependencies.
         '''
-        result = self.client.ippool_set_layer3domain(args.poolname, args.layer3domain)
+        options = OptionDict()
+        options.set_if(dryrun=args.dryrun)
+        result = self.client.ippool_set_layer3domain(args.poolname, args.layer3domain, **options)
         if result:
             _print_messages(result)
 
