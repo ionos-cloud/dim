@@ -1318,10 +1318,13 @@ class CLI(object):
 
     @cmd.register('modify container move to', Argument('to_layer3domain'))
     def ipblock_move_to(self, args):
+        options = OptionDict()
+        options.set_if(dryrun=args.dryrun)
         result = self.client.ipblock_move_to(
 			args.container,
 			get_layer3domain(args.get('layer3domain')),
-			args.get('to_layer3domain'))
+			args.get('to_layer3domain'),
+            **options)
         _print_messages(result)
 
     # modify [block_type] set/remove attrs
