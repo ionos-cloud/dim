@@ -42,6 +42,10 @@ def create_app(db_mode=None, testing=False):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     if db_mode:
         app.config['SQLALCHEMY_DATABASE_URI'] = app.config['SQLALCHEMY_DATABASE_URI_' + db_mode]
+
+    if testing:
+        app.config['LAYER3DOMAIN_WHITELIST'] = app.config.get('LAYER3DOMAIN_WHITELIST', ['10.0.0.0/8', '176.16.0.0/12', '192.168.0.0/16'])
+
     if 'LAYER3DOMAIN_WHITELIST' not in app.config:
         logging.error('LAYER3DOMAIN_WHITELIST not set')
         sys.exit(1)
