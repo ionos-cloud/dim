@@ -557,6 +557,12 @@ class RPC(object):
         if block.status.name != 'Container':
             raise DimError('block is not a container')
 
+        if db.session.query(Ipblock). \
+                filter(Ipblock.address == block.address). \
+                filter(Ipblock.layer3domain == to_layer3domain). \
+                count() > 0:
+            raise DimError('container %s already exists in layer3domain %s' % (block.ip, to_layer3domain.name))
+
         # fix all pools first
         pools = db.session.query(Ipblock). \
                 join(IpblockStatus).filter(IpblockStatus.name != 'Static'). \

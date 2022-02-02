@@ -28,6 +28,12 @@ INFO - Marked IP 10.0.5.1 from layer3domain a as static
 INFO - No zone found for test.t.
 INFO - Creating RR 1 PTR test.t. in zone 5.0.10.in-addr.arpa view a
 WARNING - No forward zone found. Only creating reverse entry.
+$ ndcli create container 10.0.4.0/22 layer3domain b
+INFO - Creating container 10.0.4.0/22 in layer3domain b
+$ ndcli modify container 10.0.4.0/22 layer3domain a move to b
+ERROR - container 10.0.4.0/22 already exists in layer3domain b
+$ ndcli delete container 10.0.4.0/22 layer3domain b
+INFO - Deleting container 10.0.4.0/22 from layer3domain b
 $ ndcli list containers layer3domain all
 layer3domain: default
 
@@ -138,8 +144,10 @@ layer3domain: b
   10.128.0.0/9 (Available)
 $ ndcli history ipblock 10.0.4.0/22
 timestamp                  user  tool   originating_ip objclass name        action
-2022-01-18 12:24:18.681149 admin native 127.0.0.1      ipblock  10.0.4.0/22 set_attr layer3domain=b in layer3domain b
-2022-01-18 12:24:17.370030 admin native 127.0.0.1      ipblock  10.0.4.0/22 created in layer3domain a
+2022-02-02 13:50:50.289111 admin native 127.0.0.1      ipblock  10.0.4.0/22 set_attr layer3domain=b in layer3domain b
+2022-02-02 13:50:50.033176 admin native 127.0.0.1      ipblock  10.0.4.0/22 deleted in layer3domain b
+2022-02-02 13:50:49.791900 admin native 127.0.0.1      ipblock  10.0.4.0/22 created in layer3domain b
+2022-02-02 13:50:48.725891 admin native 127.0.0.1      ipblock  10.0.4.0/22 created in layer3domain a
 $ ndcli history ipblock 10.0.4.1
 timestamp                  user  tool   originating_ip objclass name     action
 2022-01-18 12:24:18.682816 admin native 127.0.0.1      ipblock  10.0.4.1 set_attr layer3domain=b in layer3domain b
