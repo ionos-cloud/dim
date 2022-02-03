@@ -11,8 +11,8 @@ prio subnet gateway                 free                total
    1 ::/64          18446744073709551615 18446744073709551616
 $ ndcli list pools p
 INFO - Result for list pools p
-name vlan subnets
-p         ::/64
+name vlan subnets layer3domain
+p         ::/64   default
 $ ndcli modify pool p set attrs 'foo:bar'
 $ ndcli list pools -a 'name,subnets,foo'
 name subnets foo
