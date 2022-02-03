@@ -548,6 +548,45 @@ class RPC(object):
         return attrs
 
     @updating
+    def ipblock_move_to(self, block, layer3domain, to_layer3domain, **options):
+        layer3domain = _get_layer3domain_arg(layer3domain, options)
+        to_layer3domain = _get_layer3domain_arg(to_layer3domain, options)
+        block = check_block(get_block(block, layer3domain), layer3domain, options)
+        self._can_change_ip_attributes(block)
+
+        if block.status.name != 'Container':
+            raise DimError('block is not a container')
+
+        if db.session.query(Ipblock). \
+                filter(Ipblock.address == block.address). \
+                filter(Ipblock.layer3domain == to_layer3domain). \
+                count() > 0:
+            raise DimError('container %s already exists in layer3domain %s' % (block.ip, to_layer3domain.name))
+
+        # fix all pools first
+        pools = db.session.query(Ipblock). \
+                join(IpblockStatus).filter(IpblockStatus.name != 'Static'). \
+                filter(Ipblock.parent == block). \
+                filter(Ipblock.ippool_id is not None).all()
+        if block.parent is None and len(pools) > 0:
+            raise DimError('block has no parent but pools that need reassignment')
+        for pool in pools:
+            Messages.info("moving pool %s from parent %s to parent %s" % (pool, pool.parent.ip, block.parent.ip))
+            pool.parent = block.parent
+
+        # move all static IPs in container to the new layer3domain
+        ips = db.session.query(Ipblock).filter(Ipblock.parent==block). \
+                join(IpblockStatus).filter(IpblockStatus.name == 'Static').all()
+        block.layer3domain = to_layer3domain
+        for ip in ips:
+            Messages.info("moving static ip %s to layer3domain %s" % (ip.ip, to_layer3domain.name))
+            ip.layer3domain = to_layer3domain
+
+        # update parent and child settings of surrounding new containers and pools
+        block._tree_update()
+        return dict(messages=Messages.get())
+
+    @updating
     def ipblock_set_attrs(self, block, attributes, layer3domain=None, **options):
         layer3domain = _get_layer3domain_arg(layer3domain, options)
         block = check_block(get_block(block, layer3domain), layer3domain, options)
