@@ -44,7 +44,7 @@ db: db-clear
 	mysql -h127.0.0.1 -P3307 -updns -ppdns pdns1 < ./testenv/pdns.sql
 	mysql -h127.0.0.1 -P3307 -updns -ppdns pdns2 < ./testenv/pdns.sql
 
-test: db-clear
+test:
 	-mkdir ${ODIR}
 	-mkdir ${LDIR}
 
@@ -56,7 +56,7 @@ test: db-clear
 		NDCLI_SERVER="${NDCLI_SERVER}" \
 		${VPYTHON} runtest.py -d ${TESTS}
 
-pytest: db-clear
+pytest:
 	${VPYTEST} -k ${PYTESTS}
 
 .PHONY: db test install clean
