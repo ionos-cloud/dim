@@ -2946,11 +2946,9 @@ class RPC(object):
         ip = parse_ip(ipblock)
         hs = HistorySelect()
         query = hs.add_select(Ipblock)
-        logging.info('ipblock: %s %s %s' % (ip.address, ip.prefix, ip.version))
         query = query.where(hs.c.address == ip.address) \
             .where(hs.c.prefix == ip.prefix) \
             .where(hs.c.version == ip.version)
-        logging.info("layer3domain: %s" % (layer3domain))
         if layer3domain is not None:
             layer3domain = _get_layer3domain_arg(layer3domain)
             query.where(hs.c.layer3domain == layer3domain.name)
