@@ -1213,6 +1213,7 @@ class RPC(object):
         pool = get_pool(pool)
         from_layer3domain = pool.layer3domain
         layer3domain = get_layer3domain(layer3domain)
+        logging.info("moving pool %s from layer3domain %s to layer3domain %s" % (pool.name, from_layer3domain.name, layer3domain.name))
 
         pool.layer3domain = layer3domain
         # check overlaps in target layer3domain and check for new parent
@@ -1291,6 +1292,7 @@ class RPC(object):
             self._delete_reverse_zones(subnet, force=False)
             subnet.layer3domain = layer3domain
 
+        logging.info("finished moving pool %s from layer3domain %s to layer3domain %s" % (pool.name, from_layer3domain.name, layer3domain.name))
         return {'messages': Messages.get()}
 
     @readonly
