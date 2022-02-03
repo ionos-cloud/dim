@@ -1145,6 +1145,19 @@ class CLI(object):
         '''
         self.client.ippool_set_owner(args.poolname, args.group)
 
+    @cmd.register('modify pool set layer3domain',
+            layer3domain_arg,
+            help='set new layer3domain for POOLNAME')
+    def modify_pool_set_layer3domain(self, args):
+        '''
+        Changes the layer3domain of a pool and all its dependencies.
+        '''
+        options = OptionDict()
+        options.set_if(dryrun=args.dryrun)
+        result = self.client.ippool_set_layer3domain(args.poolname, args.layer3domain, **options)
+        if result:
+            _print_messages(result)
+
     @cmd.register('modify pool remove owning-user-group',
             help='unset owner group for POOLNAME')
     def modify_pool_set_owning_user_group(self, args):

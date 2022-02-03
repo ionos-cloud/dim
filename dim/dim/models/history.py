@@ -240,7 +240,7 @@ generate_history_table(
      Column('address', Numeric(precision=40, scale=0)),
      Column('prefix', Integer)] +
     generate_attr_change_columns(),
-    [Pool.name, Pool.version, Pool.description, Pool.vlan],
+    [Pool.name, Pool.version, Pool.description, Pool.vlan, Pool.layer3domain],
     indexes=[Index('ix_name', 'name')])
 
 generate_history_table(

@@ -13,6 +13,7 @@ from flask import current_app as app, g
 from sqlalchemy import between, and_, or_, not_, select, String, desc
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.orm import aliased, joinedload, contains_eager
+from sqlalchemy.orm.session import make_transient
 from sqlalchemy.sql.expression import literal, func, FunctionElement, distinct
 
 import dim.dns
@@ -1244,6 +1245,94 @@ class RPC(object):
                 subnet.vlan = None
                 subnet.update_modified()
         pool.vlan = None
+
+    @updating
+    def ippool_set_layer3domain(self, pool, layer3domain):
+        self.user.can_network_admin()
+        pool = get_pool(pool)
+        from_layer3domain = pool.layer3domain
+        layer3domain = get_layer3domain(layer3domain)
+        logging.info("moving pool %s from layer3domain %s to layer3domain %s" % (pool.name, from_layer3domain.name, layer3domain.name))
+
+        pool.layer3domain = layer3domain
+        # check overlaps in target layer3domain and check for new parent
+        for subnet in pool.subnets:
+            parent = db.session.query(Ipblock) \
+                    .filter(Ipblock.layer3domain == layer3domain) \
+                    .filter(Ipblock.address <= subnet.address) \
+                    .filter(Ipblock.prefix < subnet.prefix) \
+                    .join(IpblockStatus).filter(IpblockStatus.name == 'Container') \
+                    .order_by(Ipblock.address.desc(), Ipblock.prefix) \
+                    .limit(1)
+            if parent.first() is None:
+                raise DimError('could not find new parent for subnet "%s" in new layer3domain' % (subnet.ip))
+
+            overlaps = db.session.query(Ipblock) \
+                    .filter(Ipblock.layer3domain == layer3domain) \
+                    .filter(Ipblock.address.between(subnet.address - 1, subnet.ip.broadcast.address)) \
+                    .filter(Ipblock.prefix >= subnet.prefix) \
+                    .count()
+            if overlaps > 0:
+                raise DimError('''subnet %s can't be moved, %d existing containers, subnets or static entries are in the way''' % (subnet.ip, overlaps))
+
+            overlaps = db.session.query(Ipblock) \
+                    .filter(Ipblock.layer3domain == layer3domain) \
+                    .filter(Ipblock.address <= subnet.address) \
+                    .filter(Ipblock.prefix < subnet.prefix) \
+                    .join(IpblockStatus).filter(IpblockStatus.name != 'Container') \
+                    .order_by(Ipblock.address.desc(), Ipblock.prefix) \
+                    .limit(1)
+            if (overlaps is not None and overlaps.first() is not None
+                    and subnet.parent is not None):
+                    overlap = overlaps.first()
+                    if (overlap.address >= subnet.address and overlap.address <= subnet.ip.broadcast.address) or \
+                       (overlap.ip.broadcast.address >= subnet.address and overlap.ip.broadcast.address <= subnet.ip.broadcast.address):
+                        raise DimError('''subnet %s can't be moved, %s already exists and is a %s''' % (subnet.ip, overlaps.first().ip, overlaps.first().status.name))
+
+            subnet.layer3domain = layer3domain
+            subnet.parent = parent.first()
+            Messages.info("Changing subnet %s to new parent %s in layer3domain %s" % (subnet.ip, parent.first().ip, layer3domain.name))
+
+            self._create_reverse_zones(subnet)
+            children = subnet.children.all()
+            for child in children:
+                logging.info("Changing child %s of subnet %s to layer3domain %s" % (child.ip, subnet.ip, layer3domain.name))
+                Messages.info("Changing child %s of subnet %s to layer3domain %s" % (child.ip, subnet.ip, layer3domain.name))
+                if child.status.name == 'Static':
+                    child.layer3domain = layer3domain
+                    rr_name = dim.dns.get_ptr_name(child.ip)
+                    rr_zone = dim.dns.get_rr_zone(rr_name, None, None)
+                    new_view = db.session.query(ZoneView).filter(ZoneView.zone == rr_zone).filter(ZoneView.name == layer3domain.name).first()
+                    if new_view is None:
+                        raise DimError('view for layer3domain %s does not exist for zone %s' % (layer3domain.name, rr_zone.name))
+
+                    rr = db.session.query(RR).filter(RR.ipblock_id == child.id, RR.type == 'PTR').first()
+                    if rr is not None:
+                        rr.delete(send_delete_rr_event = True)
+                        Messages.info("Deleting RR %s from %s" % (rr.bind_str(relative=True), rr.view))
+                        make_transient(rr)
+                        rr.id = None
+                        rr.view = new_view
+                        rr.insert()
+                        Messages.info("Creating RR {rr}{comment_msg} in {view_msg}".format(
+                            rr=rr.bind_str(relative=True),
+                            comment_msg=' comment {0}'.format(rr.comment),
+                            view_msg=rr.view))
+
+                elif child.status.name == 'Delegation':
+                    children += child.children.all()
+                    child.layer3domain = layer3domain
+                elif child.status.name == 'Reserved':
+                    child.layer3domain = layer3domain
+                else:
+                    raise DimError("unhandled state '%s' for IP %s" % (child.status.name, child.ip))
+            # switch back layer3domain to delete old reverse zone
+            subnet.layer3domain = from_layer3domain
+            self._delete_reverse_zones(subnet, force=False)
+            subnet.layer3domain = layer3domain
+
+        logging.info("finished moving pool %s from layer3domain %s to layer3domain %s" % (pool.name, from_layer3domain.name, layer3domain.name))
+        return {'messages': Messages.get()}
 
     @readonly
     def ippool_get_attrs(self, pool):
