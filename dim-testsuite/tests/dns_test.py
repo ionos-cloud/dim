@@ -195,7 +195,7 @@ class ZoneTest(RPCTest):
         assert len(self.r.zone_list('a.0.0.0.0.0.1.0.8.b.d.0.1.0.0.2.ip6.arpa')) == 1
 
     def test_subzone(self):
-        self.r.zone_create('server.lan')
+        self.r.zone_create('company.com')
         self.r.rr_create(name='srv-monitoring.company.com.', type='TXT', strings=['test'])
         self.r.rr_create(name='monitoring.company.com.', type='TXT', strings=['test2'])
         self.r.zone_create('monitoring.company.com')
