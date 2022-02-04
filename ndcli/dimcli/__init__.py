@@ -2926,8 +2926,8 @@ register_history('user-groups', arg_meta='groups', cmd_args=(),
                  f='history_group', fargs=lambda args: [None])
 register_history('pool', arg_meta='POOL', cmd_args=(Argument('poolname', completions=complete_allocate_poolname), ),
                  f='history_ippool', fargs=lambda args: [args.poolname])
-register_history('ipblock', arg_meta='IPBLOCK', cmd_args=(Argument('ipblock'), ),
-                 f='history_ipblock', fargs=lambda args: [args.ipblock])
+register_history('ipblock', arg_meta='IPBLOCK', cmd_args=(Argument('ipblock'), layer3domain_group),
+                 f='history_ipblock', fargs=lambda args: [args.ipblock, args.layer3domain])
 register_history('registrar-account', arg_meta='REGISTRAR_ACCOUNT', cmd_args=(registrar_account_arg, ),
                  f='history_registrar_account', fargs=lambda args: [args.registrar_account])
 register_history('layer3domain', arg_meta='LAYER3DOMAIN', cmd_args=(layer3domain_arg, ),
