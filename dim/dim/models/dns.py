@@ -547,7 +547,7 @@ def dnskey_tag(rdata):
     return ac & 0xFFFF
 
 
-def ds_hash(owner, rdata, digest_function):
+def ds_hash(owner: bytes, rdata: bytes, digest_function):
     if type(owner) != bytes:
         raise TypeError("owner must be of type bytes, got {}".format(type(owner)))
     if type(rdata) != bytes:

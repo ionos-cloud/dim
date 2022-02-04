@@ -13,7 +13,7 @@ class DNSKEYTest(unittest.TestCase):
         assert dnskey_tag(dnskey_rdata(flags, protocol, algorithm, pubkey)) == 20842
 
     def test_ds_hash(self):
-        assert ds_hash('a.com', dnskey_rdata(flags, protocol, algorithm, pubkey), hashlib.sha1) == \
+        assert ds_hash('a.com'.encode('utf-8'), dnskey_rdata(flags, protocol, algorithm, pubkey), hashlib.sha1) == \
             '91053B9A59B05FB08D5469472A5F1B588C5CA092'
-        assert ds_hash('a.com', dnskey_rdata(flags, protocol, algorithm, pubkey), hashlib.sha256) == \
+        assert ds_hash('a.com'.encode('utf-8'), dnskey_rdata(flags, protocol, algorithm, pubkey), hashlib.sha256) == \
             'FFB15B5EF961E0AE3474E7B868FBD3C8F7C861D3BEA4527382CBDA791D4B9FF4'
