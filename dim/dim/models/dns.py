@@ -9,7 +9,6 @@ import struct
 
 import flask.json as json
 from flask import current_app as app, g
-from six import text_type
 from sqlalchemy import Column, ForeignKey, BigInteger, Integer, String, Boolean, TIMESTAMP, UniqueConstraint, func, desc, Text, Enum
 from sqlalchemy.orm import relationship, validates, backref
 
@@ -369,7 +368,7 @@ class RR(db.Model, TrackChanges):
             for field, validate in list(rr_class.validate.items()):
                 kwargs[field] = validate(None, field, kwargs[field])
         except ValueError as e:
-            raise InvalidParameterError(text_type(e))
+            raise InvalidParameterError(str(e))
         return kwargs
 
     @staticmethod

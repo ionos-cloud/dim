@@ -10,4 +10,3 @@ dnspython~=2.1
 simplejson~=3.17
 requests~=2.25
 pycryptodome~=3.10
-six

@@ -9,7 +9,6 @@ import xml.etree.ElementTree as et
 
 import requests
 from flask import Blueprint, jsonify, json, request, session, current_app, abort, Response
-from six import text_type
 
 from . import ldap_auth
 from dim import db
@@ -168,7 +167,7 @@ def jsonrpc_handler():
     try:
         json_request = json.loads(request.data)
     except Exception as e:
-        return jsonify(error=dict(code=-32700, message='Parse error', data=text_type(e)),
+        return jsonify(error=dict(code=-32700, message='Parse error', data=str(e)),
                        **json_response)
 
     json_response['id'] = json_request.get('id', None)
@@ -189,10 +188,10 @@ def jsonrpc_handler():
                           default=default_for_json)
     except DimError as e:
         logging.info('DimError: %s', e)
-        return jsonify(error=dict(code=e.code, message=text_type(e)), **json_response)
+        return jsonify(error=dict(code=e.code, message=str(e)), **json_response)
     except Exception as e:
         logging.exception(e)
-        return jsonify(error=dict(code=1, message=text_type(e)), **json_response)
+        return jsonify(error=dict(code=1, message=str(e)), **json_response)
 
 
 def default_for_json(o):

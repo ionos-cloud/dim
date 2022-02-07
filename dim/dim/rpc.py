@@ -7,7 +7,6 @@ import os
 import sys
 import re
 
-from six import text_type
 import flask.json as json
 from flask import current_app as app, g
 from sqlalchemy import between, and_, or_, not_, select, String, desc
@@ -1181,7 +1180,7 @@ class RPC(object):
             try:
                 reserve(rip, pool.layer3domain)
             except DimError as e:
-                Messages.info(text_type(e))
+                Messages.info(str(e))
         block.set_attrs(attributes)
         record_history(pool, action='create subnet', **_cidr(block))
         if include_messages:
@@ -3128,9 +3127,9 @@ class RPC(object):
                     except DimError as e:
                         deleted = False
                         if delete_zone:
-                            Messages.warn('Zone %s was not deleted: %s' % (name, text_type(e)))
+                            Messages.warn('Zone %s was not deleted: %s' % (name, str(e)))
                         else:
-                            Messages.warn('Zone %s view %s was not deleted: %s' % (name, view.name, text_type(e)))
+                            Messages.warn('Zone %s view %s was not deleted: %s' % (name, view.name, str(e)))
                 else:
                     delete_zone_or_view()
 
@@ -3358,7 +3357,7 @@ class RPC(object):
                     kwargs['ip'] = self._ip_mark(check_ip(ip, layer3domain, {'host': True}), layer3domain=layer3domain,
                                                  attributes=None, parse_rr=True, allow_overlap=allow_overlap)
                 else:
-                    raise InvalidParameterError('Invalid IP %s: %s' % (kwargs['ip'], text_type(e)))
+                    raise InvalidParameterError('Invalid IP %s: %s' % (kwargs['ip'], str(e)))
         if rr_type == 'PTR' and ('ip' in kwargs) and ('name' not in kwargs):
             kwargs['name'] = dim.dns.get_ptr_name(kwargs['ip'])
 
