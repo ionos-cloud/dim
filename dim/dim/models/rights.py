@@ -130,7 +130,7 @@ def permission(func):
             return
         if not func(self, *args):
             import inspect
-            argspec = inspect.getargspec(func).args
+            argspec = inspect.getfullargspec(func).args
             if 'type' in argspec:
                 args = args[0:argspec.index('type') - 1] + args[argspec.index('type'):]
             reason = ' '.join(str(a) for a in (func.__name__, ) + args)
