@@ -3569,7 +3569,7 @@ def parse_ip(ip_str):
     try:
         return IP(ip_str)
     except:
-        logging.debug('parse_ip', exc_info=1)
+        logging.debug('parse_ip', exc_info=True)
         raise InvalidIPError("Invalid IP: '%s'" % (ip_str))
 
 
