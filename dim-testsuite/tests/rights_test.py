@@ -574,8 +574,8 @@ class RightsMatrixTest(DatabaseTest):
         self.admin.group_grant_access('granted', 'allocate', 'p')
 
         def pools(p, p2):
-            return [{'name': 'p', 'can_allocate': p, 'vlan': None},
-                    {'name': 'p2', 'can_allocate': p2, 'vlan': None}]
+            return [{'name': 'p', 'can_allocate': p, 'vlan': None, 'layer3domain': 'default'},
+                    {'name': 'p2', 'can_allocate': p2, 'vlan': None, 'layer3domain': 'default'}]
         assert ErrorChecker('granted', False).ippool_list(fields=True, include_subnets=False) == pools(True, False)
         assert ErrorChecker('user', False).ippool_list(fields=True, include_subnets=False) == pools(False, False)
         assert self.admin.ippool_list(fields=True, include_subnets=False) == pools(True, True)
