@@ -3425,7 +3425,6 @@ class RPC(object):
 
     @readonly
     def ipblock_get_attrs_multi(self, ipblock, layer3domain=None, full=False, filters = {}, **options):
-        logging.warn(filters)
         ip = parse_ip(ipblock)
         ipblocks = Ipblock.query_ip(ip, layer3domain, **filters)
         result = []
