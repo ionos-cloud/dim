@@ -1,10 +1,12 @@
 import os.path
 
 from flask import current_app as app
+from typing import Optional
 
 from dim.models import UserType, Ipblock, Pool, AllocationHistory, Layer3Domain
 from dim.rpc import get_user
 from dim.transaction import time_function, transaction
+from math import floor, ceil
 
 
 def get_user_type(user_type_str):
@@ -48,7 +50,7 @@ def read_etc_file(filename):
 
 
 @time_function
-def pool_report(pool_name, prefix=None, estimate=30, warning_threshold=None, template=None):
+def pool_report(pool_name: str, prefix: Optional[int] = None, estimate: int = 30, warning_threshold: Optional[int] = None, template: Optional[str] = None):
     try:
         if template is not None:
             template_string = open(template).read()
@@ -57,7 +59,7 @@ def pool_report(pool_name, prefix=None, estimate=30, warning_threshold=None, tem
     except Exception as e:
         return "Missing template: " + str(e)
 
-    pool = Pool.query.filter_by(name=pool_name).first()
+    pool: Optional[Pool] = Pool.query.filter_by(name=pool_name).first()
     if not pool:
         return "WARNING: Pool %s does not exist." % pool_name
     total_bits = 32 if pool.version == 4 else 128
@@ -66,7 +68,7 @@ def pool_report(pool_name, prefix=None, estimate=30, warning_threshold=None, tem
         objects = "IPs"
     else:
         objects = "/%d blocks" % prefix
-    block_size = 2 ** (total_bits - prefix)
+    block_size: int = 2 ** (total_bits - prefix)
     current_used = pool.used_ips
     current_free = pool.total_ips - current_used
     history_days = (1, 7, 30)
@@ -92,12 +94,12 @@ def pool_report(pool_name, prefix=None, estimate=30, warning_threshold=None, tem
         prediction = "Data from {0} days ago not available.".format(estimate)
 
     # Return report
-    def normalize(nr):
-        return nr / block_size  # TODO float division? round?
-    usage = [normalize(current_used - ah.used_ips) if ah else 'n/a'
+    def normalize(nr) -> float:
+        return float(nr) / block_size
+    usage = [ceil(normalize(current_used - ah.used_ips)) if ah else 'n/a'
              for ah in [pool.allocation_history(days) for days in history_days]]
     keys = dict(pool_name=pool_name,
-                current_free=normalize(current_free),
+                current_free=floor(normalize(current_free)),
                 objects=objects,
                 prediction=prediction)
     for i in range(len(history_days)):

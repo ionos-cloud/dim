@@ -157,11 +157,11 @@ class Pool(db.Model, WithAttr):
         self.modified_by = get_session_username()
 
     @property
-    def total_ips(self):
+    def total_ips(self) -> int:
         return sum(s.total for s in self.subnets)
 
     @property
-    def used_ips(self):
+    def used_ips(self) -> int:
         return sum(s.used for s in self.subnets)
 
     def allocation_history(self, days_ago):
@@ -279,8 +279,8 @@ class Ipblock(db.Model, WithAttr, TrackChanges):
     def total(self):
         return self.ip.numhosts
 
-    def _used(self, only_static):
-        ret = 0
+    def _used(self, only_static) -> int:
+        ret: int = 0
         q = db.session.query(Ipblock.prefix, func.count()).filter(Ipblock.parent == self)
         if only_static:
             q = q.join(IpblockStatus).filter(IpblockStatus.name == 'Static')
