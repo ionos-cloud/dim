@@ -1,6 +1,7 @@
 
 
 from ipaddress import ip_address, IPv4Address, IPv6Address, ip_network
+from typing import Literal
 
 
 def valid_block(addr):
@@ -66,7 +67,7 @@ class IP(object):
             return ret + "/" + str(self.prefix)
 
     @property
-    def bits(self):
+    def bits(self) -> Literal[32, 128]:
         return 32 if self.version == 4 else 128
 
     @property
@@ -90,7 +91,7 @@ class IP(object):
         return IP(self.address | self.hostmask, self.bits, self.version)
 
     @property
-    def numhosts(self):
+    def numhosts(self) -> int:
         return self.broadcast.address - self.network.address + 1
 
     def __contains__(self, item):
