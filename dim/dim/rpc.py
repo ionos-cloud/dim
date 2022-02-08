@@ -1009,8 +1009,8 @@ class RPC(object):
         get_pool(old_name).name = new_name
 
     @readonly
-    def ippool_count(self, pool=None, vlan=None, cidr=None, can_allocate=None, owner=None):
-        return self._ippool_query(pool, vlan=vlan, cidr=cidr, can_allocate=can_allocate, owner=owner).count()
+    def ippool_count(self, pool=None, vlan=None, cidr=None, can_allocate=None, owner=None, layer3domain=None):
+        return self._ippool_query(pool, vlan=vlan, cidr=cidr, can_allocate=can_allocate, owner=owner, layer3domain=layer3domain).count()
 
     @readonly
     def ippool_list(self, pool=None, vlan=None, cidr=None, full=False, include_subnets=True,
