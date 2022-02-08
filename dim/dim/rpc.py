@@ -2622,7 +2622,7 @@ class RPC(object):
                         not (not delete and ref.type not in IP_RELATED and rr.type not in IP_RELATED and root.type in IP_RELATED):
                     nodes.append(ref)
                     graph[rr.id].append(ref.id)
-        return {'records': [rr_object(records[r]) for r in records], 'graph': graph, 'root': root.id}
+        return {'records': sorted([rr_object(records[r]) for r in records], key=lambda x: x['id']), 'graph': graph, 'root': root.id}
 
     @updating
     def rr_edit(self, id, views=None, references=None, **kwargs):
