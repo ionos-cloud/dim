@@ -6,7 +6,7 @@ Flask~=1.1
 Flask-SQLAlchemy~=2.5
 Jinja2~=2.11
 Flask-Script~=2.0
-dnspython~=2.1
+dnspython~=2.1,!=2.2.0
 simplejson~=3.17
 requests~=2.25
 pycryptodome~=3.10
