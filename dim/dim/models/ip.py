@@ -120,7 +120,7 @@ class Pool(db.Model, WithAttr):
     vlan = relationship(Vlan)
     owner = relationship('Group')
     layer3domain = relationship(Layer3Domain)
-    ipblocks = relationship("Ipblock", backref="pool")
+    ipblocks = relationship("Ipblock", backref="pool", order_by='Ipblock.priority')
     subnets = synonym('ipblocks')
 
     @property

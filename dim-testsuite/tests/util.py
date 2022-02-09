@@ -48,10 +48,11 @@ class DatabaseTest(unittest.TestCase):
         if not (missing or mismatched):
             return
 
+        msg = ''
         if missing:
-            msg = 'Missing: %s' % ','.join(safe_repr(m) for m in missing)
+            msg += 'Missing: %s' % ','.join(safe_repr(m) for m in missing)
         if mismatched:
-            if msg:
+            if len(msg) > 0:
                 msg += '; '
             msg += 'Mismatched values: %s' % ','.join(mismatched)
         self.fail(msg)
