@@ -1432,7 +1432,7 @@ class RPC(object):
     @updating
     def ippool_get_ip(self, pool, attributes=None, full=False):
         pool = get_pool(pool)
-        ipblock = self._ip_mark(allocate_ip(pool), attributes=attributes, pool=pool)
+        ipblock = self._ip_mark(allocate_ip(pool), layer3domain=pool.layer3domain, attributes=attributes, pool=pool)
         if ipblock:
             return self.ipblock_get_attrs(ipblock, full=full)
 
