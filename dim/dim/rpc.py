@@ -1040,7 +1040,7 @@ class RPC(object):
                                      AccessRight.object_class == 'Ippool',
                                      AccessRight.object_id == Pool.id)))\
                     .outerjoin(GroupRight).outerjoin(Group).outerjoin(*Group.users.attr)\
-                    .filter(User.username == self.username).as_scalar()
+                    .filter(User.username == self.username).scalar_subquery()
                 qfields.append(and_(rights > 0).label('can_allocate'))
         if include_subnets:
             qfields.extend([Ipblock.address, Ipblock.prefix, Ipblock.version])
@@ -1109,7 +1109,7 @@ class RPC(object):
                                      AccessRight.object_class == 'Ippool',
                                      AccessRight.object_id == Pool.id))) \
                     .outerjoin(GroupRight).outerjoin(Group).outerjoin(*Group.users.attr) \
-                    .filter(User.username == self.username).as_scalar()
+                    .filter(User.username == self.username).scalar_subquery()
                 qfields.append(and_(rights > 0).label('can_allocate'))
         if include_subnets:
             qfields.extend([Ipblock.address, Ipblock.prefix, Ipblock.version])
@@ -3523,7 +3523,7 @@ class RPC(object):
     def _changeable_views(self, can_create_rr, can_delete_rr):
         ''' Return the number of views that user has access to. '''
         q = db.session.query(func.count(ZoneView.id)).correlate(Zone).filter(ZoneView.zone_id == Zone.id)
-        return self._filter_views(q, can_create_rr, can_delete_rr).as_scalar()
+        return self._filter_views(q, can_create_rr, can_delete_rr).scalar_subquery()
 
     def _filter_views(self, query, can_create_rr, can_delete_rr):
         access = self._view_access_expr(can_create_rr=can_create_rr, can_delete_rr=can_delete_rr)
@@ -3552,7 +3552,7 @@ class RPC(object):
                 access = self._view_access_expr(can_create_rr=can_create_rr, can_delete_rr=can_delete_rr)
                 return db.session.query(func.count(AccessRight.id)).correlate(ZoneView).filter(or_(*access))\
                     .outerjoin(GroupRight).outerjoin(Group).outerjoin(*Group.users.attr)\
-                    .filter(User.username == self.username).as_scalar()
+                    .filter(User.username == self.username).scalar_subquery()
             return [and_(0 < has_access(True, False)).label('can_create_rr'),
                     and_(0 < has_access(False, True)).label('can_delete_rr')]
 
