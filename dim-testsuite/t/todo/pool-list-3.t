@@ -1,4 +1,11 @@
-$ ndcli create container 2001:db8::/32 comment:RFC3849 
+# https://github.com/1and1/dim/issues/86
+#
+# calcuate correct number of free ips/delegations
+# when assignmentsize is in effect
+# make sure it detects actual free delegations,
+# taking static (blocking) ips into account
+
+$ ndcli create container 2001:db8::/32 comment:RFC3849
 INFO - Creating container 2001:db8::/32 in layer3domain default
 
 $ ndcli create pool p assignmentsize:56
@@ -15,9 +22,9 @@ WARNING - Creating zone f.0.0.4.0.0.8.b.d.0.1.0.0.2.ip6.arpa without profile
 WARNING - Primary NS for this Domain is now localhost.
 
 $ ndcli list pool p
+INFO - Total free IPs: 4
 prio subnet               gateway free(/56) total(/56)
    1 2001:db8:40:c00::/54                 4          4
-INFO - Total free IPs: 4
 
 $ ndcli modify pool p mark ip 2001:db8:40:c00::1
 created:2021-07-05 17:12:34.969235
@@ -32,9 +39,9 @@ status:Static
 subnet:2001:db8:40:c00::/54
 
 $ ndcli list pool p
+INFO - Total free IPs: 3
 prio subnet               gateway free(/56) total(/56)
    1 2001:db8:40:c00::/54                 3          4
-INFO - Total free IPs: 3
 
 $ ndcli modify pool p get  delegation 56
 created:2021-07-05 17:13:38.127194
@@ -49,9 +56,9 @@ status:Delegation
 subnet:2001:db8:40:c00::/54
 
 $ ndcli list pool p
+INFO - Total free IPs: 2
 prio subnet               gateway free(/56) total(/56)
    1 2001:db8:40:c00::/54                 2          4
-INFO - Total free IPs: 2
 
 $ ndcli modify pool p mark delegation 2001:0db8:0040:0e00::/64
 created:2021-07-05 17:15:00.945784
@@ -78,9 +85,9 @@ status:Delegation
 subnet:2001:db8:40:c00::/54
 
 $ ndcli list pool p
+INFO - Total free IPs: 1
 prio subnet               gateway free(/56) total(/56)
    1 2001:db8:40:c00::/54                 1          4
-INFO - Total free IPs: 1
 
 $ ndcli modify pool p remove subnet 2001\:db8\:40\:c00\:\:/54 -c -f
 INFO - Deleting zone c.0.0.4.0.0.8.b.d.0.1.0.0.2.ip6.arpa
@@ -89,3 +96,4 @@ INFO - Deleting zone e.0.0.4.0.0.8.b.d.0.1.0.0.2.ip6.arpa
 INFO - Deleting zone f.0.0.4.0.0.8.b.d.0.1.0.0.2.ip6.arpa
 
 $ ndcli delete container 2001:db8::/32
+INFO - Deleting container 2001:db8::/32 from layer3domain default

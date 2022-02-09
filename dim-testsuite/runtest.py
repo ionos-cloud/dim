@@ -406,7 +406,8 @@ if __name__ == '__main__':
         else:
             tests.append(test)
     if not tests:
-        tests = sorted(os.listdir(T_DIR))
+        with os.scandir(T_DIR) as it:
+            tests = sorted([e.name for e in it if e.is_file()])
     failed = []
 
     try:
