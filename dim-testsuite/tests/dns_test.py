@@ -573,6 +573,9 @@ class TXT(RPCTest):
         RPCTest.setUp(self)
         self.r.zone_create('test.com')
 
+    def _simple_quote(self, txt: str):
+        return '"' + txt + '"'
+
     def test_parse(self):
         for txt in ('unquoted', '"', '\\"', '\\', '"\\"', '"\\', '"\\0"', '"\\999"', 'a"b"', '"a"b', '"""', '"\\\\\\"'):
             with raises(InvalidParameterError):
@@ -584,7 +587,11 @@ class TXT(RPCTest):
                      '""': '',
                      '"" "a"': '"a"',
                      '"a" ""': '"a"',
-                     r'"\\" "\"" "\223"': r'"\\" "\"" "\223"'}
+                     r'"\\" "\"" "\223"': r'"\\" "\"" "\223"',
+                      # splitting values longer than 255 bytes
+                     self._simple_quote('a' * 255): self._simple_quote('a' * 255),
+                     self._simple_quote('a' * 256): ' '.join([self._simple_quote('a' * 255), self._simple_quote('a' * 1)]),
+                     self._simple_quote('a' * 513): ' '.join([self._simple_quote('a' * 255), self._simple_quote('a' * 255), self._simple_quote('a' * 3)])}
         for i, original in enumerate(canonical.keys()):
             rr_name = '%d.test.com.' % i
             self.r.rr_create(name=rr_name, type='TXT', strings=original)
