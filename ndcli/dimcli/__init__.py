@@ -2018,7 +2018,8 @@ delegation).''')
         '''
         Renames a zone profile.
         '''
-        self.client.zone_rename(args.oldname, args.newname)
+        options = OptionDict(profile=True)
+        self.client.zone_rename(args.oldname, args.newname, **options)
 
     @cmd.register('delete zone',
                   zone_arg,
