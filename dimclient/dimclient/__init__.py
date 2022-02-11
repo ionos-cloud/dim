@@ -12,6 +12,7 @@ import time
 import os
 import os.path
 from pprint import pformat
+from typing import Optional
 from . import version
 
 __version__ = version.VERSION
@@ -36,19 +37,20 @@ class ProtocolError(DimError):
 
 
 class DimClient(object):
-    def __init__(self, server_url, cookie_file=None, cookie_umask=None):
+    def __init__(self, server_url: str, cookie_file: Optional[str] = None, cookie_umask: Optional[int] = None, permanent_session: bool = True):
         self.server_url = server_url
+        self.permanet_session = permanent_session
         self.cookie_jar = LWPCookieJar()
         self.session = build_opener(HTTPCookieProcessor(self.cookie_jar))
         if cookie_file:
             self._use_cookie_file(cookie_file, cookie_umask)
 
-    def login(self, username, password, permanent_session=False):
+    def login(self, username: str, password: str) -> bool:
         try:
             self.session.open(self.server_url + '/login',
                               urlencode(dict(username=username,
                                              password=password,
-                                             permanent_session=permanent_session)).encode('utf8'))
+                                             permanent_session=self.permanent_session)).encode('utf8'))
             self.check_protocol_version()
             self._update_cookie_file()
             return True
@@ -57,7 +59,7 @@ class DimClient(object):
             return False
 
     @property
-    def logged_in(self):
+    def logged_in(self) -> bool:
         try:
             self.get_username()
             # update cookie file with refreshed cookie(s) from response
@@ -86,7 +88,7 @@ class DimClient(object):
                 os.umask(old_mask)
 
 
-    def _use_cookie_file(self, cookie_file, cookie_umask, save_cookie=True):
+    def _use_cookie_file(self, cookie_file: str, cookie_umask: Optional[int] = None, save_cookie: bool = True):
         self.cookie_jar.filename = cookie_file
         self.save_cookie = save_cookie
         self.cookie_umask = cookie_umask
@@ -95,7 +97,7 @@ class DimClient(object):
         except:
             pass
 
-    def login_prompt(self, username=None, password=None, permanent_session=False, ignore_cookie=False):
+    def login_prompt(self, username=None, password=None, ignore_cookie=False):
         if not ignore_cookie and self.logged_in:
             return True
         else:
@@ -103,7 +105,7 @@ class DimClient(object):
                 username = input('Username: ')
             if password is None:
                 password = getpass.getpass()
-            return self.login(username, password, permanent_session)
+            return self.login(username, password)
 
     def check_protocol_version(self):
         try:

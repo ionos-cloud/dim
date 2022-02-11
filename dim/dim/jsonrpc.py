@@ -55,7 +55,9 @@ def _do_login(authenticated, username, tool):
             db.session.commit()
             logging.debug('Created user %s' % username)
         session.clear()
-        session.permanent = request.form.get('permanent_session', False)
+        # get permanent_session from request form and check whether the value represents an enabled state, as bool
+        # default to False
+        session.permanent = request.form.get('permanent_session', False, lambda x: isinstance(x, str) and x.lower() in ['true', '1'])
         session['username'] = username
         if tool:
             session['tool'] = tool.lower()

@@ -50,13 +50,14 @@ def get_layer3domain(from_args):
         return config['layer3domain']
     return None
 
+
 def dim_client(args):
     server_url = args.server or os.getenv('NDCLI_SERVER', config['server'])
     username = args.username or os.getenv('NDCLI_USERNAME', config['username'])
     cookie_path = os.path.expanduser(os.getenv('NDCLI_COOKIEPATH', f'~/.ndcli.cookie.{username}'))
     logger.debug("Dim server URL: %s" % server_url)
     logger.debug("Username: %s" % username)
-    client = DimClient(server_url, cookie_file=cookie_path, cookie_umask=0o077)
+    client = DimClient(server_url, cookie_file=cookie_path, cookie_umask=0o077, permanent_session=True)
     if not client.logged_in:
         if not client.login_prompt(username=username, password=args.password, ignore_cookie=True):
             raise Exception('Could not log in')
