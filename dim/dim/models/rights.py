@@ -231,11 +231,7 @@ class User(db.Model):
         if group.is_network_admin or group.is_dns_admin:
             return False
         is_network_admin = self.has_any_access([('network_admin', None)])
-        if group.network_rights and not is_network_admin:
-            return False
         is_dns_admin = self.has_any_access([('dns_admin', None)])
-        if group.dns_rights and not is_dns_admin:
-            return False
         return is_network_admin or is_dns_admin
 
     @permission
