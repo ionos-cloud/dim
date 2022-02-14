@@ -11,6 +11,7 @@ INFO - Creating container 10.30.2.0/23 in layer3domain default
 # Round down invalid CIDR
 $ ndcli list containers 10.30.3.0/23
 WARNING - 10.30.3.0/23 rounded to 10.30.2.0/23 because it is not a valid CIDR block
+layer3domain: default
 10.30.2.0/23 (Container)
   10.30.2.0/23 (Available)
 
@@ -18,18 +19,21 @@ WARNING - 10.30.3.0/23 rounded to 10.30.2.0/23 because it is not a valid CIDR bl
 $ ndcli list containers 192.168.0.0/12
 WARNING - 192.168.0.0/12 rounded to 192.160.0.0/12 because it is not a valid CIDR block
 WARNING - 192.160.0.0/12 rounded to 192.168.0.0/16 because no ipblock exists at 192.160.0.0/12 with status Container
+layer3domain: default
 192.168.0.0/16 (Container)
   192.168.0.0/16 (Available)
 
 # Round down valid CIDR because no container exists at that CIDR
 $ ndcli list containers 192.160.0.0/12
 WARNING - 192.160.0.0/12 rounded to 192.168.0.0/16 because no ipblock exists at 192.160.0.0/12 with status Container
+layer3domain: default
 192.168.0.0/16 (Container)
   192.168.0.0/16 (Available)
 
 # Round up valid CIDR because no container exists at that CIDR
 $ ndcli list containers 10.40.0.0/16
 WARNING - 10.40.0.0/16 rounded to 10.0.0.0/8 because no ipblock exists at 10.40.0.0/16 with status Container
+layer3domain: default
 10.0.0.0/8 (Container)
   10.0.0.0/12 (Available)
   10.16.0.0/13 (Available)

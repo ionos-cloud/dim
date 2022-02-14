@@ -7,5 +7,6 @@ INFO - No zone found for localhost.server.lan.
 INFO - No zone found for 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa.
 WARNING - No record was created because no forward or reverse zone found.
 $ ndcli list containers 0.0.0.0/8
+layer3domain: default
 0.0.0.0/8 (Container) comment:reserved reverse_dns_profile:internal source:RFC5735
   0.0.0.0/8 (Available)
