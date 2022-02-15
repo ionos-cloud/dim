@@ -52,16 +52,48 @@ def get_layer3domain(from_args):
         return config['layer3domain']
     return None
 
+class Client(object):
+    def __init__(self, server_url, username, password, cookie_file=None, cookie_umask=None, dry_run=False):
+        self.dry_run = dry_run
+        self.client = DimClient(server_url, cookie_file=cookie_file, cookie_umask=cookie_umask)
+        if not self.client.logged_in:
+            if not self.login_prompt(username=username, password=password, ignore_cookie=True):
+                raise Exception('could not log in')
+
+    def login_prompt(self, username=None, password=None, permanent_session=False, ignore_cookie=False):
+        if not ignore_cookie and self.logged_in:
+            return True
+        else:
+            if username is None:
+                username = input('Username: ')
+            if password is None:
+                password = getpass.getpass()
+            return self.client.login(username, password, permanent_session)
+
+    # inject the dry-run argument into kwargs, so that all calls can deliver dry-run.
+    def _add_dryrun(self, func, *args, **kwargs):
+        if self.dry_run:
+            kwargs['dryrun'] = self.dry_run
+
+        fun = getattr(self.client, func)
+        return fun(*args, **kwargs)
+
+    def __getattr__(self, name):
+        return lambda *args, **kwargs: self._add_dryrun(name, *args, **kwargs)
+
 def dim_client(args):
     server_url = args.server or os.getenv('NDCLI_SERVER', config['server'])
     username = args.username or os.getenv('NDCLI_USERNAME', config['username'])
     cookie_path = os.path.expanduser(os.getenv('NDCLI_COOKIEPATH', f'~/.ndcli.cookie.{username}'))
     logger.debug("Dim server URL: %s" % server_url)
     logger.debug("Username: %s" % username)
-    client = DimClient(server_url, cookie_file=cookie_path, cookie_umask=0o077)
-    if not client.logged_in:
-        if not client.login_prompt(username=username, password=args.password, ignore_cookie=True):
-            raise Exception('Could not log in')
+    client = Client(
+            server_url,
+            username,
+            args.password,
+            cookie_file=cookie_path,
+            cookie_umask=0o077,
+            dry_run=args.get('dryrun', False))
     return client
 
 
@@ -518,8 +550,7 @@ def _rr_options(rr_type, params, profile, args, zonearg):
                    ttl=args.get('ttl', None),
                    comment=args.get('comment', None),
                    views=args.get('view', None),
-                   zone=args.get(zonearg, None),
-                   dryrun=args.dryrun)
+                   zone=args.get(zonearg, None))
     return _fill_rr_options(options, rr_type, params, args)
 
 
@@ -624,7 +655,6 @@ def _make_modify_rr(rr_type, params):
         options = OptionDict()
         options.set_if(type=rr_type,
                        view=args.view,
-                       dryrun=args.dryrun,
                        comment=args.comment)
         if args.ttl is not None:
             if args.ttl.lower() == 'default':
@@ -917,8 +947,7 @@ class CLI(object):
             return exitcode_error()
 
     def _get_delegation(self, args, method, from_object, options):
-        options.set_if(full=args.full,
-                       dryrun=args.dryrun)
+        options.set_if(full=args.full)
         options.set_attributes(args.attributes)
         if args.maxsplit is not None:
             options['maxsplit'] = int(args.maxsplit)
@@ -936,7 +965,6 @@ class CLI(object):
         options = OptionDict(pool=args.poolname)
         options.set_attributes(args.attributes)
         options.set_if(full=args.full,
-                       dryrun=args.dryrun,
                        layer3domain=args.get('layer3domain'),
                        delegation=args.get('delegation', None))
         _print_attributes(self.client.ip_mark(args.ip, **options), args.script)
@@ -945,7 +973,6 @@ class CLI(object):
         options = OptionDict(pool=args.poolname,
                              include_messages=True)
         options.set_if(reserved=args.force,
-                       dryrun=args.dryrun,
                        layer3domain=args.get('layer3domain'),
                        delegation=args.get('delegation', None))
         result = self.client.ip_free(args.ip, **options)
@@ -963,8 +990,7 @@ class CLI(object):
                              status=args.status,
                              include_messages=True)
         options.set_if(force=args.force,
-                       recursive=args.cleanup,
-                       dryrun=args.dryrun)
+                       recursive=args.cleanup)
         result = self.client.ipblock_remove(args.block, **options)
         _print_messages(result)
         if not result['deleted']:
@@ -1071,8 +1097,7 @@ class CLI(object):
         decided when the first subnet is added to it.
         '''
         options = OptionDict()
-        options.set_if(dryrun=args.dryrun,
-                       owner=args.group,
+        options.set_if(owner=args.group,
                        layer3domain=get_layer3domain(args.layer3domain))
         options.set_attributes(args.attributes)
         if args.vlan is not None:
@@ -1088,7 +1113,6 @@ class CLI(object):
         Creates a container.
         '''
         options = OptionDict(status='Container')
-        options.set_if(dryrun=args.dryrun)
         options.set_if(layer3domain=get_layer3domain(args.layer3domain))
         options.set_attributes(args.attributes)
         attrs = self.client.ipblock_create(args.container, **options)
@@ -1116,9 +1140,7 @@ class CLI(object):
           * "first": the first available candidate is selected (the default)
           * "random": a random candidate is selected
         '''
-        options = OptionDict()
-        options.set_if(dryrun=args.dryrun)
-        self.client.ippool_set_attrs(args.poolname, _parse_attributes(args.attributes), **options)
+        self.client.ippool_set_attrs(args.poolname, _parse_attributes(args.attributes))
 
     @cmd.register('modify pool set vlan',
                   Argument('vlan'),
@@ -1127,9 +1149,7 @@ class CLI(object):
         '''
         Sets the vlan for POOLNAME.
         '''
-        options = OptionDict()
-        options.set_if(dryrun=args.dryrun)
-        self.client.ippool_set_vlan(args.poolname, int(args.vlan), **options)
+        self.client.ippool_set_vlan(args.poolname, int(args.vlan))
 
     @cmd.register('modify pool owning-user-group', group_arg)
     def modify_pool_owning_user_group(self, args):
@@ -1154,9 +1174,7 @@ class CLI(object):
         '''
         Changes the layer3domain of a pool and all its dependencies.
         '''
-        options = OptionDict()
-        options.set_if(dryrun=args.dryrun)
-        result = self.client.ippool_set_layer3domain(args.poolname, args.layer3domain, **options)
+        result = self.client.ippool_set_layer3domain(args.poolname, args.layer3domain)
         if result:
             _print_messages(result)
 
@@ -1175,9 +1193,7 @@ class CLI(object):
         '''
         Removes the specified attributes from POOLNAME.
         '''
-        options = OptionDict()
-        options.set_if(dryrun=args.dryrun)
-        self.client.ippool_delete_attrs(args.poolname, args.attr_names, **options)
+        self.client.ippool_delete_attrs(args.poolname, args.attr_names)
 
     @cmd.register('modify pool remove vlan',
                   help='remove vlan from POOLNAME')
@@ -1185,9 +1201,7 @@ class CLI(object):
         '''
         Removes the vlan from POOLNAME.
         '''
-        options = OptionDict()
-        options.set_if(dryrun=args.dryrun)
-        self.client.ippool_remove_vlan(args.poolname, **options)
+        self.client.ippool_remove_vlan(args.poolname)
 
     @cmd.register('modify pool remove subnet',
                   Argument('block', metavar='SUBNET', completions=complete_subnet),
@@ -1228,8 +1242,7 @@ class CLI(object):
         '''
         options = OptionDict()
         options.set_attributes(args.attributes)
-        options.set_if(full=args.full,
-                       dryrun=args.dryrun)
+        options.set_if(full=args.full)
         ip_data = self.client.ippool_get_ip(args.poolname, **options)
         self._print_get_ip_data(ip_data, args)
 
@@ -1321,7 +1334,6 @@ class CLI(object):
         '''
         options = OptionDict(include_messages=True)
         options.set_attributes(args.attributes)
-        options.set_if(dryrun=args.dryrun)
         options.set_if(gateway=args.gw,
                        allow_move=args['allow-move'],
                        allow_overlap=args['allow-overlap'],
@@ -1333,13 +1345,10 @@ class CLI(object):
 
     @cmd.register('modify container move to', Argument('to_layer3domain'))
     def ipblock_move_to(self, args):
-        options = OptionDict()
-        options.set_if(dryrun=args.dryrun)
         result = self.client.ipblock_move_to(
 			args.container,
 			get_layer3domain(args.get('layer3domain')),
-			args.get('to_layer3domain'),
-            **options)
+			args.get('to_layer3domain'))
         _print_messages(result)
 
     # modify [block_type] set/remove attrs
@@ -1449,8 +1458,7 @@ class CLI(object):
         options = OptionDict(pool=args.poolname,
                              status='Delegation')
         options.set_attributes(args.attributes)
-        options.set_if(full=args.full,
-                       dryrun=args.dryrun)
+        options.set_if(full=args.full)
         ip_data = self.client.ipblock_get_ip(args.delegation, **options)
         self._print_get_ip_data(ip_data, args)
 
@@ -1472,25 +1480,21 @@ class CLI(object):
         '''
         Renames a pool.
         '''
-        options = OptionDict()
-        options.set_if(dryrun=args.dryrun)
-        self.client.ippool_rename(args.oldname, args.newname, **options)
+        self.client.ippool_rename(args.oldname, args.newname)
 
     @cmd.register('delete pool',
                   Argument('poolname', completions=complete_poolname),
                   Option('f', 'force', help='force delete non-empty pools'),
                   help='delete pool')
     def delete_pool(self, args):
-        options = OptionDict()
-        options.set_if(dryrun=args.dryrun)
         forceDelete = False
         if args.force is not None:
             forceDelete = args.force
-        subnets = self.client.ippool_get_subnets(args.poolname, options)
+        subnets = self.client.ippool_get_subnets(args.poolname)
         if len(subnets) != 0 and not forceDelete:
             raise Exception('You cannot delete pool because it contains %d subnet(s). However, you can use --force option to delete it.' % len(subnets))
 
-        self.client.ippool_delete(args.poolname, force=forceDelete, **options)
+        self.client.ippool_delete(args.poolname, force=forceDelete)
 
     @cmd.register('delete container',
                   Argument('container'),
@@ -1501,7 +1505,6 @@ class CLI(object):
         Deletes CONTAINER. Any blocks inside the deleted container are left intact.
         '''
         options = OptionDict(include_messages=True)
-        options.set_if(dryrun=args.dryrun)
         options.set_if(layer3domain=get_layer3domain(args.layer3domain))
         result = self.client.ipblock_remove(args.container, force=True, status='Container', **options)
         _print_messages(result)
@@ -2000,7 +2003,6 @@ delegation).''')
         options.set_attributes(args.attributes)
         options.set_if(soa_attributes=_get_soa_attributes(args),
                        from_profile=args.profilename,
-                       dryrun=args.dryrun,
                        owner=args.group)
         options['inherit_rights'] = not (args['no-inherit'] or args['no-inherit-rights'])
         options['inherit_zone_groups'] = not (args['no-inherit'] or args['no-inherit-zone-groups'])
@@ -2027,8 +2029,7 @@ delegation).''')
         '''
         options = OptionDict()
         options.set_attributes(args.attributes)
-        options.set_if(soa_attributes=_get_soa_attributes(args),
-                       dryrun=args.dryrun)
+        options.set_if(soa_attributes=_get_soa_attributes(args))
         self.client.zone_create(args.profilename, profile=True, **options)
 
     @cmd.register('rename zone-profile',
@@ -2040,7 +2041,6 @@ delegation).''')
         Renames a zone profile.
         '''
         options = OptionDict(profile=True)
-        options.set_if(dryrun=args.dryrun)
         self.client.zone_rename(args.oldname, args.newname, **options)
 
     @cmd.register('delete zone',
@@ -2055,8 +2055,7 @@ delegation).''')
             zonedelete.delete_zone(self.client, args.zonename, profile=False, print_messages=_print_messages)
         else:
             options = OptionDict(profile=False)
-            options.set_if(cleanup=args.cleanup,
-                           dryrun=args.dryrun)
+            options.set_if(cleanup=args.cleanup)
             result = self.client.zone_delete(args.zonename, **options)
             _print_messages(result)
 
@@ -2074,8 +2073,7 @@ delegation).''')
 
     def _set_zone_attrs(self, args, profile):
         options = OptionDict()
-        options.set_if(dryrun=args.dryrun,
-                       profile=profile)
+        options.set_if(profile=profile)
         if profile:
             zonename = args.profilename
         else:
@@ -2135,8 +2133,7 @@ delegation).''')
         '''
         options = OptionDict()
         options.set_if(soa_attributes=_get_soa_attributes(args),
-                       from_profile=args.profilename,
-                       dryrun=args.dryrun)
+                       from_profile=args.profilename)
         result = self.client.zone_create_view(args.zonename, args.view, **options)
         if not args.profilename:
             self.warning('You created a view without specifing a profile, your view is totally empty.')
@@ -2154,8 +2151,7 @@ delegation).''')
             zonedelete.delete_zone_view(self.client, args.zonename, args.view, print_messages=_print_messages)
         else:
             options = OptionDict()
-            options.set_if(dryrun=args.dryrun,
-                           cleanup=args.cleanup)
+            options.set_if(cleanup=args.cleanup)
             _print_messages(self.client.zone_delete_view(args.zonename, args.view, **options))
 
     @cmd.register('modify zone rename view',
@@ -2166,9 +2162,7 @@ delegation).''')
         '''
         Rename VIEW from zone ZONENAME to NEWNAME.
         '''
-        options = OptionDict()
-        options.set_if(dryrun=args.dryrun)
-        self.client.zone_rename_view(args.zonename, args.view, args.newname, **options)
+        self.client.zone_rename_view(args.zonename, args.view, args.newname)
 
     @cmd.register('modify zone dnssec enable',
                   Argument('algorithm', choices=['8']),
@@ -2189,8 +2183,7 @@ delegation).''')
         '''
         options = dict(algorithm=args.algorithm,
                        ksk_bits=args.ksk_bits,
-                       zsk_bits=args.zsk_bits,
-                       dryrun=args.dryrun)
+                       zsk_bits=args.zsk_bits)
         if args.nsec3:
             options.update(nsec3_algorithm=1,
                            nsec3_iterations=int(args.iterations),
@@ -2203,9 +2196,7 @@ delegation).''')
         '''
         Disable DNSSEC for zone ZONENAME. All keys and NSEC3PARAM records are deleted.
         '''
-        options = OptionDict()
-        options.set_if(dryrun=args.dryrun)
-        result = self.client.zone_dnssec_disable(args.zonename, **options)
+        result = self.client.zone_dnssec_disable(args.zonename)
         _print_messages(result)
 
     @cmd.register('create registrar-account',
@@ -2293,16 +2284,12 @@ delegation).''')
 
     @cmd.register('modify zone dnssec new ksk')
     def modify_zone_dnssec_new_ksk(self, args):
-        options = OptionDict()
-        options.set_if(dryrun=args.dryrun)
-        result = self.client.zone_create_key(args.zonename, 'ksk', **options)
+        result = self.client.zone_create_key(args.zonename, 'ksk')
         _print_messages(result)
 
     @cmd.register('modify zone dnssec new zsk')
     def modify_zone_dnssec_new_zsk(self, args):
-        options = OptionDict()
-        options.set_if(dryrun=args.dryrun)
-        result = self.client.zone_create_key(args.zonename, 'zsk', **options)
+        result = self.client.zone_create_key(args.zonename, 'zsk')
         _print_messages(result)
 
     for rr, properties in RR_FIELDS.items():
@@ -2407,8 +2394,7 @@ delegation).''')
         options = OptionDict()
         options.set_if(ttl=args.get('ttl', None),
                        comment=args.get('comment', None),
-                       views=args.get('view', None),
-                       dryrun=args.dryrun)
+                       views=args.get('view', None))
         poolname = args.poolname
         if poolname.isdigit() and 2 <= int(poolname) <= 4096:
             vlan = int(poolname)
