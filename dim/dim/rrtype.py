@@ -44,10 +44,12 @@ def validate_mail(self, key, value):
     return value.lower()
 
 
-def validate_target(self, key, value):
+def validate_target(self, key, value, preference=None):
     if len(value) > 254:
         raise InvalidParameterError('Invalid %s: %s' % (key, value))
     value = value.lower()
+    if preference == 0 and value == '.':
+        return value
     dnlabels = value.split('.')
     for label in dnlabels[:-1]:
         if not label_is_valid(label):
@@ -80,10 +82,12 @@ def validate_uint32(self, key, value):
     return value
 
 
-def validate_preference(self, key, value):
+def validate_preference(self, key, value, exchange=None):
     value = int(value)
-    if value < 1 or value > 32767:
-        raise InvalidParameterError('Preference min 1 max 32767')
+    if (value == 0 and exchange == '.'):
+        return value
+    if (value < 1 or value > 32767):
+        raise InvalidParameterError('Preference min 1 max 32767 or 0 with exchange "."')
     return value
 
 

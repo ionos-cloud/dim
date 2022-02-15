@@ -32,7 +32,7 @@ ERROR - NULL MX records can not coexist with normal MX records
 $ ndcli delete rr a.de. mx -q
 
 $ ndcli create rr a.de. mx 0 .
-INFO - Creating RR @ MX 0. in zone a.de
+INFO - Creating RR @ MX 0 . in zone a.de
 WARNING - . does not exist.
 
 # Try to create a MX in parallel to a NULL MX -> fail

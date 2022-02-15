@@ -231,6 +231,10 @@ def create_single_rr(name, rr_type, zone, view, user, overwrite=False, **kwargs)
                 if rr_type == 'PTR':  # Don't allow PTR round robin records
                     created = False
                     Messages.warn("Not overwriting: %s" % rrs[0])
+                elif rr_type == 'MX' and (new_rr.target == '.' and samerr):
+                    raise DimError('NULL MX records can not coexist with normal MX records')
+                elif rr_type == 'MX' and RR.query.filter(RR.name == new_rr.name and RR.view == view and RR.target == '.').count() > 0:
+                    raise DimError('NULL MX records can not coexist with normal MX records')
                 else:
                     Messages.warn("The name %s already existed, creating round robin record" % name)
     if created:
