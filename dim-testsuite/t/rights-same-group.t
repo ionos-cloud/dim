@@ -16,8 +16,6 @@ $ ndcli modify user-group network-admins add user networkadmin
 $ ndcli create user-group receiver
 $ ndcli modify user-group receiver add user receiver
 $ ndcli create user-group blocker
-$ ndcli create user-group department
-$ ndcli modify user-group department set department 674832
 
 $ ndcli create zone example.com
 WARNING - Creating zone example.com without profile
