@@ -8,6 +8,8 @@ import sys
 import textwrap
 from datetime import datetime
 from functools import wraps
+from typing import List
+from collections import OrderedDict
 
 from operator import itemgetter
 
@@ -15,7 +17,7 @@ from . import zoneimport
 from .cliparse import Command, Option, Group, Argument, Token
 from . import version
 
-from dimclient import DimClient
+from dimclient import DimClient, DimError
 
 __version__ = version.VERSION
 
@@ -1626,7 +1628,7 @@ class CLI(object):
                   Argument('container', nargs='?'),
                   help='list the children of a container')
     def list_containers(self, args):
-        def print_tree(tree, level):
+        def print_tree(tree, level: int):
             for node in tree:
                 attributes = ['(%s)' % node['status']]
                 if 'pool' in node:
@@ -1635,22 +1637,42 @@ class CLI(object):
                 print('  ' * level + '%s %s' % (node['ip'], ' '.join(attributes)))
                 if 'children' in node:
                     print_tree(node['children'], level + 1)
-
-        layer3domains = [args.layer3domain]
-        if args.layer3domain == "all":
+        layer3domains: List[str] = []
+        if args.layer3domain == "all" or get_layer3domain(args.layer3domain) is None:
             layer3domains = [l['name'] for l in self.client.layer3domain_list()]
-
-        for idx, layer3domain in enumerate(layer3domains):
-            if len(layer3domains) > 1:
-                if idx > 0:
-                    print()
-                print('layer3domain: ' + layer3domain)
+        else:
+            layer3domains = [get_layer3domain(args.layer3domain)]
+        # loop through layer3domains and collect results,
+        # so we can raise an error if there are no results at all
+        results = OrderedDict()
+        dim_errors = []
+        for layer3domain in layer3domains:
             options = OptionDict(include_messages=True)
             options.set_if(container=args.container)
             options.set_if(layer3domain=layer3domain)
-            result = self.client.container_list(**options)
+            try:
+                results[layer3domain] = self.client.container_list(**options)
+            except Exception as e:
+                if e.code == 3: # InvalidIPError
+                    dim_errors.append(e)
+                    next
+                else:
+                    raise
+        if len(dim_errors) == len(layer3domains):
+            # raise an error if there are no results at all
+            raise DimError('; '.join([str(e) for e in dim_errors]), code=3) # InvalidIPError
+        elif len(dim_errors) > 0:
+            for dimerror in dim_errors:
+                logging.debug(dimerror)
+        idx = 0
+        for layer3domain, result in results.items():
+            if idx > 0:
+                print()
             _print_messages(result)
-            print_tree(result['containers'], 0)
+            if result['containers']:
+                print('layer3domain: ' + layer3domain)
+                print_tree(result['containers'], 0)
+                idx += 1
 
     @cmd.register('list ips',
                   Argument('query', metavar='VLANID|CIDR|POOL'),

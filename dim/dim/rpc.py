@@ -3557,6 +3557,16 @@ class RPC(object):
                     and_(0 < has_access(False, True)).label('can_delete_rr')]
 
 
+    @readonly
+    def ipblock_get_attrs_multi(self, ipblock, layer3domain=None, full=False, filters = {}, **options):
+        ip = parse_ip(ipblock)
+        ipblocks = Ipblock.query_ip(ip, layer3domain, **filters)
+        result = []
+        for ipblock in ipblocks.all():
+            result.append(self.ipblock_get_attrs(ipblock, layer3domain=ipblock.layer3domain.name, full=full, **options))
+        return result
+
+
 def TRPC(*args, **kwargs):
     '''
     Returns an instance to a TransactionProxy class wrapping the public methods
