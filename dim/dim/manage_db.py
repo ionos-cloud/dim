@@ -11,14 +11,20 @@ from dim.models.migrate import migrate
 
 
 manage_db = Blueprint('manage_db', __name__, cli_group='db')
-#app.add_option('-t', '--test', dest='db_mode', action='store_const', const='TEST', required=False)
+
+
+# as separate function without decorators, so flask cli commands
+# can call it without having to pass the context
+def _init():
+    '''Creates tables and inserts default data'''
+    dim.db.create_all()
+    dim.models.insert_default_data()
 
 
 @manage_db.cli.command('init')
 def init():
     '''Creates tables and inserts default data'''
-    dim.db.create_all()
-    dim.models.insert_default_data()
+    _init()
 
 
 @manage_db.cli.command('check')
@@ -31,10 +37,11 @@ def check():
 
 
 @manage_db.cli.command('clear')
-def clear():
+@click.option('-f', '--force', 'force', is_flag=True)
+def clear_db(force: bool = False):
     '''Drops tables and runs init'''
     dim.db.drop_all()
-    init()
+    _init()
 
 
 @manage_db.cli.command('upgrade')
@@ -54,6 +61,7 @@ def script(filename):
     with open(filename) as f:
         sql = f.read()
     db.engine.execute(sql)
+
 
 @manage_db.cli.command('fix_ipv6')
 @click.argument('s')

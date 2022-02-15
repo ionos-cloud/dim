@@ -10,6 +10,8 @@ SRVLOG         ?= ${LDIR}/server.log
 NDCLI_USERNAME ?= admin
 NDCLI_SERVER   ?= http://localhost:5000
 NDCLI_CONFIG   ?= /dev/null
+VFLASK         ?= ${VDIR}/bin/flask
+FLASK_APP      ?= 'dim:create_app(db_mode="TEST")'
 
 all: install db test
 	mkdir ${VDIR}
@@ -38,7 +40,7 @@ install-dev: install-deps-local-editable
 	${VPIP} install -r ../ndcli/requirements-dev.txt
 
 db-clear:
-	${VDIR}/bin/manage_db clear
+	FLASK_APP=${FLASK_APP} ${VDIR}/bin/flask db clear
 
 db: db-clear
 	mysql -h127.0.0.1 -P3307 -updns -ppdns pdns1 < ./testenv/pdns.sql
@@ -54,6 +56,8 @@ test:
 		NDCLI_USERNAME="${NDCLI_USERNAME}" \
 		NDCLI_CONFIG="${NDCLI_CONFIG}" \
 		NDCLI_SERVER="${NDCLI_SERVER}" \
+		VFLASK="${VFLASK}" \
+		FLASK_APP=${FLASK_APP} \
 		${VPYTHON} runtest.py -d ${TESTS}
 
 pytest:

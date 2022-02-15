@@ -11,9 +11,7 @@ import dim.ldap_sync
 import dim.models
 
 
-manage_dim = Blueprint('manage_dim', __name__, cli_group=None)
-#manage_dim.add_option('-t', '--test', dest='db_mode', action='store_const', const='TEST', required=False)
-
+manage_dim = Blueprint('manage_dim', __name__, cli_group='dim')
 
 @manage_dim.cli.command('rebuild_tree')
 def rebuild_tree():
@@ -52,16 +50,16 @@ def update_validity():
 
 
 @manage_dim.cli.command('ldap_sync')
-@click.option('-n', '--dry-run', '--noop', dest='dryrun',  is_flag=True)
-@click.option('-f', '--ignore-deletion-threshold', dest='ignore_deletion_threshold', action='store_true')
+@click.option('-n', '--dry-run', '--noop', 'dryrun',  is_flag=True)
+@click.option('-f', '--ignore-deletion-threshold', 'ignore_deletion_threshold', is_flag=True)
 def ldap_sync(dryrun, ignore_deletion_threshold):
     '''Update Users, Group, and Departments from LDAP'''
     dim.ldap_sync.ldap_sync(dryrun=dryrun, ignore_deletion_threshold=ignore_deletion_threshold)
 
 
 @manage_dim.cli.command('sync_ldap')
-@click.option('-n', '--dry-run', '--noop', dest='dryrun',  is_flag=True)
-@click.option('-f', '--ignore-deletion-threshold', dest='ignore_deletion_threshold', action='store_true')
+@click.option('-n', '--dry-run', '--noop', 'dryrun',  is_flag=True)
+@click.option('-f', '--ignore-deletion-threshold', 'ignore_deletion_threshold', is_flag=True)
 def sync_ldap(dryrun, ignore_deletion_threshold):
     '''Update Users, Group, and Departments from LDAP'''
     dim.ldap_sync.ldap_sync(dryrun=dryrun, ignore_deletion_threshold=ignore_deletion_threshold)

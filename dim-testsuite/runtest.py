@@ -42,6 +42,7 @@ PDNS_ADDRESS = '127.1.1.1'
 PDNS_DB_URI = 'mysql://pdns:pdns@127.0.0.1:3307/pdns1'
 DIM_MYSQL_OPTIONS = '-h127.0.0.1 -P3307 -udim -pdim dim'
 DIM_MYSQL_COMMAND = 'mysql ' + DIM_MYSQL_OPTIONS
+VFLASK = os.getenv('VFLASK', 'flask')
 
 
 server = None
@@ -105,7 +106,7 @@ def clean_database():
     if not hasattr(clean_database, 'dumped'):
         commands.extend([
             "echo 'drop database dim; create database dim;' | " + DIM_MYSQL_COMMAND,
-            'manage_db clear',
+            '{} db clear'.format(VFLASK),
             'mysqldump ' + DIM_MYSQL_OPTIONS + ' >' + clean_sql])
         clean_database.dumped = True
     else:
@@ -388,7 +389,7 @@ if __name__ == '__main__':
     port = parsed.port
 
     logfile = open(SRVLOG, 'wb+')
-    server = Popen(['manage_dim', 'runserver', '--port', str(port), '--host', str(host)], stderr=STDOUT, stdout=logfile)
+    server = Popen([VFLASK, 'run', '--port', str(port), '--host', str(host)], stderr=STDOUT, stdout=logfile)
 
     stop_on_error = False
     auto_pdns_check = False
