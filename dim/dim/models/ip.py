@@ -309,10 +309,10 @@ class Ipblock(db.Model, WithAttr, TrackChanges):
         '''Return ranges of free addresses inside block as tuples (start_address, stop_address)'''
         start = block.ip.address
         for child in children:
-            if start < child.ip.address - 1:
+            if start <= child.ip.address - 1:
                 yield start, child.ip.address - 1
             start = child.ip.broadcast.address + 1
-        if start < block.ip.broadcast.address:
+        if start <= block.ip.broadcast.address:
             yield start, block.ip.broadcast.address
 
     @property
@@ -334,7 +334,7 @@ class Ipblock(db.Model, WithAttr, TrackChanges):
             Fill the free space between range_start and range_end with the least
             amount of blocks.
             '''
-            if range_start >= range_end:
+            if range_start > range_end:
                 return []
             hb = max_hostbits(range_start, bits - self.prefix)
             while range_start + 2 ** hb - 1 > range_end:
