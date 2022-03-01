@@ -69,6 +69,9 @@ def create_app(db_mode: Optional[str] = None, testing: bool = False):
     # add manage_db commands
     from .manage_db import manage_db
     app.register_blueprint(manage_db)
+    # add report commands
+    from .report import dim_report
+    app.register_blueprint(dim_report)
     return app
 
 
