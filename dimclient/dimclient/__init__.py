@@ -1,7 +1,4 @@
-try:
-    import simplejson as json
-except:
-    import json
+import json
 from http.cookiejar import LWPCookieJar
 from urllib.parse import urlencode
 from urllib.error import HTTPError

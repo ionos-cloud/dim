@@ -40,7 +40,7 @@ jobs:
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
       - run: mkdir -p ${HOME}/rpmbuild/SOURCES
       - run: /bin/yum install --assumeyes epel-release
-      - run: /bin/yum install --assumeyes python36-devel python36 rpm-build python36-dns python36-simplejson
+      - run: /bin/yum install --assumeyes python36-devel python36 rpm-build python36-dns
       - uses: actions/download-artifact@v2
         with:
           name: dimclient-src-${{ needs.build.outputs.version }}.tar.gz
@@ -58,8 +58,6 @@ jobs:
 
           Source0: dimclient-src-%{version}.tar.gz
           BuildRequires: python36-devel
-          BuildRequires: python36-simplejson
-          Requires: python36-simplejson
           Requires: python36
 
           # don't strip debug symbols, else it will all come crashing down
@@ -99,7 +97,7 @@ jobs:
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
       - run: mkdir -p ${HOME}/rpmbuild/SOURCES
       - run: /bin/dnf install --assumeyes epel-release
-      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns python3-simplejson
+      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns
       - uses: actions/download-artifact@v2
         with:
           name: dimclient-src-${{ needs.build.outputs.version }}.tar.gz
@@ -117,8 +115,6 @@ jobs:
 
           Source0: dimclient-src-%{version}.tar.gz
           BuildRequires: python3-devel
-          BuildRequires: python3-simplejson
-          Requires: python3-simplejson
           Requires: python3
 
           # don't strip debug symbols, else it will all come crashing down
@@ -160,7 +156,7 @@ jobs:
       - uses: actions/checkout@v2
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
       - run: mkdir -p ${HOME}/rpmbuild/SOURCES
-      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns python3-simplejson
+      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns
       - uses: actions/download-artifact@v2
         with:
           name: dimclient-src-${{ needs.build.outputs.version }}.tar.gz
@@ -178,8 +174,6 @@ jobs:
 
           Source0: dimclient-src-%{version}.tar.gz
           BuildRequires: python3-devel
-          BuildRequires: python3-simplejson
-          Requires: python3-simplejson
           Requires: python3
 
           # don't strip debug symbols, else it will all come crashing down
