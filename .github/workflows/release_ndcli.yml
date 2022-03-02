@@ -25,7 +25,7 @@ jobs:
         env:
           _REF: ${{ github.ref }}
       - run: apt-get update
-      - run: apt-get install --yes build-essential python3 python3-dnspython bash-completion dh-python python3-setuptools python3-all debhelper devscripts python3-simplejson python3-sphinx make git
+      - run: apt-get install --yes build-essential python3 python3-dnspython bash-completion dh-python python3-setuptools python3-all debhelper devscripts python3-sphinx make git
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
@@ -67,7 +67,7 @@ jobs:
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
       - run: mkdir -p ${HOME}/rpmbuild/SOURCES
       - run: /bin/yum install --assumeyes epel-release
-      - run: /bin/yum install --assumeyes python36-devel python36 rpm-build python36-dns python36-simplejson python36-dateutil
+      - run: /bin/yum install --assumeyes python36-devel python36 rpm-build python36-dns python36-dateutil
       - run: |
           curl --location "https://github.com/${{ github.repository }}/releases/download/dimclient-${_DIMCLIENT}/python36-dimclient-${_DIMCLIENT}-1.el7.x86_64.rpm" > ./python36-dimclient-${_DIMCLIENT}-1.el7.x86_64.rpm
           rpm -i ./python36-dimclient-${_DIMCLIENT}-1.el7.x86_64.rpm
@@ -143,7 +143,7 @@ jobs:
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
       - run: mkdir -p ${HOME}/rpmbuild/SOURCES
       - run: /bin/dnf install --assumeyes epel-release
-      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns python3-simplejson python3-dateutil
+      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns python3-dateutil
       - run: |
           curl --location "https://github.com/${{ github.repository }}/releases/download/dimclient-${_DIMCLIENT}/python3-dimclient-${_DIMCLIENT}-1.el8.x86_64.rpm" > ./python3-dimclient-${_DIMCLIENT}-1.el8.x86_64.rpm
           rpm -i ./python3-dimclient-${_DIMCLIENT}-1.el8.x86_64.rpm
@@ -221,7 +221,7 @@ jobs:
       - uses: actions/checkout@v2
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
       - run: mkdir -p ${HOME}/rpmbuild/SOURCES
-      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns python3-simplejson python3-dateutil curl
+      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns python3-dateutil curl
       - run: |
           curl --location "https://github.com/${{ github.repository }}/releases/download/dimclient-${_DIMCLIENT}/python3-dimclient-${_DIMCLIENT}-1.fc${{ matrix.os }}.x86_64.rpm" > ./python3-dimclient-${_DIMCLIENT}-1.fc${{ matrix.os }}.x86_64.rpm
           rpm -i ./python3-dimclient-${_DIMCLIENT}-1.fc${{ matrix.os }}.x86_64.rpm
@@ -295,7 +295,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: apt-get update
-      - run: apt-get install --yes build-essential python3 python3-dnspython bash-completion dh-python python3-setuptools python3-all debhelper devscripts python3-simplejson python3-sphinx
+      - run: apt-get install --yes build-essential python3 python3-dnspython bash-completion dh-python python3-setuptools python3-all debhelper devscripts python3-sphinx
       - run: |
           curl --location "https://github.com/${{ github.repository }}/releases/download/dimclient-${_DIMCLIENT}/python3-dimclient_${_DIMCLIENT}_all.deb" > ./python3-dimclient_${_DIMCLIENT}_all.deb
           dpkg -i ./python3-dimclient_${_DIMCLIENT}_all.deb
