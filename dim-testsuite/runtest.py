@@ -79,7 +79,8 @@ def is_ignorable(line: bytes):
 
 
 def generates_table(line: bytes):
-    return line.startswith(b'$ ndcli list') or line.startswith(b'$ ndcli dump zone') or line.startswith(b'$ ndcli history')
+    return (line.startswith(b'$ ndcli list') and not line.startswith(b'$ ndcli list containers')) \
+        or line.startswith(b'$ ndcli dump zone') or line.startswith(b'$ ndcli history')
 
 
 def generates_map(line: bytes):

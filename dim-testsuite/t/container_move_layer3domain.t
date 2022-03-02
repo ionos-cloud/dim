@@ -35,12 +35,11 @@ ERROR - container 10.0.4.0/22 already exists in layer3domain b
 $ ndcli delete container 10.0.4.0/22 layer3domain b
 INFO - Deleting container 10.0.4.0/22 from layer3domain b
 $ ndcli list containers layer3domain all
-layer3domain: default
-
 layer3domain: a
 10.0.0.0/8 (Container)
   10.0.0.0/22 (Available)
   10.0.4.0/22 (Container)
+    10.0.4.0 (Available)
     10.0.4.1 (Static)
     10.0.4.2/31 (Available)
     10.0.4.4/30 (Available)
@@ -91,8 +90,6 @@ INFO - moving pool 10.0.6.0/24 from parent 10.0.4.0/22 to parent 10.0.0.0/8
 INFO - moving pool 10.0.5.0/24 from parent 10.0.4.0/22 to parent 10.0.0.0/8
 INFO - moving static ip 10.0.4.1 to layer3domain b
 $ ndcli list containers layer3domain all
-layer3domain: default
-
 layer3domain: a
 10.0.0.0/8 (Container)
   10.0.0.0/22 (Available)
@@ -119,6 +116,7 @@ layer3domain: b
 10.0.0.0/8 (Container)
   10.0.0.0/22 (Available)
   10.0.4.0/22 (Container)
+    10.0.4.0 (Available)
     10.0.4.1 (Static)
     10.0.4.2/31 (Available)
     10.0.4.4/30 (Available)
