@@ -1,10 +1,9 @@
 mysqlclient>=1.4.6
 SQLAlchemy~=1.4
 ldap3~=2.9
-Werkzeug>=0.15.3
-Flask~=1.1
+Flask~=2.0
 Flask-SQLAlchemy~=2.5
-Jinja2~=2.11
+Jinja2~=3.0
 Flask-Script~=2.0
 dnspython~=2.1,!=2.2.0
 requests~=2.25

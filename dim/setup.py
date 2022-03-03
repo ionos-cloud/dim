@@ -5,4 +5,4 @@ setup(name='dim',
       version=version.VERSION,
       packages=['dim', 'dim.models'],
       package_data={'dim': ['sql/*.sql']},
-      scripts=['report', 'manage_dim', 'manage_db'])
+      scripts=['report', 'manage_db', 'manage_dim'])
