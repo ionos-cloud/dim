@@ -54,7 +54,7 @@ jobs:
           _dimclient: ${{ steps.dimclient.outputs.version }}
           _version: ${{ steps.version.outputs.version }}
 
-  centos7:
+  el7:
     runs-on: ubuntu-latest
     needs: build
     container:
@@ -130,11 +130,11 @@ jobs:
           name: python36-ndcli-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
           path: ~/rpmbuild/RPMS/x86_64/python36-ndcli-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
 
-  centos8:
+  el8:
     runs-on: ubuntu-latest
     needs: build
     container:
-      image: centos:centos8
+      image: oraclelinux:8
       env:
         _VERSION: ${{ needs.build.outputs.version }}
         _DIMCLIENT: ${{ needs.build.outputs.dimclient }}
@@ -321,8 +321,8 @@ jobs:
     needs:
       - build
       - debian
-      - centos7
-      - centos8
+      - el7
+      - el8
       - fedora
     steps:
       - uses: actions/checkout@v2
