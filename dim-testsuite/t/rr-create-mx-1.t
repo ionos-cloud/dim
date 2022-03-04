@@ -47,9 +47,9 @@ rootserver a.de       MX    10 mx00.example.com.
 # rfc1035 states "PREFERENCE A 16 bit integer....." it does not say explicitly signed or unsigned
 # for our use i specify min value 1 max value 2^15-1
 $ ndcli create rr m.a.de. mx 0 mx
-ERROR - Preference min 1 max 32767
+ERROR - Preference min 1 max 32767 or 0 with exchange "."
 $ ndcli create rr m.a.de. mx 32768 mx
-ERROR - Preference min 1 max 32767
+ERROR - Preference min 1 max 32767 or 0 with exchange "."
 
 $ ndcli delete zone a.de --cleanup
 INFO - Deleting RR @ MX 10 mx from zone a.de
