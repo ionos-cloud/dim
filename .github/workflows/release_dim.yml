@@ -38,14 +38,15 @@ jobs:
           name: dim-src-${{ steps.version.outputs.version }}.tar.gz
           path: dim-src-${{ steps.version.outputs.version }}.tar.gz
 
-  centos8:
+  el8:
     runs-on: ubuntu-latest
     needs: build
     container:
-      image: centos:centos8
+      image: oraclelinux:8
       env:
         _VERSION: ${{ needs.build.outputs.version }}
     steps:
+      - run: /bin/dnf install --assumeyes gcc python39-devel mariadb-devel git python39 rpm-build tar gzip
       - uses: actions/download-artifact@v2
         with:
           name: dim-src-${{ needs.build.outputs.version }}.tar.gz
@@ -53,8 +54,7 @@ jobs:
       - run: tar -xzf dim-src-${{ needs.build.outputs.version }}.tar.gz
         working-directory: /tmp
       - uses: actions/checkout@v2
-      - run: /bin/dnf install --assumeyes openldap-devel gcc python3-devel mariadb-devel git python3 rpm-build
-      - run: /bin/python3 -m venv /opt/dim/
+      - run: /bin/python3.9 -m venv /opt/dim/
       - run: /opt/dim/bin/pip3 install -r dim/requirements.txt
       - run: /opt/dim/bin/pip3 install ./dim
       - run: mkdir /opt/dim/doc/
@@ -75,6 +75,8 @@ jobs:
           License: MIT
 
           Source0: dim-%{version}.tar.gz
+
+          Requires: python39
 
           # don't strip debug symbols, else it will all come crashing down
           %define debug_package %{nil}
@@ -101,86 +103,11 @@ jobs:
           name: dim-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
           path: ~/rpmbuild/RPMS/x86_64/dim-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
 
-  centos7:
-    runs-on: ubuntu-latest
-    needs: build
-    container:
-      image: centos:centos7
-      env:
-        _VERSION: ${{ needs.build.outputs.version }}
-    steps:
-      - uses: actions/download-artifact@v2
-        with:
-          name: dim-src-${{ needs.build.outputs.version }}.tar.gz
-          path: /tmp/
-      - run: tar -xzf dim-src-${{ needs.build.outputs.version }}.tar.gz
-        working-directory: /tmp
-      - uses: actions/checkout@v2
-      - run: /bin/yum install --assumeyes openldap-devel gcc python36-devel mariadb-devel git python36 rpm-build
-      - run: /bin/python3.6 -m venv /opt/dim/
-      - run: /opt/dim/bin/pip3.6 install -r dim/requirements.txt
-      - run: /opt/dim/bin/pip3.6 install ./dim
-      - run: mkdir /opt/dim/doc/
-      - run: cp -r /tmp/dim-${{ needs.build.outputs.version }}/doc/_build/html/* /opt/dim/doc/
-      - run: /bin/tar --transform="s,^opt,dim-${_VERSION}/opt," -czf "/tmp/dim-bin.tar.gz" opt
-        working-directory: /
-      - run: mkdir -p ${HOME}/rpmbuild/SPECS
-      - run: mkdir -p ${HOME}/rpmbuild/SOURCES
-      - shell: sh
-        run: |
-          cat <<EOF > ${HOME}/rpmbuild/SPECS/dim.spec
-          Name:    dim
-          Version: ${_VERSION}
-          Release: 1.el7
-          Summary: DNS and IP management
-
-          Group: application/system
-          License: MIT
-
-          Source0: dim-%{version}.tar.gz
-
-          # don't strip debug symbols, else it will all come crashing down
-          %define debug_package %{nil}
-          %define __strip /bin/true
-          # stop trying to compile python files with old python version
-          %if 0%{?rhel}
-          %global __os_install_post    \
-              /usr/lib/rpm/redhat/brp-compress \
-              %{!?__debug_package:\
-              /usr/lib/rpm/redhat/brp-strip %{__strip} \
-              /usr/lib/rpm/redhat/brp-strip-comment-note %{__strip} %{__objdump} \
-              } \
-              /usr/lib/rpm/redhat/brp-strip-static-archive %{__strip} \
-              %{!?__jar_repack:/usr/lib/rpm/redhat/brp-java-repack-jars} \
-          %{nil}
-          %endif
-
-          %description
-          DNS and IP management
-
-          %prep
-          %setup -q #unpack tarball
-
-          %build
-
-          %install
-          cp -rfa * %{buildroot}
-
-          %files
-          /opt/*
-          EOF
-      - run: cp /tmp/dim-bin.tar.gz ${HOME}/rpmbuild/SOURCES/dim-${_VERSION}.tar.gz
-      - run: rpmbuild -ba ${HOME}/rpmbuild/SPECS/dim.spec
-      - uses: actions/upload-artifact@v2
-        with:
-          name: dim-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
-          path: ~/rpmbuild/RPMS/x86_64/dim-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
-
   debian:
     runs-on: ubuntu-latest
     needs: build
     container:
-      image: debian:10
+      image: debian:11
       env:
         _VERSION: ${{ needs.build.outputs.version }}
     steps:
@@ -204,8 +131,7 @@ jobs:
     needs:
       - build
       - debian
-      - centos8
-      - centos7
+      - el8
     steps:
       - uses: actions/checkout@v2
       - uses: actions/create-release@v1
@@ -223,9 +149,6 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: dim-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
-      - uses: actions/download-artifact@v2
-        with:
-          name: dim-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
       - uses: actions/download-artifact@v2
         with:
           name: python3-dim_${{ needs.build.outputs.version }}_all.deb
@@ -253,12 +176,4 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: dim-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
           asset_name: dim-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
-          asset_content_type: application/octet-stream
-      - uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dim-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
-          asset_name: dim-${{ needs.build.outputs.version }}-1.el7.x86_64.rpm
           asset_content_type: application/octet-stream
