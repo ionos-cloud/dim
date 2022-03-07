@@ -27,17 +27,17 @@ WARNING - mx.outside.zone. does not exist.
 
 # Try to create a NULL MX -> must fail
 $ ndcli create rr a.de. mx 0 .
-ERROR - NULL MX records can not coexist with normal MX records
+ERROR - Can not create NULL MX record - other MX record already exists
 
 $ ndcli delete rr a.de. mx -q
 
 $ ndcli create rr a.de. mx 0 .
-INFO - Creating RR @ MX 0. in zone a.de
+INFO - Creating RR @ MX 0 . in zone a.de
 WARNING - . does not exist.
 
 # Try to create a MX in parallel to a NULL MX -> fail
 $ ndcli create rr a.de. mx 10 mx.outside.zone.
-ERROR - NULL MX records can not coexist with normal MX records
+ERROR - Can not create MX record - NULL MX record already exists
 
 $ ndcli delete zone a.de --cleanup -q
 $ ndcli delete zone 3.2.1.in-addr.arpa --cleanup

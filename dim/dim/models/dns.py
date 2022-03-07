@@ -366,7 +366,7 @@ class RR(db.Model, TrackChanges):
         rr_class = RR.get_class(type)
         try:
             for field, validate in list(rr_class.validate.items()):
-                kwargs[field] = validate(None, field, kwargs[field])
+                kwargs[field] = validate(None, field, kwargs[field], **({i:kwargs[i] for i in kwargs if i != field}))
         except ValueError as e:
             raise InvalidParameterError(str(e))
         return kwargs

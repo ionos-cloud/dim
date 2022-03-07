@@ -19,7 +19,7 @@ def label_is_valid(label):
     return True
 
 
-def validate_fqdn(self, key, value):
+def validate_fqdn(self, key, value, **kwargs):
     if value == '.':
         return value
     if not value.endswith('.'):
@@ -33,7 +33,7 @@ def validate_fqdn(self, key, value):
     return value
 
 
-def validate_mail(self, key, value):
+def validate_mail(self, key, value, **kwargs):
     if '.' not in value[:-1]:
         raise InvalidParameterError('Invalid %s: %s' % (key, value))
     try:
@@ -44,10 +44,12 @@ def validate_mail(self, key, value):
     return value.lower()
 
 
-def validate_target(self, key, value):
+def validate_target(self, key, value, preference=None, **kwargs):
     if len(value) > 254:
         raise InvalidParameterError('Invalid %s: %s' % (key, value))
     value = value.lower()
+    if preference == 0 and value == '.':
+        return value
     dnlabels = value.split('.')
     for label in dnlabels[:-1]:
         if not label_is_valid(label):
@@ -59,48 +61,50 @@ def validate_target(self, key, value):
     return value
 
 
-def validate_uint8(self, key, value):
+def validate_uint8(self, key, value, **kwargs):
     value = int(value)
     if value < 0 or value > 2 ** 8 - 1:
         raise InvalidParameterError("Invalid %s: %d" % (key, value))
     return value
 
 
-def validate_uint16(self, key, value):
+def validate_uint16(self, key, value, **kwargs):
     value = int(value)
     if value < 0 or value > 2 ** 16 - 1:
         raise InvalidParameterError("Invalid %s: %d" % (key, value))
     return value
 
 
-def validate_uint32(self, key, value):
+def validate_uint32(self, key, value, **kwargs):
     value = int(value)
     if value < 0 or value > 2 ** 32 - 1:
         raise InvalidParameterError("Invalid %s: %d" % (key, value))
     return value
 
 
-def validate_preference(self, key, value):
+def validate_preference(self, key, value, exchange=None):
     value = int(value)
-    if value < 1 or value > 32767:
-        raise InvalidParameterError('Preference min 1 max 32767')
+    if (value == 0 and exchange == '.'):
+        return value
+    if (value < 1 or value > 32767):
+        raise InvalidParameterError('Preference min 1 max 32767 or 0 with exchange "."')
     return value
 
 
-def validate_certificate(self, key, value):
+def validate_certificate(self, key, value, **kwargs):
     if ' ' in value:
         raise InvalidParameterError("Invalid %s: %s" % (key, value))
     return value
 
 
-def validate_hexstring(self, key, value):
+def validate_hexstring(self, key, value, **kwargs):
     if ' ' in value or not re.match('^[0-9a-fA-F]*$', value) or len(value) % 2 != 0:
         raise InvalidParameterError("Invalid %s: %s" % (key, value))
     return value
 
 
 def validate_enum(enum, reserved=None):
-    def f(self, key, value):
+    def f(self, key, value, **kwargs):
         try:
             value = int(value)
         except:
@@ -119,7 +123,7 @@ def validate_enum(enum, reserved=None):
     return f
 
 
-def validate_caa_flags(self, key, value):
+def validate_caa_flags(self, key, value, **kwargs):
     try:
         value = int(value)
         if value not in (0, 1, 128):
@@ -129,7 +133,7 @@ def validate_caa_flags(self, key, value):
         raise InvalidParameterError('CAA Issuer critical only allows values 0, 1, 128')
 
 
-def validate_property_tag(self, key, value):
+def validate_property_tag(self, key, value, **kwargs):
     value = value.lower()
     if value not in ("issue", "issuewild", "iodef"):
         raise InvalidParameterError('only CAA property tags "issue", "issuewild", "iodef" are allowed')
@@ -204,7 +208,7 @@ def _parse_strings(value):
     return strings
 
 
-def validate_strings(self, key, value: Union[str, List[str]]):
+def validate_strings(self, key, value: Union[str, List[str]], **kwargs):
     if isinstance(value, str):
         strings = _parse_strings(value)
     elif isinstance(value, list):
@@ -226,7 +230,7 @@ def validate_strings(self, key, value: Union[str, List[str]]):
     return ' '.join('"' + dns.rdata._escapify(s) + '"' for s in split_strings)
 
 
-def validate_character_string(self, key, value):
+def validate_character_string(self, key, value, **kwargs):
     if len(_unescapify(value)) > 255:
         raise ValueError('Invalid %s: character string too long' % key)
     return '"%s"' % value

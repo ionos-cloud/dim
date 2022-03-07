@@ -231,6 +231,10 @@ def create_single_rr(name, rr_type, zone, view, user, overwrite=False, **kwargs)
                 if rr_type == 'PTR':  # Don't allow PTR round robin records
                     created = False
                     Messages.warn("Not overwriting: %s" % rrs[0])
+                elif rr_type == 'MX' and (new_rr.target == '.' and len(rrs) > 0):
+                    raise DimError('Can not create NULL MX record - other MX record already exists')
+                elif rr_type == 'MX' and RR.query.filter(RR.name == new_rr.name, RR.type == 'MX', RR.view == view, RR.target == '.').count() > 0:
+                    raise DimError('Can not create MX record - NULL MX record already exists')
                 else:
                     Messages.warn("The name %s already existed, creating round robin record" % name)
     if created:
