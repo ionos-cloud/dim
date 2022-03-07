@@ -228,7 +228,6 @@ def create_single_rr(name, rr_type, zone, view, user, overwrite=False, **kwargs)
                 existed = True
                 Messages.info("%s already exists" % samerr)
             else:
-                logging.info('WOOOOSA %s -> %s -> %s', new_rr, samerr, rrs)
                 if rr_type == 'PTR':  # Don't allow PTR round robin records
                     created = False
                     Messages.warn("Not overwriting: %s" % rrs[0])
