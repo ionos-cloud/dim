@@ -81,6 +81,8 @@ jobs:
           # don't strip debug symbols, else it will all come crashing down
           %define debug_package %{nil}
           %define __strip /bin/true
+          # Disable creation of build-id links
+          %define _build_id_links none
 
           %description
           DNS and IP management
