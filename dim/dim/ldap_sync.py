@@ -151,7 +151,7 @@ def ldap_sync(ignore_deletion_threshold: bool = False):
     # Synchronize group members
     ldap_users = {}  # map department_number to list of usernames
     for group in Group.query.filter(Group.department_number != None).all():  # noqa
-        search_results = ldap.departments('ou=%s' % group.department_number)
+        search_results = ldap.departments('(ou=%s)' % group.department_number)
         if len(search_results) == 0:
             group.department_number = None
             log_stdout('Department %s %s was deleted and had the following members from LDAP: %s' % (
@@ -170,7 +170,7 @@ def ldap_sync(ignore_deletion_threshold: bool = False):
                 logging.info('Renaming group %s to %s' % (group.name, new_name))
                 group.name = new_name
             ldap_users[group.department_number] = \
-                [u.username for u in ldap.users('departmentNumber=%s' % dept.department_number)]
+                [u.username for u in ldap.users('(departmentNumber=%s)' % dept.department_number)]
     # Remove all users added by a ldap query that are no longer present in the group
     for membership in GroupMembership.query.filter(GroupMembership.from_ldap).all():  # noqa
         if membership.group.department_number is None or \
@@ -184,7 +184,7 @@ def ldap_sync(ignore_deletion_threshold: bool = False):
         for username in [u for u in ldap_users[group.department_number] if u not in group_users]:
             user = User.query.filter_by(username=username).first()
             if user is None:
-                ldap_search = ldap.users('o=%s' % username)
+                ldap_search = ldap.users('(o=%s)' % username)
                 if ldap_search:
                     lu = ldap_search[0]
                     user = User(username=username,
