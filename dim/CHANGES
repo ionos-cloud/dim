@@ -1,4 +1,12 @@
+5.0.0rc2
+--------
+* fix missing /32 entries in list containers (#104)
+
+* allow NetworkAdmins and DNSAdmins to grant rights to all groups (#171)
+* add option layer3domain to `history ipblock` (#183)
+
 5.0.0rc1
+--------
 * Version String changed due to packaging issues
 
 5.0.0-rc1

@@ -1,0 +1,15 @@
+5.0.0-rc1
+---------
+* fix missing dry-run options for modifying commands (#87)
+
+* add environment variables NDCLI_USERNAME and NDCLI_SERVER
+* add environment variable NDCLI_CONFIG and NDCLI_COOKIEPATH
+* add environment variable NDCLI_LAYER3DOMAIN
+* add option layer3domain to config
+* create a cookie file for each user
+* add command `modify container set layer3domain` (#124)
+* add command `modify pool set owning-user-group`
+* add command `modify pool remove owning-user-group`
+* add command `modify pool set layer3domain` (#123)
+* add command `modify layer3domain set type`
+* add option layer3domain to `history ipblock` (#183)
