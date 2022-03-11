@@ -15,11 +15,9 @@ how many free IPs are left in the pools with names starting with
 We first need some setup code to connect to the server and obtain a proxy object
 which will forward calls to the dim server::
 
-    from dimclient import script_client
-    client = script_client('https://localhost/dim')
-
-Note that if you're not already logged in, :func:`script_client` will ask for
-the password and store a permanent cookie in ``~/.ndcli.cookie``.
+    from dimclient import DimClient
+    client = DimClient('https://localhost/dim')
+    client.login(username, password)
 
 You can discover the API functions needed and their parameters by using the
 ``--debug`` (``-d``) ndcli flag::
@@ -60,8 +58,8 @@ Reading the documentation of :func:`ippool_get_subnets` we find out that we have
 to sum the *free* fields for all the subnets to get the count of free addresses
 from a pool. The final code is::
 
-    from dimclient import script_client
-    client = script_client('https://localhost/dim')
+    from dimclient import DimClient
+    client = DimClient('https://localhost/dim')
     free = 0
     for pool in client.ippool_list(pool='MyPool*', include_subnets=False):
         free += sum(subnet['free']
@@ -119,9 +117,3 @@ Reference
           server.call('ippool_list', {'pool': '*'})
 
       .. note:: Keyword arguments cannot be used for positional jsonrpc arguments.
-
-.. function:: script_client(server_url, username=None, password=None)
-
-   Convenience function for setting up a :class:`DimClient` instance. It will use
-   ``~/.ndcli.cookie`` for *cookie_file* and request a permanent session via
-   :meth:`DimClient.login_prompt`.
