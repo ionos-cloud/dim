@@ -4056,7 +4056,7 @@ def _check_department_number(department_number):
         raise AlreadyExistsError("A group with department_number %s already exists"
                                  % department_number)
     try:
-        lg = dim.ldap_sync.LDAP().departments('ou=%s' % department_number)
+        lg = dim.ldap_sync.LDAP().departments('(ou=%s)' % department_number)
         if not lg:
             raise Exception("Department number %s not found" % department_number)
         return lg[0].name
