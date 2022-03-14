@@ -139,11 +139,11 @@ jobs:
         _VERSION: ${{ needs.build.outputs.version }}
         _DIMCLIENT: ${{ needs.build.outputs.dimclient }}
     steps:
+      - run: /bin/dnf install --assumeyes epel-release
+      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns python3-dateutil tar gzip git
       - uses: actions/checkout@v2
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
       - run: mkdir -p ${HOME}/rpmbuild/SOURCES
-      - run: /bin/dnf install --assumeyes epel-release
-      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns python3-dateutil
       - run: |
           curl --location "https://github.com/${{ github.repository }}/releases/download/dimclient-${_DIMCLIENT}/python3-dimclient-${_DIMCLIENT}-1.el8.x86_64.rpm" > ./python3-dimclient-${_DIMCLIENT}-1.el8.x86_64.rpm
           rpm -i ./python3-dimclient-${_DIMCLIENT}-1.el8.x86_64.rpm

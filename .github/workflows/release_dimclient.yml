@@ -93,11 +93,10 @@ jobs:
       env:
         _VERSION: ${{ needs.build.outputs.version }}
     steps:
+      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns tar gzip git
       - uses: actions/checkout@v2
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
       - run: mkdir -p ${HOME}/rpmbuild/SOURCES
-      - run: /bin/dnf install --assumeyes epel-release
-      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns
       - uses: actions/download-artifact@v2
         with:
           name: dimclient-src-${{ needs.build.outputs.version }}.tar.gz
