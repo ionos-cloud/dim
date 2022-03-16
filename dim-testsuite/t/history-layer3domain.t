@@ -20,6 +20,10 @@ $ ndcli history ipblock 10.0.0.0/8
 timestamp                  user  tool   originating_ip objclass name       action
 2022-02-03 12:53:08.686055 admin native 127.0.0.1      ipblock  10.0.0.0/8 created in layer3domain b
 2022-02-03 12:53:08.546129 admin native 127.0.0.1      ipblock  10.0.0.0/8 created in layer3domain a
+$ ndcli history ipblock 10.0.0.0/8 layer3domain all
+timestamp                  user  tool   originating_ip objclass name       action
+2022-02-03 12:53:08.686055 admin native 127.0.0.1      ipblock  10.0.0.0/8 created in layer3domain b
+2022-02-03 12:53:08.546129 admin native 127.0.0.1      ipblock  10.0.0.0/8 created in layer3domain a
 $ ndcli history ipblock 10.0.0.0/8 layer3domain a
 timestamp                  user  tool   originating_ip objclass name       action
 2022-02-03 12:53:08.546129 admin native 127.0.0.1      ipblock  10.0.0.0/8 created in layer3domain a

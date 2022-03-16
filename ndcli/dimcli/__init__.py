@@ -2880,13 +2880,16 @@ delegation).''')
         self.client.output_delete(args.output)
 
 
-def register_history(htype, cmd_args, arg_meta, f, fargs):
+def register_history(htype, cmd_args, arg_meta: str, f, fargs, layer3domain_option: bool = False):
     def _get_history(self, args):
         func = getattr(self.client, f)
         fargs_l = fargs(args)
         options = OptionDict(limit=int(args.limit),
                              begin=_local2utc(args.get('begin')),
                              end=_local2utc(args.get('end')))
+        # add layer3domain option only if the history function supports it
+        if layer3domain_option:
+            options['layer3domain'] = args.get('layer3domain')
         columns = ['timestamp', {},
                    'user', {},
                    'tool', {},
@@ -2935,7 +2938,7 @@ register_history('user-groups', arg_meta='groups', cmd_args=(),
 register_history('pool', arg_meta='POOL', cmd_args=(Argument('poolname', completions=complete_allocate_poolname), ),
                  f='history_ippool', fargs=lambda args: [args.poolname])
 register_history('ipblock', arg_meta='IPBLOCK', cmd_args=(Argument('ipblock'), layer3domain_group),
-                 f='history_ipblock', fargs=lambda args: [args.ipblock, args.layer3domain])
+                 f='history_ipblock', fargs=lambda args: [args.ipblock], layer3domain_option=True)
 register_history('registrar-account', arg_meta='REGISTRAR_ACCOUNT', cmd_args=(registrar_account_arg, ),
                  f='history_registrar_account', fargs=lambda args: [args.registrar_account])
 register_history('layer3domain', arg_meta='LAYER3DOMAIN', cmd_args=(layer3domain_arg, ),
