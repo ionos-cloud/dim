@@ -2889,7 +2889,7 @@ def register_history(htype, cmd_args, arg_meta: str, f, fargs, layer3domain_opti
                              end=_local2utc(args.get('end')))
         # add layer3domain option only if the history function supports it
         if layer3domain_option:
-            options['layer3domain'] = args.get('layer3domain')
+            options['layer3domain'] = get_layer3domain(args.layer3domain)
         columns = ['timestamp', {},
                    'user', {},
                    'tool', {},

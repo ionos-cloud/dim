@@ -2963,7 +2963,9 @@ class RPC(object):
     @readonly
     def history_layer3domain(self, name, limit=None, begin=None, end=None):
         hs = HistorySelect()
-        hs.add_select(Layer3Domain).where(hs.c.name == name)
+        query = hs.add_select(Layer3Domain)
+        if name is not None and name != 'all':
+            query.where(hs.c.name == name)
         return hs.execute(limit, begin, end)
 
     @readonly
