@@ -5,7 +5,7 @@ Administrator Documentation
 ===========================
 
 System requirements
-===============
+===================
 * Python 3.9+ for DIM
 * Python 3.5+ for dimclient/ndcli
 
