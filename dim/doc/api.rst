@@ -280,6 +280,11 @@ Pool Functions
    Remove the vlan from *pool* and all its subnets.
 
 
+.. function:: ippool_set_layer3domain(pool, layer3domain)
+
+   Set layer3domain for *pool* and all its subnets.
+
+
 .. function:: ippool_get_access(pool) -> array of objects
 
    Returns a list of access rights. Each access right has the following properties:
@@ -373,6 +378,10 @@ Pool Functions
    delegation.
 
 
+.. function:: ippool_unset_owner(poolname)
+   Unset owner for pool.
+
+
 .. function:: ippool_list(pool[, options]) -> array of objects
 
    Returns the list of pools matching the criteria specified in *options*. Each
@@ -381,6 +390,7 @@ Pool Functions
    - *name*
    - *vlan*
    - *subnets* (array of strings): list of CIDRs (one for each subnet)
+   - *layer3domain*
 
    Valid *options*:
 
@@ -395,6 +405,7 @@ Pool Functions
    - *include_subnets*: whether to include the *subnets* field in the response
    - *can_allocate*: whether to include only pools with the allocate right for the current user
    - *fields*: if true, add a *can_allocate* field to each object returned
+   - *layer3domain*: selects only pools which are in *layer3domain*
 
    The options *pool*, *vlan*, *cidr* and *owner* are mutually exclusive. If none is
    specified, all pools are returned.
@@ -408,6 +419,8 @@ Pool Functions
    - *vlan*
    - *cidr*
    - *can_allocate*
+   - *owner*
+   - *layer3domain*
 
    The options have the same meaning as for :func:`ippool_list`.
 
@@ -539,6 +552,14 @@ Block Functions
 
    Returns an array of results from :func:`ipblock_get_attrs` for each allocated
    delegation.
+
+
+.. function:: ipblock_move_to(cidr, block, layer3domain, to_layer3domain[, options])
+
+    Move block from source layer3domain *layer3domain* to
+    target layer3domain *to_layer3domain*.
+
+   Valid *options*:
 
 
 Subnet Functions
