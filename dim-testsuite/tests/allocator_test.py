@@ -1,4 +1,6 @@
 from tests.util import RPCTest
+from sqlalchemy.exc import IntegrityError
+import pytest
 
 
 def ips(d):
@@ -147,6 +149,7 @@ class AllocatorTest(RPCTest):
         self.r.subnet_set_priority('192.168.1.0/24', 1)
         assert self.r.ippool_get_ip('testpool')['ip'] == '192.168.1.1'
 
+    @pytest.mark.xfail(raises=IntegrityError, reason='https://github.com/1and1/dim/issues/205')
     def test_delegation_not_subnet(self):
         self.r.ipblock_create('10::/32', status='Container')
         self.r.ippool_create('pool')
