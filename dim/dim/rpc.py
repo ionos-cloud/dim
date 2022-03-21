@@ -2942,14 +2942,14 @@ class RPC(object):
         return hs.execute(limit, begin, end, incl=['layer3domain'])
 
     @readonly
-    def history_ipblock(self, ipblock, layer3domain, limit=None, begin=None, end=None):
+    def history_ipblock(self, ipblock, layer3domain=None, limit=None, begin=None, end=None):
         ip = parse_ip(ipblock)
         hs = HistorySelect()
         query = hs.add_select(Ipblock)
         query = query.where(hs.c.address == ip.address) \
             .where(hs.c.prefix == ip.prefix) \
             .where(hs.c.version == ip.version)
-        if layer3domain is not None:
+        if layer3domain is not None and layer3domain != 'all':
             layer3domain = _get_layer3domain_arg(layer3domain)
             query.where(hs.c.layer3domain == layer3domain.name)
         return hs.execute(limit, begin, end, incl=['layer3domain'])
@@ -2963,7 +2963,9 @@ class RPC(object):
     @readonly
     def history_layer3domain(self, name, limit=None, begin=None, end=None):
         hs = HistorySelect()
-        hs.add_select(Layer3Domain).where(hs.c.name == name)
+        query = hs.add_select(Layer3Domain)
+        if name is not None and name != 'all':
+            query.where(hs.c.name == name)
         return hs.execute(limit, begin, end)
 
     @readonly

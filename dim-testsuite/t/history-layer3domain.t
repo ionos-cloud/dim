@@ -20,6 +20,20 @@ $ ndcli history ipblock 10.0.0.0/8
 timestamp                  user  tool   originating_ip objclass name       action
 2022-02-03 12:53:08.686055 admin native 127.0.0.1      ipblock  10.0.0.0/8 created in layer3domain b
 2022-02-03 12:53:08.546129 admin native 127.0.0.1      ipblock  10.0.0.0/8 created in layer3domain a
+$ ndcli history ipblock 10.0.0.0/8 layer3domain all
+timestamp                  user  tool   originating_ip objclass name       action
+2022-02-03 12:53:08.686055 admin native 127.0.0.1      ipblock  10.0.0.0/8 created in layer3domain b
+2022-02-03 12:53:08.546129 admin native 127.0.0.1      ipblock  10.0.0.0/8 created in layer3domain a
 $ ndcli history ipblock 10.0.0.0/8 layer3domain a
 timestamp                  user  tool   originating_ip objclass name       action
 2022-02-03 12:53:08.546129 admin native 127.0.0.1      ipblock  10.0.0.0/8 created in layer3domain a
+$ ndcli history layer3domain all
+timestamp                  user  tool   originating_ip objclass     name    action
+2022-03-18 14:56:00.825054 admin native 127.0.0.1      layer3domain b       created
+2022-03-18 14:56:00.612569 admin native 127.0.0.1      layer3domain a       created
+2022-03-18 14:56:00.207050 admin native 127.0.0.1      layer3domain two     deleted
+2022-03-18 14:55:59.991345 admin native 127.0.0.1      layer3domain two     set_attr rd=22:22
+2022-03-18 14:55:59.787253 admin native 127.0.0.1      layer3domain two     set_attr comment=c
+2022-03-18 14:55:59.575115 admin native 127.0.0.1      layer3domain two     created
+2022-03-18 14:55:59.573743 admin native 127.0.0.1      layer3domain two     set_attr rd=2:2
+2022-03-18 14:55:33.025375 local native                layer3domain default created
