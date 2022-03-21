@@ -4,6 +4,11 @@
 Administrator Documentation
 ===========================
 
+System requirements
+===============
+* Python 3.9+ for DIM
+* Python 3.5+ for dimclient/ndcli
+
 dim provides three scripts in ``/opt/dim/bin``:
 
 * manage_db
@@ -66,7 +71,7 @@ report pool
 -----------
 
 The template file used formatting the report contains a `Python format string
-<http://docs.python.org/release/2.6.7/library/string.html#formatstrings>`_. It
+<https://docs.python.org/3.9/library/string.html#format-string-syntax>`_. It
 uses the following variables:
 
 - *pool_name*
@@ -158,13 +163,13 @@ run ``ndcli list registrar-account RA zones -t -v``.
 Apache configuration
 ====================
 
-Instructions for CentOS 7:
+Instructions for EL8:
 
 1. Edit ``/etc/dim/dim.cfg``.
 
 2. Install the necessary httpd modules::
 
-    yum install mod_ssl mod_wsgi
+    dnf install python39-mod_wsgi
 
 3. Adjust the hostname in the ``Redirect`` directive and the SSL configuration
    from ``/etc/httpd/conf.d/dim.conf``.
