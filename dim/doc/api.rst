@@ -282,7 +282,18 @@ Pool Functions
 
 .. function:: ippool_set_layer3domain(pool, layer3domain)
 
-   Set layer3domain for *pool* and all its subnets.
+   Moves *pool* from its origin layer3domain to *layer3domain*.
+   Subnets of the pool, the contained entries and delegations are also being moved to layer3domain.
+   Reverse entries are stored in views named after the layer3domain.
+   All reverse entries are being deleted from the old view and then created in the new view.
+   If the view does not exist, it will be created.
+
+   **Please remember to add eventually newly created views to their appropriate zone-profile.**
+   Forward entries will be fixed to keep their reference to the reverse record.
+
+   **This operation can take a long time** to succeed depending on
+   the number of existing subnets, IPs, forward DNS entries and reverse DNS entries.
+   During this time, the pool and its entries can't be modified.
 
 
 .. function:: ippool_get_access(pool) -> array of objects
@@ -556,10 +567,16 @@ Block Functions
 
 .. function:: ipblock_move_to(cidr, block, layer3domain, to_layer3domain[, options])
 
-    Move block from source layer3domain *layer3domain* to
-    target layer3domain *to_layer3domain*.
+   Moves a `container` from *layer3domain* to the layer3domain *to_layer3domain*.
+   IP addresses that are not part of a pool are moved, too.
+   The container must have a parent. All `subnets` contained in the container get reassigned to the parent container.
+   If not present, new views for the affected reverse zones will be created with the name of the layer3domain to_layer3domain.
+   Entries for the IP addresses will then be deleted in the old view and recreated in the new view.
 
-   Valid *options*:
+   **This operation can take a long time** to succeed depending on the size of the container,
+   the number of subnets and the number of IPs allocated in the container.
+   In this time any write actions against the container,
+   subnets or reverse zones may get blocked at the database level.
 
 
 Subnet Functions
