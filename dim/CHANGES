@@ -1,6 +1,7 @@
 5.0.0rc3
 --------
 * make layer3domain optional for `history ipblock` (#222)
+* deprecate `login_prompt()` in dimclient (#182)
 
 5.0.0rc2
 --------
