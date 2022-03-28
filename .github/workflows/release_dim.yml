@@ -24,7 +24,7 @@ jobs:
         env:
           _REF: ${{ github.ref }}
       - run: apt-get update
-      - run: apt-get install --yes python3-dnspython python3-sphinx make git
+      - run: apt-get install --yes python3-dnspython python3-sphinx graphviz make git
       - uses: actions/checkout@v2
       - run: sphinx-build -b html doc doc/_build/html
         working-directory: dim

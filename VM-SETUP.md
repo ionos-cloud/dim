@@ -1,6 +1,6 @@
 # Setup DB, DIM and PDNS Server and Shell environment
 
-The following steps assume that you have a minimal CentOS 8 installed.
+The following steps assume that you have a minimal EL8 installed.
 
 ### Disable SELINUX
 
@@ -81,7 +81,7 @@ Install necessary tools
 # cat <<EOF >/etc/yum.repos.d/mariadb.repo
 [mariadb]
 name = MariaDB
-baseurl = http://yum.mariadb.org/10.5/centos8-amd64
+baseurl = http://yum.mariadb.org/10.5/rhel8-amd64
 gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
 gpgcheck=1
 module_hotfixes=1
@@ -118,7 +118,7 @@ grant select on pdns_int.* to pdns_int_user@localhost identified by 'SuperSecret
 
 Install repo file and install software
 ```
-# curl -o /etc/yum.repos.d/powerdns-auth-44.repo https://repo.powerdns.com/repo-files/centos-auth-44.repo
+# curl -o /etc/yum.repos.d/powerdns-auth-44.repo https://repo.powerdns.com/repo-files/el-auth-44.repo
 # dnf install pdns-tools pdns-backend-mysql
 ```
 
@@ -234,7 +234,7 @@ use systemctl status to verify that startup worked.
 Install pdns-recursor software
 
 ```
-# curl -o /etc/yum.repos.d/powerdns-rec-45.repo https://repo.powerdns.com/repo-files/centos-rec-45.repo
+# curl -o /etc/yum.repos.d/powerdns-rec-45.repo https://repo.powerdns.com/repo-files/el-rec-45.repo
 
 # dnf install pdns-recursor
 ```

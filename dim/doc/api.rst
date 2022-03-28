@@ -280,6 +280,22 @@ Pool Functions
    Remove the vlan from *pool* and all its subnets.
 
 
+.. function:: ippool_set_layer3domain(pool, layer3domain)
+
+   Moves *pool* from its origin layer3domain to *layer3domain*.
+   Subnets of the pool, the contained entries and delegations are also being moved to layer3domain.
+   Reverse entries are stored in views named after the layer3domain.
+   All reverse entries are being deleted from the old view and then created in the new view.
+   If the view does not exist, it will be created.
+
+   **Please remember to add eventually newly created views to their appropriate zone-profile.**
+   Forward entries will be fixed to keep their reference to the reverse record.
+
+   **This operation can take a long time** to succeed depending on
+   the number of existing subnets, IPs, forward DNS entries and reverse DNS entries.
+   During this time, the pool and its entries can't be modified.
+
+
 .. function:: ippool_get_access(pool) -> array of objects
 
    Returns a list of access rights. Each access right has the following properties:
@@ -373,6 +389,10 @@ Pool Functions
    delegation.
 
 
+.. function:: ippool_unset_owner(poolname)
+   Unset owner for pool.
+
+
 .. function:: ippool_list(pool[, options]) -> array of objects
 
    Returns the list of pools matching the criteria specified in *options*. Each
@@ -381,6 +401,7 @@ Pool Functions
    - *name*
    - *vlan*
    - *subnets* (array of strings): list of CIDRs (one for each subnet)
+   - *layer3domain*
 
    Valid *options*:
 
@@ -395,6 +416,7 @@ Pool Functions
    - *include_subnets*: whether to include the *subnets* field in the response
    - *can_allocate*: whether to include only pools with the allocate right for the current user
    - *fields*: if true, add a *can_allocate* field to each object returned
+   - *layer3domain*: selects only pools which are in *layer3domain*
 
    The options *pool*, *vlan*, *cidr* and *owner* are mutually exclusive. If none is
    specified, all pools are returned.
@@ -408,6 +430,8 @@ Pool Functions
    - *vlan*
    - *cidr*
    - *can_allocate*
+   - *owner*
+   - *layer3domain*
 
    The options have the same meaning as for :func:`ippool_list`.
 
@@ -539,6 +563,20 @@ Block Functions
 
    Returns an array of results from :func:`ipblock_get_attrs` for each allocated
    delegation.
+
+
+.. function:: ipblock_move_to(cidr, block, layer3domain, to_layer3domain[, options])
+
+   Moves a `container` from *layer3domain* to the layer3domain *to_layer3domain*.
+   IP addresses that are not part of a pool are moved, too.
+   The container must have a parent. All `subnets` contained in the container get reassigned to the parent container.
+   If not present, new views for the affected reverse zones will be created with the name of the layer3domain to_layer3domain.
+   Entries for the IP addresses will then be deleted in the old view and recreated in the new view.
+
+   **This operation can take a long time** to succeed depending on the size of the container,
+   the number of subnets and the number of IPs allocated in the container.
+   In this time any write actions against the container,
+   subnets or reverse zones may get blocked at the database level.
 
 
 Subnet Functions

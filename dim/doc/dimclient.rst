@@ -72,13 +72,15 @@ Reference
 
 .. module:: dimclient
 
-.. class:: DimClient(server_url, cookie_file=None)
+.. class:: DimClient(server_url, cookie_file=None, cookie_umask=None)
 
    Instances of this class are proxies forwarding (most) method calls to the dim
    server.
 
    *cookie_file* is the name of a file (in libwww-perl Set-Cookie3 format) where
    cookies are read and/or written.
+
+   *cookie_umask* is the umask used for the cookie file.
 
    .. method:: login(username, password, permanent_session=False)
 
@@ -88,10 +90,12 @@ Reference
 
    .. attribute:: logged_in
 
-      A boolean value indicating whether the user is logged in. This costs an
-      HTTP request.
+      A boolean value indicating whether the user is logged in. This uses
+      the *get_username* API call.
 
    .. method:: login_prompt(username=None, password=None, permanent_session=False, ignore_cookie=False)
+
+      *Deprecated* sice 1.0.0: CLIs should implement their own interactive prompt.
 
       If *ignore_cookie* is ``True`` or :attr:`logged_in` is ``False``, this
       method asks for username (unless *username* is set) and password (unless

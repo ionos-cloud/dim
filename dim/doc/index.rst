@@ -5,7 +5,7 @@ documentation).
 
 If you are looking to interface with dim you should read the :ref:`developer`.
 
-If you are an administrator, check out :ref:`Quick Start <quickstart>`
+If you are an administrator, check out :ref:`administrator`.
 
 Contents
 ========
