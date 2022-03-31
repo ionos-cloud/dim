@@ -65,7 +65,7 @@ WARNING - Primary NS for this Domain is now localhost.
 WARNING - Creating zone 7.0.10.in-addr.arpa without profile
 WARNING - Primary NS for this Domain is now localhost.
 $ ndcli modify pool a set layer3domain b
-ERROR - subnet 10.0.5.0/24 can't be moved, 3 existing containers, subnets or static entries are in the way
+ERROR - subnet 10.0.5.0/24 can't be moved, 2 existing containers, subnets or static entries are in the way
 
 ## cleanup everything and make final move happen
 $ ndcli modify pool fail remove subnet 10.0.4.0/22
@@ -73,6 +73,48 @@ INFO - Deleting zone 4.0.10.in-addr.arpa
 INFO - Deleting view b from zone 5.0.10.in-addr.arpa
 INFO - Deleting zone 6.0.10.in-addr.arpa
 INFO - Deleting zone 7.0.10.in-addr.arpa
+$ ndcli modify pool fail add subnet 10.0.4.0/24
+INFO - Created subnet 10.0.4.0/24 in layer3domain b
+WARNING - Creating zone 4.0.10.in-addr.arpa without profile
+WARNING - Primary NS for this Domain is now localhost.
+$ ndcli modify pool a set layer3domain b
+INFO - Changing subnet 10.0.5.0/24 to new parent 10.0.0.0/8 in layer3domain b
+INFO - Creating view b in zone 5.0.10.in-addr.arpa without profile
+INFO - Changing child 10.0.5.0 of subnet 10.0.5.0/24 to layer3domain b
+INFO - Changing child 10.0.5.5 of subnet 10.0.5.0/24 to layer3domain b
+INFO - Deleting RR 5 PTR a.t. from zone 5.0.10.in-addr.arpa view a
+INFO - Creating RR 5 PTR a.t. comment None in zone 5.0.10.in-addr.arpa view b
+INFO - Changing child 10.0.5.64/30 of subnet 10.0.5.0/24 to layer3domain b
+INFO - Changing child 10.0.5.255 of subnet 10.0.5.0/24 to layer3domain b
+INFO - Changing child 10.0.5.66 of subnet 10.0.5.0/24 to layer3domain b
+INFO - Deleting RR 66 PTR b.t. from zone 5.0.10.in-addr.arpa view a
+INFO - Creating RR 66 PTR b.t. comment None in zone 5.0.10.in-addr.arpa view b
+INFO - Deleting view a from zone 5.0.10.in-addr.arpa
+INFO - Changing subnet 10.23.0.0/28 to new parent 10.0.0.0/8 in layer3domain b
+INFO - Creating view b in zone 0.23.10.in-addr.arpa without profile
+INFO - Changing child 10.23.0.0 of subnet 10.23.0.0/28 to layer3domain b
+INFO - Changing child 10.23.0.15 of subnet 10.23.0.0/28 to layer3domain b
+INFO - Deleting view a from zone 0.23.10.in-addr.arpa
+$ ndcli modify pool a set layer3domain a
+INFO - Changing subnet 10.0.5.0/24 to new parent 10.0.0.0/8 in layer3domain a
+INFO - Creating view a in zone 5.0.10.in-addr.arpa without profile
+INFO - Changing child 10.0.5.0 of subnet 10.0.5.0/24 to layer3domain a
+INFO - Changing child 10.0.5.5 of subnet 10.0.5.0/24 to layer3domain a
+INFO - Deleting RR 5 PTR a.t. from zone 5.0.10.in-addr.arpa view b
+INFO - Creating RR 5 PTR a.t. comment None in zone 5.0.10.in-addr.arpa view a
+INFO - Changing child 10.0.5.64/30 of subnet 10.0.5.0/24 to layer3domain a
+INFO - Changing child 10.0.5.255 of subnet 10.0.5.0/24 to layer3domain a
+INFO - Changing child 10.0.5.66 of subnet 10.0.5.0/24 to layer3domain a
+INFO - Deleting RR 66 PTR b.t. from zone 5.0.10.in-addr.arpa view b
+INFO - Creating RR 66 PTR b.t. comment None in zone 5.0.10.in-addr.arpa view a
+INFO - Deleting view b from zone 5.0.10.in-addr.arpa
+INFO - Changing subnet 10.23.0.0/28 to new parent 10.0.0.0/8 in layer3domain a
+INFO - Creating view a in zone 0.23.10.in-addr.arpa without profile
+INFO - Changing child 10.23.0.0 of subnet 10.23.0.0/28 to layer3domain a
+INFO - Changing child 10.23.0.15 of subnet 10.23.0.0/28 to layer3domain a
+INFO - Deleting view b from zone 0.23.10.in-addr.arpa
+$ ndcli modify pool fail remove subnet 10.0.4.0/24
+INFO - Deleting zone 4.0.10.in-addr.arpa
 $ ndcli delete pool fail
 
 # check state before final move
@@ -143,6 +185,8 @@ subnet:10.0.5.0/24
 $ ndcli history pool a
 timestamp                  user  tool   originating_ip objclass name action
 2022-02-01 09:17:52.468475 admin native 127.0.0.1      ippool   a    set_attr layer3domain=b
+2022-02-01 09:17:52.468475 admin native 127.0.0.1      ippool   a    set_attr layer3domain=a
+2022-02-01 09:17:52.468475 admin native 127.0.0.1      ippool   a    set_attr layer3domain=b
 2022-02-01 09:17:50.944328 admin native 127.0.0.1      ippool   a    create static 10.0.5.66
 2022-02-01 09:17:50.823374 admin native 127.0.0.1      ippool   a    create delegation 10.0.5.64/30
 2022-02-01 09:17:50.642992 admin native 127.0.0.1      ippool   a    create static 10.0.5.5
@@ -153,14 +197,20 @@ timestamp                  user  tool   originating_ip objclass name action
 $ ndcli history ipblock 10.0.5.66
 timestamp                  user  tool   originating_ip objclass name      action
 2022-02-01 09:17:52.530755 admin native 127.0.0.1      ipblock  10.0.5.66 set_attr layer3domain=b in layer3domain b
+2022-02-01 09:17:52.530755 admin native 127.0.0.1      ipblock  10.0.5.66 set_attr layer3domain=a in layer3domain a
+2022-02-01 09:17:52.530755 admin native 127.0.0.1      ipblock  10.0.5.66 set_attr layer3domain=b in layer3domain b
 2022-02-01 09:17:50.939473 admin native 127.0.0.1      ipblock  10.0.5.66 created in layer3domain a
 $ ndcli history ipblock 10.0.5.5
 timestamp                  user  tool   originating_ip objclass name     action
+2022-02-01 09:17:52.503848 admin native 127.0.0.1      ipblock  10.0.5.5 set_attr layer3domain=b in layer3domain b
+2022-02-01 09:17:52.503848 admin native 127.0.0.1      ipblock  10.0.5.5 set_attr layer3domain=a in layer3domain a
 2022-02-01 09:17:52.503848 admin native 127.0.0.1      ipblock  10.0.5.5 set_attr layer3domain=b in layer3domain b
 2022-02-01 09:17:50.638336 admin native 127.0.0.1      ipblock  10.0.5.5 created in layer3domain a
 $ ndcli history ipblock 10.0.5.64/30
 timestamp                  user  tool   originating_ip objclass name         action
 2022-02-01 09:17:52.529946 admin native 127.0.0.1      ipblock  10.0.5.64/30 set_attr layer3domain=b in layer3domain b
+2022-02-01 09:17:52.503848 admin native 127.0.0.1      ipblock  10.0.5.64/30 set_attr layer3domain=a in layer3domain a
+2022-02-01 09:17:52.503848 admin native 127.0.0.1      ipblock  10.0.5.64/30 set_attr layer3domain=b in layer3domain b
 2022-02-01 09:17:50.817764 admin native 127.0.0.1      ipblock  10.0.5.64/30 created in layer3domain a
 $ ndcli list zone 5.0.10.in-addr.arpa
 record zone                ttl   type value
@@ -169,13 +219,16 @@ record zone                ttl   type value
     66 5.0.10.in-addr.arpa       PTR  b.t.
 $ ndcli history ipblock 10.0.5.0/24
 timestamp                  user  tool   originating_ip objclass name        action
-2022-02-01 09:25:47.801393 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=b in layer3domain b
-2022-02-01 09:25:47.787609 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=a in layer3domain a
-2022-02-01 09:25:47.729919 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=b in layer3domain b
-2022-02-01 09:25:46.550123 admin native 127.0.0.1      ipblock  10.0.5.0/24 deleted in layer3domain b
-2022-02-01 09:25:46.324948 admin native 127.0.0.1      ipblock  10.0.5.0/24 created in layer3domain b
-2022-02-01 09:25:45.611436 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr pool=a in layer3domain a
-2022-02-01 09:25:45.596906 admin native 127.0.0.1      ipblock  10.0.5.0/24 created in layer3domain a
+2022-03-31 15:17:59.536249 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=b in layer3domain b
+2022-03-31 15:17:59.523732 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=a in layer3domain a
+2022-03-31 15:17:59.476550 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=b in layer3domain b
+2022-03-31 15:17:58.704790 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=a in layer3domain a
+2022-03-31 15:17:58.692130 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=b in layer3domain b
+2022-03-31 15:17:58.643961 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=a in layer3domain a
+2022-03-31 15:17:58.489071 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=b in layer3domain b
+2022-03-31 15:17:58.470090 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=a in layer3domain a
+2022-03-31 15:17:58.418779 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=b in layer3domain b
+2022-03-31 15:17:57.529218 admin native 127.0.0.1      ipblock  10.0.5.0/24 deleted in layer3domain b
 $ ndcli modify zone-group b add zone 5.0.10.in-addr.arpa view b
 $ ndcli modify zone-group b add zone 0.23.10.in-addr.arpa view b
 $ ndcli list outputs -t
