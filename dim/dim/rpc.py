@@ -1269,7 +1269,7 @@ class RPC(object):
 
             overlaps = db.session.query(Ipblock) \
                     .filter(Ipblock.layer3domain == layer3domain) \
-                    .filter(Ipblock.address.between(subnet.address - 1, subnet.ip.broadcast.address)) \
+                    .filter(Ipblock.address.between(subnet.address, subnet.ip.broadcast.address)) \
                     .filter(Ipblock.prefix >= subnet.prefix) \
                     .count()
             if overlaps > 0:
