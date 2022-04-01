@@ -11,5 +11,6 @@ Depends: ${misc:Depends}, ${python3:Depends}
 Provides: python3-dimcli, python3-ndcli
 Replaces: python3-ndcli
 Conflicts: python3-ndcli
+Suggests: bash-completion
 Description: DNS and IP management CLI client
 
