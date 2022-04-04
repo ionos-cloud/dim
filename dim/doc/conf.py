@@ -48,7 +48,7 @@ copyright = '2013-2019, 1&1; 2019-2022 IONOS and contributors'
 # built documents.
 #
 # The short X.Y version.
-version = '5.0.0rc3'
+version = '5.0.0rc4'
 # The full version, including alpha/beta/rc tags.
 release = version
 

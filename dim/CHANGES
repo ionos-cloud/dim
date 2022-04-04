@@ -1,3 +1,6 @@
+5.0.0rc4
+--------
+* fix collision detection when moving between layer3domains
 5.0.0rc3
 --------
 * make layer3domain optional for `history ipblock` (#222)
