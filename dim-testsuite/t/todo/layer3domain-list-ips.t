@@ -98,6 +98,7 @@ ip       status    ptr_target comment
 10.0.0.7 Available
 10.0.0.8 Available
 10.0.0.9 Available
+
 $ ndcli list ips 10.0.0.0/24
 INFO - Result for list ips 10.0.0.0/24
 WARNING - More results available
@@ -113,6 +114,36 @@ ip       status    ptr_target comment layer3domain
 10.0.0.4 Available                    default
 10.0.0.4 Available                    two
 
+$ ndcli list ips 10.0.0.0/24 -a ip,status,pool,layer3domain
+INFO - Result for list ips 10.0.0.0/24
+WARNING - More results available
+ip       status    pool layer3domain
+10.0.0.0 Reserved  p    default
+10.0.0.0 Reserved  p2   two
+10.0.0.1 Available p    default
+10.0.0.1 Available p2   two
+10.0.0.2 Available p    default
+10.0.0.2 Static    p2   two
+10.0.0.3 Available p    default
+10.0.0.3 Available p2   two
+10.0.0.4 Available p    default
+10.0.0.4 Available p2   two
+
+$ ndcli list ips 10.0.0.0/24 -a status,pool
+INFO - Result for list ips 10.0.0.0/24
+WARNING - More results available
+status    pool
+Reserved  p
+Reserved  p2
+Available p
+Available p2
+Available p
+Static    p2
+Available p
+Available p2
+Available p
+Available p2
+
 $ ndcli list ips 10.0.0.0/24 layer3domain default
 INFO - Result for list ips 10.0.0.0/24
 WARNING - More results available
@@ -127,3 +158,11 @@ ip       status    ptr_target comment
 10.0.0.7 Available
 10.0.0.8 Available
 10.0.0.9 Available
+
+$ ndcli modify pool p2 remove subnet 10.0.0.0/24 -f -c q
+$ ndcli delete pool p2 -q
+$ ndcli delete container 10.0.0.0/8 layer3domain two -q
+$ ndcli delete layer3domain two -q
+$ ndcli modify pool p remove subnet 10.0.0.0/24 -f -c -q
+$ ndcli delete pool p -q
+$ ndcli delete container 10.0.0.0/8 -q
