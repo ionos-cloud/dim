@@ -1,5 +1,9 @@
 import sys
-sys.path.insert(0, "..")
+import os
+# use path relative to doc/gendoc.py (this file)
+# to find its corresponding dimcli module
+ndcli_path = os.path.dirname(os.path.dirname(__file__))
+sys.path.insert(0, ndcli_path)
 from dimcli import cmd
 
 
@@ -42,6 +46,6 @@ def gendoc():
         if options:
             print("\nOptions:\n")
             print_options(options)
-        print
+        print()
 
 gendoc()
