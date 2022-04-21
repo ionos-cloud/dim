@@ -88,7 +88,7 @@ def update_output_rr_data():
 
 
 def new_tid():
-    g.tid = uuid.uuid4().hex()[16:]
+    g.tid = uuid.uuid4().hex[16:]
 
 
 @manage_db.cli.command('migrate_new_pdns')
