@@ -19,19 +19,21 @@ jobs:
       DEBIAN_FRONTEND: noninteractive
 
     steps:
+      - run: apt-get update
+      - run: apt-get install --yes build-essential python3 python3-dnspython bash-completion dh-python python3-setuptools python3-all debhelper devscripts python3-sphinx make git
       - run: echo "::set-output name=version::$(echo "$_REF" | cut -d'-' -f2-)"
         id: version
         shell: bash
         env:
           _REF: ${{ github.ref }}
-      - run: apt-get update
-      - run: apt-get install --yes build-essential python3 python3-dnspython bash-completion dh-python python3-setuptools python3-all debhelper devscripts python3-sphinx make git
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-#      - run: echo "::set-output name=version::$( git tag | grep dimclient | sort | tail -1 | cut -d'-' -f2- )"
-#        id: dimclient
-#        shell: bash
+      - run: |
+          git config --global --add safe.directory "/__w/dim/dim"
+          echo "::set-output name=version::$( git tag | grep dimclient | sort | tail -1 | cut -d'-' -f2- )"
+        id: dimclient
+        shell: bash
       - run: |
           curl --location "https://github.com/${{ github.repository }}/releases/download/dimclient-${_DIMCLIENT}/python3-dimclient_${_DIMCLIENT}_all.deb" > ./python3-dimclient_${_DIMCLIENT}_all.deb
           dpkg -i ./python3-dimclient_${_DIMCLIENT}_all.deb
