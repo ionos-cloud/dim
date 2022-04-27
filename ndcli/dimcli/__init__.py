@@ -965,16 +965,20 @@ class CLI(object):
         options = OptionDict(pool=args.poolname)
         options.set_attributes(args.attributes)
         options.set_if(full=args.full,
-                       layer3domain=get_layer3domain(args.layer3domain),
                        delegation=args.get('delegation', None))
+        # set layer3domain only if pool is unset, as pools have a layer3domain already
+        if args.poolname == None:
+             options.set_if(layer3domain=get_layer3domain(args.layer3domain))
         _print_attributes(self.client.ip_mark(args.ip, **options), args.script)
 
     def _free_ip(self, args):
         options = OptionDict(pool=args.poolname,
                              include_messages=True)
         options.set_if(reserved=args.force,
-                       layer3domain=get_layer3domain(args.layer3domain),
                        delegation=args.get('delegation', None))
+        # set layer3domain only if pool is unset, as pools have a layer3domain already
+        if args.poolname == None:
+             options.set_if(layer3domain=get_layer3domain(args.layer3domain))
         result = self.client.ip_free(args.ip, **options)
         _print_messages(result)
         freed = result['freed']
