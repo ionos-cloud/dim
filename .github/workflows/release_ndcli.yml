@@ -29,15 +29,15 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - run: echo "::set-output name=version::$( git tag | grep dimclient | sort | tail -1 | cut -d'-' -f2- )"
-        id: dimclient
-        shell: bash
+#      - run: echo "::set-output name=version::$( git tag | grep dimclient | sort | tail -1 | cut -d'-' -f2- )"
+#        id: dimclient
+#        shell: bash
       - run: |
           curl --location "https://github.com/${{ github.repository }}/releases/download/dimclient-${_DIMCLIENT}/python3-dimclient_${_DIMCLIENT}_all.deb" > ./python3-dimclient_${_DIMCLIENT}_all.deb
           dpkg -i ./python3-dimclient_${_DIMCLIENT}_all.deb
           apt-get install -fy
         env:
-          _DIMCLIENT: ${{ steps.dimclient.outputs.version }}
+          _DIMCLIENT: "1.0.1"
       - run: python3 gendoc.py > gendoc.txt
         working-directory: ndcli/doc
       - run: sphinx-build -b man doc doc/_build/man
