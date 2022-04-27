@@ -25,15 +25,11 @@ WARNING - www.internal. does not exist.
 $ ndcli modify zone-profile internal create rr @ cname www.other.domain.
 ERROR - It is not allowed to create a CNAME for a zone
 $ ndcli modify zone-profile internal create rr www a 172.19.0.2
-INFO - Marked IP 172.19.0.2 from layer3domain default as static
-INFO - Creating RR www A 172.19.0.2 in zone profile internal
-$ ndcli modify zone-profile internal create rr @ a 172.19.0.2
-INFO - Creating RR @ A 172.19.0.2 in zone profile internal
-$ ndcli modify zone-profile internal create rr www.a.zone a 172.19.0.2
-WARNING - The left hand side of this record contains '.'. This will probably not do what you expect it to do.
-INFO - Creating RR www.a.zone A 172.19.0.2 in zone profile internal
-$ ndcli modify zone-profile internal create rr www.a.zone. a 172.19.0.2
-ERROR - RR name www.a.zone. not in zone internal
+ERROR - zone-profiles must not contain A records
+$ ndcli modify zone-profile internal create rr www aaaa 2001:db8::c0ff:ee:b5ea:4
+ERROR - zone-profiles must not contain AAAA records
+$ ndcli modify zone-profile internal create rr 1 ptr fuh.bar.
+ERROR - zone-profiles must not contain PTR records
 $ ndcli modify zone-profile internal set attrs foo:bar
 $ ndcli create zone-profile public-brand1 "comment:Profile for public Domains related to the 2 brand"
 $ ndcli create zone-profile public-brand2 "comment:Profile for public Domains related to the G brand"
@@ -63,18 +59,12 @@ record     ttl   type value
 @          86400 SOA  ins01.internal.test. dnsadmin.company.com. 2012102610 14400 3600 605000 86400
 @                NS   ins01.internal.test.
 @                MX   10 mintern00.example.com.
-@                A    172.19.0.2
 w3               CNAME www
-www              A    172.19.0.2
-www.a.zone       A    172.19.0.2
 $ ndcli list zone-profile internal -H
 @	86400	SOA	ins01.internal.test. dnsadmin.company.com. 2012102610 14400 3600 605000 86400
 @		NS	ins01.internal.test.
 @		MX	10 mintern00.example.com.
-@		A	172.19.0.2
 w3		CNAME	www
-www		A	172.19.0.2
-www.a.zone		A	172.19.0.2
 $ ndcli delete zone-profile internal
 $ ndcli delete zone-profile public-brand1
 $ ndcli delete zone-profile public-brand2
