@@ -1354,16 +1354,20 @@ class CLI(object):
     # modify [block_type] set/remove attrs
     def ipblock_set_attrs(self, args):
         options = OptionDict(_check_type_options(args.block_type))
-        options.set_if(pool=args.get('poolname', None),
-                       layer3domain=get_layer3domain(args.layer3domain))
+        options.set_if(pool=args.get('poolname', None))
+        # set layer3domain only if block is not a pool, as those have a layer3domain already
+        if args.get('poolname', None) == None:
+            options.set_if(layer3domain=get_layer3domain(args.layer3domain))
         self.client.ipblock_set_attrs(args[args.block_type],
                                       _parse_attributes(args.attributes),
                                       **options)
 
     def ipblock_remove_attrs(self, args):
         options = OptionDict(_check_type_options(args.block_type))
-        options.set_if(pool=args.get('poolname', None),
-                       layer3domain=get_layer3domain(args.layer3domain))
+        options.set_if(pool=args.get('poolname', None))
+        # set layer3domain only if block is not a pool, as those have a layer3domain already
+        if args.get('poolname', None) == None:
+            options.set_if(layer3domain=get_layer3domain(args.layer3domain))
         self.client.ipblock_delete_attrs(args[args.block_type],
                                          args.attr_names,
                                          **options)
