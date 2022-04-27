@@ -558,7 +558,7 @@ def _make_create_rr(rr_type, params, profile, zonearg, create_linked=None):
     def create_simple_rr(self, args):
         options = _rr_options(rr_type, params, profile, args, zonearg)
         if rr_type in ('A', 'AAAA', 'PTR'):
-            options.set_if(layer3domain=args.get('layer3domain'),
+            options.set_if(layer3domain=get_layer3domain(args.layer3domain),
                            allow_overlap=args.get('allow-overlap'),
                            overwrite_a=args.get('overwrite', args.get('overwrite-a', False)),
                            overwrite_ptr=args.get('overwrite-ptr', False),)
@@ -582,7 +582,7 @@ def _make_delete_rr(rr_type, params, profile, zonearg, ignore_references=False):
         options = _rr_options(rr_type, params, profile, args, zonearg)
         options.set_if(free_ips=not args.get('keep-ip-reservation', True))
         if rr_type in ('A', 'AAAA', 'PTR'):
-            options.set_if(layer3domain=args.get('layer3domain'))
+            options.set_if(layer3domain=get_layer3domain(args.layer3domain))
         force = args.get('force', True)
         recursive = args.get('recursive', False)
         if force and recursive:
@@ -671,7 +671,7 @@ def _make_show_ip(status):
     def show_ip(self, args):
         options = OptionDict()
         options.set_if(full=args.full,
-                       layer3domain=args.get('layer3domain'))
+                       layer3domain=get_layer3domain(args.layer3domain))
         if status == 'ip':
             options['host'] = True
         else:
@@ -965,7 +965,7 @@ class CLI(object):
         options = OptionDict(pool=args.poolname)
         options.set_attributes(args.attributes)
         options.set_if(full=args.full,
-                       layer3domain=args.get('layer3domain'),
+                       layer3domain=get_layer3domain(args.layer3domain),
                        delegation=args.get('delegation', None))
         _print_attributes(self.client.ip_mark(args.ip, **options), args.script)
 
@@ -973,7 +973,7 @@ class CLI(object):
         options = OptionDict(pool=args.poolname,
                              include_messages=True)
         options.set_if(reserved=args.force,
-                       layer3domain=args.get('layer3domain'),
+                       layer3domain=get_layer3domain(args.layer3domain),
                        delegation=args.get('delegation', None))
         result = self.client.ip_free(args.ip, **options)
         _print_messages(result)
@@ -1355,7 +1355,7 @@ class CLI(object):
     def ipblock_set_attrs(self, args):
         options = OptionDict(_check_type_options(args.block_type))
         options.set_if(pool=args.get('poolname', None),
-                       layer3domain=args.get('layer3domain'))
+                       layer3domain=get_layer3domain(args.layer3domain))
         self.client.ipblock_set_attrs(args[args.block_type],
                                       _parse_attributes(args.attributes),
                                       **options)
@@ -1363,7 +1363,7 @@ class CLI(object):
     def ipblock_remove_attrs(self, args):
         options = OptionDict(_check_type_options(args.block_type))
         options.set_if(pool=args.get('poolname', None),
-                       layer3domain=args.get('layer3domain'))
+                       layer3domain=get_layer3domain(args.layer3domain))
         self.client.ipblock_delete_attrs(args[args.block_type],
                                          args.attr_names,
                                          **options)
@@ -1734,7 +1734,7 @@ delegation).''')
         '''
         options = OptionDict()
         options.set_if(full=args.full,
-                       layer3domain=args.get('layer3domain'))
+                       layer3domain=get_layer3domain(args.layer3domain))
         _print_attributes(self.client.ipblock_get_attrs(args.ip, **options), args.script)
 
     for status in ('ip', 'delegation', 'subnet', 'container'):
@@ -2528,6 +2528,7 @@ delegation).''')
         Displays resource records matching WILDCARD.
         '''
         options = OptionDict(pattern=args.wildcard)
+        # do not use get_layer3domain() as CNAMEs etc. do not have a layer3domain
         options.set_if(type=args.type,
                        layer3domain=args.get('layer3domain'))
         logger.info("Result for list rrs %s" % args.wildcard)
@@ -2605,6 +2606,7 @@ delegation).''')
         Displays the zone records.
         '''
         options = OptionDict(zone=args.zonename)
+        # do not use get_layer3domain() as CNAMEs etc. do not have a layer3domain
         options.set_if(view=args.view,
                        type=args.type,
                        layer3domain=args.get('layer3domain'))
