@@ -304,7 +304,7 @@ jobs:
           curl --location "https://github.com/${{ github.repository }}/releases/download/dimclient-${_DIMCLIENT}/python3-dimclient_${_DIMCLIENT}_all.deb" > ./python3-dimclient_${_DIMCLIENT}_all.deb
           dpkg -i ./python3-dimclient_${_DIMCLIENT}_all.deb
           apt-get install -fy
-      - run: python3 gendoc.py > gendoc.txt
+      - run: python3 ndcli/doc/gendoc.py > gendoc.txt
       - run: sphinx-build -b man doc doc/_build/man
         working-directory: ndcli
       - run: cp -vr packaging/debian/ndcli/* ndcli/
