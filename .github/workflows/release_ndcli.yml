@@ -305,7 +305,6 @@ jobs:
           dpkg -i ./python3-dimclient_${_DIMCLIENT}_all.deb
           apt-get install -fy
       - run: python3 gendoc.py > gendoc.txt
-        working-directory: ndcli/doc
       - run: sphinx-build -b man doc doc/_build/man
         working-directory: ndcli
       - run: cp -vr packaging/debian/ndcli/* ndcli/
