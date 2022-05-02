@@ -145,7 +145,7 @@
 
         if (foundIPv4 != null) {
           params.cidr = this.pattern;
-          this.jsonRpc('ipblock_get_attrs', [this.pattern], (response) => {
+          this.jsonRpc('ipblock_get_attrs', [this.pattern, {layer3domain: this.$config.DEFAULT_LAYER3DOMAIN}], (response) => {
             if (response.data.result) {
               this.pools_count = 1;
               this.max_page = Math.ceil(this.pools_count / this.page_size);
@@ -161,7 +161,7 @@
             }
           }, true);
         } else if (foundIPv6 != null) {
-          this.jsonRpc('ipblock_get_attrs', [this.pattern], (response) => {
+          this.jsonRpc('ipblock_get_attrs', [this.pattern, {layer3domain: this.$config.DEFAULT_LAYER3DOMAIN}], (response) => {
             if (response.data.result) {
               this.pools_count = 1;
               this.max_page = Math.ceil(this.pools_count / this.page_size);
