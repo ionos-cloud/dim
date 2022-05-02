@@ -619,7 +619,7 @@ class RPC(object):
             pool = get_pool(pool)
         check_ip(ip, layer3domain, options)
         block = Ipblock.query_ip(ip, layer3domain).first()
-        self._can_change_ip(block or ip, pool=pool)
+        self._can_change_ip(block or ip, pool=pool, layer3domain=layer3domain)
         freed = None
         if block:
             if block.status.name == 'Reserved' and not reserved:
