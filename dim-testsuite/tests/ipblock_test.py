@@ -119,6 +119,11 @@ class IpblockTest(RPCTest):
         assert self.r.ip_free('12.0.0.0') == -1
         assert self.r.ip_free('12.0.0.0', reserved=True) == 1
         assert self.r.ipblock_get_attrs('12.0.0.0')['status'] == 'Available'
+        # test with multiple layer3domains
+        self.r.layer3domain_create('two', 'dummy')
+        self.r.ip_mark('12.0.0.6', layer3domain='default')
+        assert self.r.ip_free('12.0.0.6', layer3domain='default') == 1
+        assert self.r.ip_free('12.0.0.6', layer3domain='default') == 0
 
     def test_attrs(self):
         self.r.ipblock_create('12.0.0.0/24', attributes={'team': '1'})
