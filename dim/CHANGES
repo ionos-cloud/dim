@@ -1,3 +1,8 @@
+5.0.1
+-----
+* fix .hex is not a function
+* fix freeing free ip
+
 5.0.0rc4
 --------
 * fix collision detection when moving between layer3domains
