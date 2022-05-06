@@ -28,11 +28,17 @@ INFO - Creating RR 1 PTR a.t. in zone 5.0.10.in-addr.arpa
 
 $ ndcli create pool b layer3domain a
 $ ndcli modify pool b add subnet 10.0.5.64/28
-INFO - Created subnet 10.0.5.0/28 in layer3domain a
-$ ndcli create rr a.t. a 10.0.5.65
+INFO - Created subnet 10.0.5.64/28 in layer3domain a
+$ ndcli create rr b.t. a 10.0.5.65
 INFO - Marked IP 10.0.5.65 from layer3domain a as static
 INFO - Creating RR b A 10.0.5.65 in zone t
 INFO - Creating RR 65 PTR b.t. in zone 5.0.10.in-addr.arpa
+
+$ ndcli list ips 10.0.5.0/24 status used
+INFO - Result for list ips 10.0.5.0/24
+ip        status ptr_target comment
+10.0.5.1  Static a.t.
+10.0.5.65 Static b.t.
 
 $ ndcli modify pool a set layer3domain b
 INFO - Changing subnet 10.0.5.0/28 to new parent 10.0.0.0/8 in layer3domain b
@@ -40,24 +46,36 @@ INFO - Creating view b in zone 5.0.10.in-addr.arpa without profile
 INFO - Changing child 10.0.5.0 of subnet 10.0.5.0/28 to layer3domain b
 INFO - Changing child 10.0.5.1 of subnet 10.0.5.0/28 to layer3domain b
 INFO - Deleting RR 1 PTR a.t. from zone 5.0.10.in-addr.arpa view a
+INFO - Creating RR 1 PTR a.t. comment None in zone 5.0.10.in-addr.arpa view b
 INFO - Changing child 10.0.5.15 of subnet 10.0.5.0/28 to layer3domain b
-WARNING - Deleting view a from zone 5.0.10.in-addr.arpa failed
+WARNING - Zone 5.0.10.in-addr.arpa view a was not deleted: The view a of the zone 5.0.10.in-addr.arpa is not empty.
+
+# ensure that reverse zone was not removed
+$ ndcli list ips 10.0.5.0/24 status used
+INFO - Result for list ips 10.0.5.0/24
+ip        status ptr_target comment layer3domain
+10.0.5.1  Static a.t.               b
+10.0.5.65 Static b.t.               a
+$ ndcli list zone 5.0.10.in-addr.arpa views
+name
+a
+b
 
 $ ndcli modify pool b set layer3domain b
 INFO - Changing subnet 10.0.5.64/28 to new parent 10.0.0.0/8 in layer3domain b
 INFO - Changing child 10.0.5.64 of subnet 10.0.5.64/28 to layer3domain b
 INFO - Changing child 10.0.5.65 of subnet 10.0.5.64/28 to layer3domain b
 INFO - Deleting RR 65 PTR b.t. from zone 5.0.10.in-addr.arpa view a
+INFO - Creating RR 65 PTR b.t. comment None in zone 5.0.10.in-addr.arpa view b
 INFO - Changing child 10.0.5.79 of subnet 10.0.5.64/28 to layer3domain b
 INFO - Deleting view a from zone 5.0.10.in-addr.arpa
-
 
 $ ndcli modify pool a remove subnet 10.0.5.0/28 -f -c -q
 $ ndcli delete pool a
 $ ndcli modify pool b remove subnet 10.0.5.64/28 -f -c -q
 $ ndcli delete pool b
 
-$ndcli delete zone t -f -c -q
+$ ndcli delete zone t -c -q
 
 $ ndcli delete output a
 $ ndcli delete output b

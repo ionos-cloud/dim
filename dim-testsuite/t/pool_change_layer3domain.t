@@ -219,16 +219,13 @@ record zone                ttl   type value
     66 5.0.10.in-addr.arpa       PTR  b.t.
 $ ndcli history ipblock 10.0.5.0/24
 timestamp                  user  tool   originating_ip objclass name        action
-2022-03-31 15:17:59.536249 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=b in layer3domain b
-2022-03-31 15:17:59.523732 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=a in layer3domain a
-2022-03-31 15:17:59.476550 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=b in layer3domain b
-2022-03-31 15:17:58.704790 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=a in layer3domain a
-2022-03-31 15:17:58.692130 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=b in layer3domain b
-2022-03-31 15:17:58.643961 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=a in layer3domain a
-2022-03-31 15:17:58.489071 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=b in layer3domain b
-2022-03-31 15:17:58.470090 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=a in layer3domain a
-2022-03-31 15:17:58.418779 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=b in layer3domain b
-2022-03-31 15:17:57.529218 admin native 127.0.0.1      ipblock  10.0.5.0/24 deleted in layer3domain b
+2022-05-06 12:41:19.157366 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=b in layer3domain b
+2022-05-06 12:41:18.394729 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=a in layer3domain a
+2022-05-06 12:41:18.165002 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr layer3domain=b in layer3domain b
+2022-05-06 12:41:17.190089 admin native 127.0.0.1      ipblock  10.0.5.0/24 deleted in layer3domain b
+2022-05-06 12:41:16.965841 admin native 127.0.0.1      ipblock  10.0.5.0/24 created in layer3domain b
+2022-05-06 12:41:16.084417 admin native 127.0.0.1      ipblock  10.0.5.0/24 set_attr pool=a in layer3domain a
+2022-05-06 12:41:16.075188 admin native 127.0.0.1      ipblock  10.0.5.0/24 created in layer3domain a
 $ ndcli modify zone-group b add zone 5.0.10.in-addr.arpa view b
 $ ndcli modify zone-group b add zone 0.23.10.in-addr.arpa view b
 $ ndcli list outputs -t
