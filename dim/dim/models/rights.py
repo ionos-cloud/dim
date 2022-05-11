@@ -1,6 +1,6 @@
 from contextlib import wraps
 
-from sqlalchemy import Column, Integer, BigInteger, Boolean, String, Text, ForeignKey, UniqueConstraint, or_
+from sqlalchemy import Column, Integer, BigInteger, Boolean, String, Text, ForeignKey, UniqueConstraint, or_, literal
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import relationship, backref
 
@@ -111,7 +111,7 @@ class AccessRight(db.Model):
 
     groups = association_proxy('grouprights', 'group')
 
-    grantable_by_network_admin = ['allocate']
+    grantable_by_network_admin = ['allocate', 'attr']
     grantable_by_dns_admin = [
         'dns_update_agent',
         'zone_create',
@@ -204,6 +204,16 @@ class User(db.Model):
                 class_name = dict(Pool='Ippool').get(obj.__class__.__name__, obj.__class__.__name__)
                 anylist.append(Group.rights.any(access=access, object_class=class_name, object_id=obj.id))
         return Group.query.filter(Group.users.any(id=self.id)).filter(or_(*anylist)).count() != 0
+
+    @permission
+    def can_set_attribute(self, pool, attr):
+        return Group.query.filter(Group.users.any(id=self.id)). \
+            join(GroupRight). \
+            join(AccessRight).filter(
+                AccessRight.object_id == pool.id,
+                AccessRight.object_class == 'Ippool',
+                literal('attr.' + attr).like(AccessRight.access + '%')).count() != 0
+
 
     @property
     def is_super_admin(self):
