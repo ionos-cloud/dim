@@ -207,6 +207,8 @@ class User(db.Model):
 
     @permission
     def can_set_attribute(self, pool, attr):
+        if self.can_modify_pool_attributes():
+            return True
         return Group.query.filter(Group.users.any(id=self.id)). \
             join(GroupRight). \
             join(AccessRight).filter(
