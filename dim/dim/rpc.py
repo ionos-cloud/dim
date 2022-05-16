@@ -1773,7 +1773,7 @@ class RPC(object):
         qfields = []
         if fields:
             qfields.extend(self._zone_view_rights())
-        views = db.session.query(ZoneView.name, *qfields).filter_by(zone=zone).group_by(ZoneView.name).order_by(ZoneView.name)
+        views = db.session.query(ZoneView.name, *qfields).filter_by(zone=zone).group_by(ZoneView.id, ZoneView.name, *qfields).order_by(ZoneView.name)
         if (can_create_rr or can_delete_rr) and not self.user.is_super_admin:
             views = self._filter_views(views, can_create_rr=can_create_rr, can_delete_rr=can_delete_rr)
 
