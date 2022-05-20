@@ -207,7 +207,9 @@ class User(db.Model):
 
     @permission
     def can_set_attribute(self, pool, attr):
-        if self.has_any_access([('network_admin', None)]):
+        is_network_admin = self.has_any_access([('network_admin', None)])
+        is_dns_admin = self.has_any_access([('dns_admin', None)])
+        if is_network_admin or is_dns_admin:
             return True
         return Group.query.filter(Group.users.any(id=self.id)). \
             join(GroupRight). \
