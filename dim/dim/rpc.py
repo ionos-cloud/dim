@@ -1354,7 +1354,10 @@ class RPC(object):
 
     @updating
     def ippool_set_attrs(self, name, attributes):
-        self.user.can_modify_pool_attributes()
+        pool = get_pool(name)
+        for key in attributes:
+            if not self.user.can_set_attribute(pool, key):
+                self.user.can_modify_pool_attributes()
         get_pool(name).set_attrs(attributes)
 
     @updating
@@ -1369,7 +1372,10 @@ class RPC(object):
 
     @updating
     def ippool_delete_attrs(self, name, attribute_names):
-        self.user.can_modify_pool_attributes()
+        pool = get_pool(name)
+        for key in attribute_names:
+            if not self.user.can_set_attribute(pool, key):
+                self.user.can_modify_pool_attributes()
         get_pool(name).delete_attrs(attribute_names)
 
     @readonly
@@ -3668,6 +3674,9 @@ def get_object_id_class(access, object_name):
             raise InvalidParameterError("View '%s' does not exist in zone %s" % (view_name, zone.display_name))
         else:
             return (view_id, 'ZoneView')
+    elif access == 'attr':
+        pool = get_pool(object_name[1])
+        return (pool.id, 'Ippool')
     else:
         raise InvalidAccessRightError("Invalid access right: %r" % access)
 
@@ -4088,6 +4097,8 @@ def _group_grant_access(group, access, object):
             raise InvalidParameterError('An user can be granted the zone_create right from a single user-group')
     for (access, object) in rights:
         object_id, object_class = get_object_id_class(access, object)
+        if access == 'attr':
+            access = 'attr.' + object[0]
         group.rights.add(AccessRight.find_or_create(access=access,
                                                     object_id=object_id,
                                                     object_class=object_class))

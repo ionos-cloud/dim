@@ -1832,6 +1832,9 @@ delegation).''')
         'dns_admin': dict(desc='full access to all zones'),
         'dns_update_agent': dict(desc='ability to delete output updates'),
         'zone_create': dict(desc='ability to create forward zones'),
+        'attr': dict(desc='set attributes on pools with the specified prefix',
+                arguments=(Argument('prefix'), Argument('poolname', completions=complete_poolname), ),
+                extra=lambda args: ([args.prefix, args.poolname], )),
         'allocate':
             dict(desc='modify the contents of subnets from POOLNAME',
                  arguments=(Argument('poolname', completions=complete_poolname), ),
