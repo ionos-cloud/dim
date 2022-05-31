@@ -1306,7 +1306,7 @@ class RPC(object):
                     if new_view is None:
                         raise DimError('view for layer3domain %s does not exist for zone %s' % (layer3domain.name, rr_zone.name))
 
-                    rr = db.session.query(RR).filter(RR.ipblock_id == child.id, RR.type == 'PTR').first()
+                    rr = db.session.query(RR).filter(RR.ipblock_id == child.id).filter(RR.type == 'PTR').first()
                     if rr is not None:
                         rr.delete(send_delete_rr_event = True)
                         Messages.info("Deleting RR %s from %s" % (rr.bind_str(relative=True), rr.view))
@@ -1326,10 +1326,17 @@ class RPC(object):
                     child.layer3domain = layer3domain
                 else:
                     raise DimError("unhandled state '%s' for IP %s" % (child.status.name, child.ip))
-            # switch back layer3domain to delete old reverse zone
-            subnet.layer3domain = from_layer3domain
-            self._delete_reverse_zones(subnet, force=False)
-            subnet.layer3domain = layer3domain
+
+            # create a copy of the subnet to delete possible existing reverse zones
+            # _delete_reverse_zone expects the block to not exist anymore, thats why
+            # we need a copy.
+            logging.info('trying to delete old reverse zone for subnet %s' % (subnet))
+            subnet_to_delete = Ipblock(
+                    version = subnet.version,
+                    address = subnet.address,
+                    prefix = subnet.prefix,
+                    layer3domain = from_layer3domain)
+            self._delete_reverse_zones(subnet_to_delete, force=True)
 
         logging.info("finished moving pool %s from layer3domain %s to layer3domain %s" % (pool.name, from_layer3domain.name, layer3domain.name))
         return {'messages': Messages.get()}
