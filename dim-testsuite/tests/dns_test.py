@@ -111,6 +111,10 @@ class ZoneTest(RPCTest):
         assert rrs(self.r.rr_list('*test.com.')) == rrs(
             [('a', 'test.com', 'TXT', '"something"'),
              ('@', 'test.com', 'NS', 'whatever.com.')])
+        with raises(InvalidParameterError):
+            self.r.rr_create(name='foo.profile.', type='A', ip='127.0.0.1', profile=True)
+        with raises(InvalidParameterError):
+            self.r.rr_create(name='foo.profile.', type='AAAA', ip='::1', profile=True)
 
     def test_list_zone(self):
         self.r.zone_create('some.domain', soa_attributes=dict(primary='ns01.company.com.', mail='dnsadmin.company.com.'))
@@ -421,15 +425,15 @@ class RR(RPCTest):
 
     def test_email(self):
         self.r.zone_create('test.com')
-        self.r.zone_set_soa_attrs('test.com', {'mail': 'first\.last.test.com.'})
-        assert " first\.last.test.com. " in self.r.zone_dump('test.com')
+        self.r.zone_set_soa_attrs('test.com', {'mail': 'first.last.test.com.'})
+        assert " first.last.test.com. " in self.r.zone_dump('test.com')
 
     def test_create_revzone(self):
         self.r.rr_create(ip='12.0.0.1', type='PTR', ptrdname='test.com.', create_linked=False, create_revzone=True)
 
     def test_create_rr_rp(self):
         self.r.zone_create('test.com')
-        self.r.rr_create(name='a.test.com.', type='RP', mbox='john\.doe.example.com.', txtdname='test.com.')
+        self.r.rr_create(name='a.test.com.', type='RP', mbox='john.doe.example.com.', txtdname='test.com.')
 
     def test_create_rr_cert(self):
         self.r.zone_create('test.com')

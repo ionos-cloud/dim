@@ -3270,6 +3270,8 @@ class RPC(object):
             return reverse_zone, created_ptr
 
         if type in ('A', 'AAAA', 'PTR'):
+            if profile:
+                raise InvalidParameterError('Cannot add PTR records to zone profiles.')
             view = kwargs.pop('view', None)
             overwrite_a = kwargs.pop('overwrite_a', False)
             overwrite_ptr = kwargs.pop('overwrite_ptr', False)
@@ -3277,8 +3279,6 @@ class RPC(object):
             forward_zone = reverse_zone = None
             created_ptr = False
             if type == 'PTR':
-                if profile:
-                    raise InvalidParameterError('Cannot add PTR records to zone profiles.')
                 reverse_zone, created_ptr = create_reverse()
                 if create_linked:
                     forward_zone = create_forward()
