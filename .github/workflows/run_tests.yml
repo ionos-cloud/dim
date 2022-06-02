@@ -1,0 +1,71 @@
+# run tests
+name: run_tests
+on:
+  push:
+    paths:
+      - '.github/workflows/**'
+      - 'dim/**'
+      - 'ndcli/**'
+      - 'dimclient/**'
+      - 'dim-testsuite/**'
+
+jobs:
+  pytest_dim:
+    runs-on: ubuntu-latest
+    container:
+      image: oraclelinux:8
+    services:
+      mariadb:
+        image: mariadb:latest
+        env:
+          MARIADB_USER: dim
+          MARIADB_PASSWORD: dim
+          MARIADB_DATABASE: dim
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
+        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+    steps:
+      - name: Install dependencies
+        run: /bin/dnf install --assumeyes gcc python39-devel mariadb-devel git python39 make tar gzip
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Prepare virtual environment
+        run: make install-dev
+        working-directory: dim-testsuite
+      - name: Create DIM configuration directory
+        run: mkdir -p /etc/dim
+      - name: Create DIM configuration
+        shell: sh
+        run: |
+          cat <<EOF > /etc/dim/dim.cfg
+          ### Database
+          SQLALCHEMY_DATABASE_URI = 'mysql://dim:dim@mariadb:3306/dim'
+          DB_LOCK_TIMEOUT = 120
+          ### Authentication
+          # 'ldap' or None
+          AUTHENTICATION_METHOD = None
+          # Set SECRET_KEY to a random string
+          # The security of this application is compromised if SECRET_KEY is leaked
+          SECRET_KEY = 'testkey'
+          PERMANENT_SESSION_LIFETIME = 30 * 24 * 3600 # 1 month
+          TEMPORARY_SESSION_LIFETIME = 24 * 3600      # 1 day
+          # list of ipspaces which are allowed to exist multiple times in dim (layer3domains)
+          # in general only rfc1918 ip should be allowed
+          LAYER3DOMAIN_WHITELIST = ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16']
+          ### Debugging
+          SQLALCHEMY_DATABASE_URI_TEST = 'mysql://dim:dim@mariadb:3306/dim'
+          PDNS_DATABASE_URI_TEST = 'mysql://pdns:pdns@mariadb:3306/pdns_slave'
+          SYNC_PDNS_OUTPUT = False
+          DEBUG = False
+          SQLALCHEMY_LOG = False
+          EOF
+      - name: Initialize Database
+        run: make db-clear
+        working-directory: dim-testsuite
+        env:
+          PDNS1_SERVER: mariadb
+          PDNS1_PORT: 3306
+          PDNS2_SERVER: mariadb
+          PDNS2_PORT: 3306
+      - name: Run pytests
+        run: make pytest
+        working-directory: dim-testsuite

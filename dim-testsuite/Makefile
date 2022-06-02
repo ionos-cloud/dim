@@ -12,6 +12,16 @@ NDCLI_SERVER   ?= http://localhost:5000
 NDCLI_CONFIG   ?= /dev/null
 VFLASK         ?= ${VDIR}/bin/flask
 FLASK_APP      ?= 'dim:create_app(db_mode="TEST")'
+PDNS1_SERVER   ?= 127.0.0.1
+PDNS1_PORT     ?= 3307
+PDNS1_DB       ?= pdns1
+PDNS1_USER     ?= pdns1
+PDNS1_PW       ?= pdns
+PDNS2_SERVER   ?= 127.0.0.1
+PDNS2_PORT     ?= 3307
+PDNS2_DB       ?= pdns2
+PDNS2_USER     ?= pdns2
+PDNS2_PW       ?= pdns
 
 all: install db test
 	mkdir ${VDIR}
@@ -43,8 +53,8 @@ db-clear:
 	FLASK_APP=${FLASK_APP} ${VDIR}/bin/flask db clear
 
 db: db-clear
-	mysql -h127.0.0.1 -P3307 -updns -ppdns pdns1 < ./testenv/pdns.sql
-	mysql -h127.0.0.1 -P3307 -updns -ppdns pdns2 < ./testenv/pdns.sql
+	mysql -h${PDNS1_SERVER} -P${PDNS1_PORT} -u${PDNS1_USER} -p${PDNS1_PW} ${PDNS1_DB} < ./testenv/pdns.sql
+	mysql -h${PDNS2_SERVER} -P${PDNS2_PORT} -u${PDNS2_USER} -p${PDNS2_PW} ${PDNS2_DB} < ./testenv/pdns.sql
 
 test:
 	-mkdir ${ODIR}
