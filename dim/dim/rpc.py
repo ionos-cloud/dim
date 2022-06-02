@@ -1252,6 +1252,8 @@ class RPC(object):
         pool = get_pool(pool)
         from_layer3domain = pool.layer3domain
         layer3domain = get_layer3domain(layer3domain)
+        if from_layer3domain.name == layer3domain.name:
+            raise DimError('Pool %s is already in layer3domain %s' % (pool.name, layer3domain.name))
         logging.info("moving pool %s from layer3domain %s to layer3domain %s" % (pool.name, from_layer3domain.name, layer3domain.name))
 
         pool.layer3domain = layer3domain
