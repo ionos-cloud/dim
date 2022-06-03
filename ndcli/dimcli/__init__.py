@@ -2344,7 +2344,7 @@ delegation).''')
                      description='Modifies a ' + rr.upper() + ' resource record.',
                      *show_rr_options)\
                     (_make_modify_rr(rr_type=rr.upper(), params=params))
-        if rr != 'ptr':
+        if rr not in ('ptr', 'a', 'aaaa'):
             cmd.register('modify zone-profile create rr ' + rr,
                          description='Adds a ' + rr.upper() + ' resource record to PROFILENAME.',
                          *create_profile_rr_options)\
