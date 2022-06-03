@@ -1,9 +1,9 @@
 mysqlclient>=1.4.6
 SQLAlchemy~=1.4
 ldap3~=2.9
-Flask~=2.0
+Flask~=2.1
 Flask-SQLAlchemy~=2.5
-Jinja2~=3.0
+Jinja2~=3.1
 dnspython~=2.1,!=2.2.0
-requests~=2.25
-pycryptodome~=3.10
+requests~=2.27
+pycryptodome~=3.14
