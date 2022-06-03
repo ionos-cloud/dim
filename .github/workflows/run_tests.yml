@@ -1,6 +1,13 @@
 # run tests
 name: run_tests
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - 'dim/**'
+      - 'ndcli/**'
+      - 'dimclient/**'
+      - 'dim-testsuite/**'
   push:
     paths:
       - '.github/workflows/**'
