@@ -40,6 +40,8 @@ ip        status ptr_target comment
 10.0.5.1  Static a.t.
 10.0.5.65 Static b.t.
 
+$ ndcli modify pool a set layer3domain a
+ERROR - Pool a is already in layer3domain a
 $ ndcli modify pool a set layer3domain b
 INFO - Changing subnet 10.0.5.0/28 to new parent 10.0.0.0/8 in layer3domain b
 INFO - Creating view b in zone 5.0.10.in-addr.arpa without profile
