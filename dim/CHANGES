@@ -1,3 +1,12 @@
+5.0.2
+-----
+* add new permission to set attributes on pools (#242)
+* fix group_by clause when returning views for a zone (#243)
+* fix moving pools between layer3domains with subnets smaller than /24 (#233)
+* fix missing check if pool is already in target layer3domain (#232)
+* fix missing check to avoid creating A or AAAA records in zone profiles (#238)
+* update dependencies (#248)
+
 5.0.1
 -----
 * fix .hex is not a function
