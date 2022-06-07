@@ -98,7 +98,7 @@ jobs:
           Requires: python36-dimclient
           Requires: python36-dns
           Requires: python36
-          Suggests: bash-completion
+          Requires: bash-completion
 
           # don't strip debug symbols, else it will all come crashing down
           %define debug_package %{nil}
