@@ -210,12 +210,89 @@ jobs:
           name: python3-ndcli-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
           path: ~/rpmbuild/RPMS/x86_64/python3-ndcli-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
 
+  el9:
+    runs-on: ubuntu-latest
+    needs: build
+    container:
+      image: oraclelinux:9
+      env:
+        _VERSION: ${{ needs.build.outputs.version }}
+        _DIMCLIENT: ${{ needs.build.outputs.dimclient }}
+    steps:
+      - run: /bin/dnf install --assumeyes epel-release
+      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns python3-dateutil tar gzip git
+      - uses: actions/checkout@v2
+      - run: mkdir -p ${HOME}/rpmbuild/SPECS
+      - run: mkdir -p ${HOME}/rpmbuild/SOURCES
+      - run: |
+          curl --location "https://github.com/${{ github.repository }}/releases/download/dimclient-${_DIMCLIENT}/python3-dimclient-${_DIMCLIENT}-1.el9.x86_64.rpm" > ./python3-dimclient-${_DIMCLIENT}-1.el9.x86_64.rpm
+          rpm -i ./python3-dimclient-${_DIMCLIENT}-1.el9.x86_64.rpm
+        shell: sh
+      - uses: actions/download-artifact@v2
+        with:
+          name: ndcli-src-${{ needs.build.outputs.version }}.tar.gz
+          path: ~/rpmbuild/SOURCES/
+      - shell: sh
+        run: |
+          cat <<EOF > ${HOME}/rpmbuild/SPECS/ndcli.spec
+          Name:    python3-ndcli
+          Version: ${_VERSION}
+          Release: 1.el9
+          Summary: DNS and IP management
+
+          Group: application/system
+          License: MIT
+
+          Source0: ndcli-src-%{version}.tar.gz
+          BuildRequires: python3-devel
+          BuildRequires: python3-dimclient
+          BuildRequires: python3-dateutil
+          BuildRequires: python3-dns
+          Requires: python3-dimclient
+          Requires: python3-dateutil
+          Requires: python3-dns
+          Requires: python3
+          Suggests: bash-completion
+
+          # don't strip debug symbols, else it will all come crashing down
+          %define debug_package %{nil}
+          %define __strip /bin/true
+
+          %description
+          DNS and IP management
+
+          %prep
+          %autosetup -p1 -n ndcli-%{version}
+
+          %build
+          %py3_build
+
+          %install
+          %py3_install
+          mkdir -p %{buildroot}%{_sysconfdir}/bash_completion.d
+          install -m 644 -T bash_completion.d/ndcli %{buildroot}%{_sysconfdir}/bash_completion.d/ndcli
+          mkdir -p %{buildroot}%{_mandir}/man1
+          gzip doc/_build/man/ndcli.1
+          install -m 644 -T doc/_build/man/ndcli.1.gz %{buildroot}%{_mandir}/man1/ndcli.1.gz
+
+          %files
+          %{python3_sitelib}/*
+          %{_bindir}/*
+          %{_sysconfdir}/bash_completion.d/*
+          %{_mandir}/man1/*
+          EOF
+      - run: rpmbuild -ba ${HOME}/rpmbuild/SPECS/ndcli.spec
+      - uses: actions/upload-artifact@v2
+        with:
+          name: python3-ndcli-${{ needs.build.outputs.version }}-1.el9.x86_64.rpm
+          path: ~/rpmbuild/RPMS/x86_64/python3-ndcli-${{ needs.build.outputs.version }}-1.el9.x86_64.rpm
+
   fedora:
     runs-on: ubuntu-latest
     needs: build
     strategy:
       matrix:
-        os: [34,35]
+        os: [36,37]
     container:
       image: fedora:${{ matrix.os }}
       env:
@@ -327,6 +404,7 @@ jobs:
       - debian
       - el7
       - el8
+      - el9
       - fedora
     steps:
       - uses: actions/checkout@v2
@@ -350,10 +428,13 @@ jobs:
           name: python3-ndcli-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
       - uses: actions/download-artifact@v2
         with:
-          name: python3-ndcli-${{ needs.build.outputs.version }}-1.fc34.x86_64.rpm
+          name: python3-ndcli-${{ needs.build.outputs.version }}-1.el9.x86_64.rpm
       - uses: actions/download-artifact@v2
         with:
-          name: python3-ndcli-${{ needs.build.outputs.version }}-1.fc35.x86_64.rpm
+          name: python3-ndcli-${{ needs.build.outputs.version }}-1.fc36.x86_64.rpm
+      - uses: actions/download-artifact@v2
+        with:
+          name: python3-ndcli-${{ needs.build.outputs.version }}-1.fc37.x86_64.rpm
       - uses: actions/download-artifact@v2
         with:
           name: ndcli_${{ needs.build.outputs.version }}_all.deb
@@ -395,14 +476,22 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: python3-ndcli-${{ needs.build.outputs.version }}-1.fc34.x86_64.rpm
-          asset_name: python3-ndcli-${{ needs.build.outputs.version }}-1.fc34.x86_64.rpm
+          asset_path: python3-ndcli-${{ needs.build.outputs.version }}-1.el9.x86_64.rpm
+          asset_name: python3-ndcli-${{ needs.build.outputs.version }}-1.el9.x86_64.rpm
           asset_content_type: application/octet-stream
       - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: python3-ndcli-${{ needs.build.outputs.version }}-1.fc35.x86_64.rpm
-          asset_name: python3-ndcli-${{ needs.build.outputs.version }}-1.fc35.x86_64.rpm
+          asset_path: python3-ndcli-${{ needs.build.outputs.version }}-1.fc36.x86_64.rpm
+          asset_name: python3-ndcli-${{ needs.build.outputs.version }}-1.fc36.x86_64.rpm
+          asset_content_type: application/octet-stream
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: python3-ndcli-${{ needs.build.outputs.version }}-1.fc37.x86_64.rpm
+          asset_name: python3-ndcli-${{ needs.build.outputs.version }}-1.fc37.x86_64.rpm
           asset_content_type: application/octet-stream
