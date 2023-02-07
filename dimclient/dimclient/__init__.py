@@ -33,19 +33,21 @@ class ProtocolError(DimError):
 
 
 class DimClient(object):
-    def __init__(self, server_url, cookie_file=None, cookie_umask=None):
+    def __init__(self, server_url, cookie_file=None, cookie_umask=None, request_timeout=120):
         self.server_url = server_url
         self.cookie_jar = LWPCookieJar()
         self.session = build_opener(HTTPCookieProcessor(self.cookie_jar))
         if cookie_file:
             self._use_cookie_file(cookie_file, cookie_umask)
+        self.request_timeout = request_timeout
 
     def login(self, username, password, permanent_session=False):
         try:
-            self.session.open(self.server_url + '/login',
-                              urlencode(dict(username=username,
-                                             password=password,
-                                             permanent_session=permanent_session)).encode('utf8'))
+            self.session.open(
+                self.server_url + '/login',
+                urlencode(dict(username=username, password=password, permanent_session=permanent_session)).encode('utf8'),
+                timeout=self.request_timeout,
+            )
             self.check_protocol_version()
             self._update_cookie_file()
             return True
@@ -120,7 +122,7 @@ class DimClient(object):
         logger.debug('dim call: %s(%s)' % (function, ', '.join([repr(x) for x in args])))
         start = time.time()
         request = Request(url, data=json_call.encode('utf8'), headers={'Content-Type': 'application/json'})
-        response = self.session.open(request).read()
+        response = self.session.open(request, timeout=self.request_timeout).read()
         rpc_response = json.loads(response.decode('utf8'))
         logger.debug('time taken: %.3f' % (time.time() - start))
         if 'error' in rpc_response:
