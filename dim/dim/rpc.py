@@ -3697,7 +3697,7 @@ def get_group(group_str):
     return group
 
 
-def get_user(user_str):
+def get_user(user_str: str) -> User:
     user = User.query.filter_by(username=user_str).first()
     if user is None:
         raise InvalidUserError("User '%s' does not exist" % user_str)
