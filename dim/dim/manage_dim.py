@@ -68,3 +68,10 @@ def sync_ldap(dryrun, ignore_deletion_threshold):
 @manage_dim.cli.command('autodns3')
 def autodns3():
     dim.autodns3.run()
+
+@manage_dim.cli.command('delete_user')
+@click.option('-n', '--dry-run', '--noop', 'dryrun',  is_flag=True)
+@click.option('-u', '--username', 'username')
+def delete_user(dryrun, username):
+    '''Delete user from DIM'''
+    dim.commands.delete_user(dryrun=dryrun, username=username)

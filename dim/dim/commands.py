@@ -7,9 +7,10 @@ from dim.models import UserType, Ipblock, Pool, AllocationHistory, Layer3Domain
 from dim.rpc import get_user
 from dim.transaction import time_function, transaction
 from math import floor, ceil
+from dim import db
 
 
-def get_user_type(user_type_str):
+def get_user_type(user_type_str: str) -> UserType:
     user_type = UserType.query.filter_by(name=user_type_str).first()
     if user_type is None:
         raise Exception("User type '%s' does not exist" % user_type_str)
@@ -26,12 +27,19 @@ def rebuild_tree():
 
 @time_function
 @transaction
-def set_user(username, user_type_str):
+def set_user(username: str, user_type_str: str):
     if user_type_str not in ('User', 'Admin'):
         raise ValueError("User type must be either 'User' or 'Admin'")
 
     user = get_user(username)
     user.user_type = get_user_type(user_type_str)
+
+
+@time_function
+@transaction
+def delete_user(username: str):
+    user = get_user(username)
+    db.session.delete(user)
 
 
 @time_function
@@ -42,7 +50,7 @@ def update_history():
     AllocationHistory.collect_data()
 
 
-def read_etc_file(filename):
+def read_etc_file(filename: str):
     try:
         return open(os.path.join(app.config.root_path, '..', 'etc', filename)).read()
     except:
