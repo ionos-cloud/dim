@@ -137,7 +137,7 @@ def sync_users(ldap: LDAP, deletion_threshold: int = -1, ignore_deletion_thresho
 
 @time_function
 @transaction
-def ldap_sync(ignore_deletion_threshold: bool = False):
+def ldap_sync(ignore_deletion_threshold: bool = False, cleanup_department_groups: bool = False):
     '''Update Users, Group, and Departments from LDAP'''
     ldap = LDAP()
     deletion_thresholds = app.config.get_namespace('LDAP_SYNC_DELETION_THRESHOLD_')
@@ -178,6 +178,13 @@ def ldap_sync(ignore_deletion_threshold: bool = False):
             logging.info('User %s was removed from group %s' %
                          (membership.user.username, membership.group.name))
             membership.group.remove_user(membership.user)
+    # Remove users in department user-groups, that have not been added via ldap
+    if cleanup_department_groups:
+        for membership in GroupMembership.query.filter(GroupMembership.from_ldap == False).filter(Group.department_number != None).filter(GroupMembership.usergroup_id==Group.id).all():
+            if membership.user.username not in ldap_users[membership.group.department_number]:
+                logging.info(f'User {membership.user.username} was removed from department group {membership.group.name} ({membership.group.department_number}) as the membership was not from LDAP')
+                membership.group.remove_user(membership.user)
+
     # Add new users to groups
     for group in Group.query.filter(Group.department_number != None).all():  # noqa
         group_users = set([u.username for u in group.users])
