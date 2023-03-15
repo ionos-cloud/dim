@@ -52,17 +52,19 @@ def update_validity():
 @manage_dim.cli.command('ldap_sync')
 @click.option('-n', '--dry-run', '--noop', 'dryrun',  is_flag=True)
 @click.option('-f', '--ignore-deletion-threshold', 'ignore_deletion_threshold', is_flag=True)
-def ldap_sync(dryrun, ignore_deletion_threshold):
+@click.option('--cleanup-department-groups', 'cleanup_department_groups', is_flag=True, help="remove manually added users from department groups")
+def ldap_sync(dryrun, ignore_deletion_threshold, cleanup_department_groups):
     '''Update Users, Group, and Departments from LDAP'''
-    dim.ldap_sync.ldap_sync(dryrun=dryrun, ignore_deletion_threshold=ignore_deletion_threshold)
+    dim.ldap_sync.ldap_sync(dryrun=dryrun, ignore_deletion_threshold=ignore_deletion_threshold, cleanup_department_groups=cleanup_department_groups)
 
 
 @manage_dim.cli.command('sync_ldap')
 @click.option('-n', '--dry-run', '--noop', 'dryrun',  is_flag=True)
 @click.option('-f', '--ignore-deletion-threshold', 'ignore_deletion_threshold', is_flag=True)
-def sync_ldap(dryrun, ignore_deletion_threshold):
+@click.option('--cleanup-department-groups', 'cleanup_department_groups', is_flag=True, help="remove manually added users from department groups")
+def sync_ldap(dryrun, ignore_deletion_threshold, cleanup_department_groups):
     '''Update Users, Group, and Departments from LDAP'''
-    dim.ldap_sync.ldap_sync(dryrun=dryrun, ignore_deletion_threshold=ignore_deletion_threshold)
+    dim.ldap_sync.ldap_sync(dryrun=dryrun, ignore_deletion_threshold=ignore_deletion_threshold, cleanup_department_groups=cleanup_department_groups)
 
 
 @manage_dim.cli.command('autodns3')
