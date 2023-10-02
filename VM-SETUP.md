@@ -338,7 +338,7 @@ pdns-output needs to be build manually at the moment (any volunteers?)
 # cd jdnssec-tools && ../../gradlew build -x test && ../../gradlew publishToMavenLocal; cd ..
 # cd gmp-rsa && ../../gradlew build -x test && ../../gradlew publishToMavenLocal; cd ..
 # cd pdns-output && ../../gradlew shadowJar -x test; cd ..
-# cp build/libs/pdns-output-4.0.0-all.jar /opt/dim
+# cp pdns-output/build/libs/pdns-output-4.0.0-all.jar /opt/dim
 # cd ..
 # rm -rf dim
 ```
