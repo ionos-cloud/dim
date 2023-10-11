@@ -487,7 +487,7 @@ username=user
 EOF
 ```
 
-Give the user `user` uberadmin rights `/opt/dim/bin/manage_dim set_user user Admin` and force re login `rm -f ~/.ndcli.cookie`.
+Give the user `user` uberadmin rights `/opt/dim/bin/manage_dim set_user -u user -t Admin` and force re login `rm -f ~/.ndcli.cookie; ndcli login`.
 
 make sure that ``bash-completion`` is installed (to enable ``ndcli`` completion)
 
