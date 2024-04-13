@@ -20,7 +20,7 @@
 
 - name: Enable epel-release
   dnf:
-    name: epel
+    name: epel-release
     state: present
 
 - name: Install necessary packages
@@ -30,6 +30,19 @@
       - bind-utils
       - vim
       - nload
+      - bc
+      - chkconfig
+      - initscripts
     state: present
     update_cache: true
+
+- name: Download network-scripts package
+  get_url:
+    url: "{{ network_scripts_url }}"
+    dest: "{{ network_scripts_dest }}"
+
+- name: Install network-scripts package
+  dnf:
+    name: "{{ network_scripts_dest }}/{{ network_scripts_package }}"
+    state: present
 
