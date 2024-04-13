@@ -1,0 +1,6 @@
+# General
+install_ansible_modules: "true"
+disable_transparent_huge_pages: "true"
+setup_interface: "false"
+
+#DIM
