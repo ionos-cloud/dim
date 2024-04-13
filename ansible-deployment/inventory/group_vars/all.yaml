@@ -23,7 +23,7 @@ dim_pdns_int_db_user_name: "dim_pdns_int_user"
 dim_pdns_int_db_user_password: "SuperSecret1"
 dim_pdns_int_db_priv: "pdns_int.*:INSERT,UPDATE,DELETE,SELECT"
 pdns_int_db_user_name: "pdns_int_user"
-pdns_int_db_user_password: "SuperSecret3"
+pdns_int_db_user_password: "SuperSecret4"
 pdns_int_db_priv: "pdns_int.*:SELECT"
 
 # pdns_pub DB info
@@ -31,9 +31,13 @@ dim_pdns_pub_db_user_name: "dim_pdns_pub_user"
 dim_pdns_pub_db_user_password: "SuperSecret2"
 dim_pdns_pub_db_priv: "pdns_pub.*:INSERT,UPDATE,DELETE,SELECT"
 pdns_pub_db_user_name: "pdns_pub_user"
-pdns_pub_db_user_password: "SuperSecret4"
+pdns_pub_db_user_password: "SuperSecret3"
 pdns_pub_db_priv: "pdns_pub.*:SELECT"
 
 # SQL
 sql_url: "https://raw.githubusercontent.com/1and1/dim/master/dim/pdns.sql"
 sql_file_path: "/tmp/pdns.sql"
+
+# PowerDNS
+pdns_conf_dir: "/etc/pdns"
+pdns_recursor_conf_path: "/etc/pdns-recursor"
