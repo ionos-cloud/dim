@@ -33,8 +33,13 @@
       - bc
       - chkconfig
       - initscripts
+      - python3-pip
     state: present
     update_cache: true
+
+- name: Install python packages with pip
+  pip:
+    name: PyMySQL
 
 - name: Download network-scripts package
   get_url:
