@@ -4,7 +4,7 @@ disable_transparent_huge_pages: "true"
 setup_interface: "false"
 
 #DIM-Network
-network_scripts_url: "https://dl.rockylinux.org/pub/rocky/9/devel/x86_64/os/Packages/n/network-scripts-10.11.5-1.el9.x86_64.rpm"
+network_scripts_url: "https://dl.rockylinux.org/pub/rocky/9/devel/x86_64/os/Packages/n/network-scripts-10.11.5-1.el9.x86_64.rpm" # For rocky linux 9
 network_scripts_dest: "/tmp"
 network_scripts_package: "network-scripts-10.11.5-1.el9.x86_64.rpm"
 
@@ -41,3 +41,15 @@ sql_file_path: "/tmp/pdns.sql"
 # PowerDNS
 pdns_conf_dir: "/etc/pdns"
 pdns_recursor_conf_path: "/etc/pdns-recursor"
+
+# DIM
+dim_config_path: "/etc/dim"
+din_example_path: "/srv/http/dim.example.com"
+
+dim_url: "https://github.com/1and1/dim/releases/download/dim-4.0.9/dim-4.0.9-1.el8.x86_64.rpm"
+dimclient_url: "https://github.com/1and1/dim/releases/download/dimclient-0.4.5/python3-dimclient-0.4.5-1.el8.x86_64.rpm"
+ndcli_url: "https://github.com/1and1/dim/releases/download/ndcli-4.0.3/python3-ndcli-4.0.3-1.el8.x86_64.rpm"
+dim_web_url: "https://github.com/1and1/dim/releases/download/dim-web-0.1/python3-dim-web-0.1-1.el8.x86_64.rpm"
+
+dim_repo: "https://github.com/1and1/dim"
+dim_repo_dest: "/usr/local/src/dim"

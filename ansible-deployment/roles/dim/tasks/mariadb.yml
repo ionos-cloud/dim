@@ -3,7 +3,7 @@
     name:
       - mariadb-server
     state: present
-    update_cache: true
+    # update_cache: true
 
 - name: Start and enable mariadb
   systemd:

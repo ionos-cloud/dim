@@ -39,4 +39,5 @@ An optional section for the role authors to include contact information, or a we
 
 ```
 ansible-galaxy collection install ansible.posix
+ansible-galaxy collection install community.mysql
 ```
