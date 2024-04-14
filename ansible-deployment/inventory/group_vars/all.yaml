@@ -13,10 +13,12 @@ dim_db_name: "dim"
 pdns_int_db_name: "pdns_int"
 pdns_pub_db_name: "pdns_pub"
 
+
 # DIM DB info
 dim_db_user_name: "dim_user"
 dim_db_user_password: "dim_pass"
 dim_db_priv: "dim.*:ALL"
+dim_secret_key: "SuperSecretTtestkey"
 
 # pdns_int DB info
 dim_pdns_int_db_user_name: "dim_pdns_int_user"
@@ -53,3 +55,9 @@ dim_web_url: "https://github.com/1and1/dim/releases/download/dim-web-0.1/python3
 
 dim_repo: "https://github.com/1and1/dim"
 dim_repo_dest: "/usr/local/src/dim"
+
+# Httpd
+httpd_conf_path: "/etc/httpd/conf.d"
+
+# wsgi
+wsgi_path: "/opt/dim"
