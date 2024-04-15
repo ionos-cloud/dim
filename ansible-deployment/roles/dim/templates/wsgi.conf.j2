@@ -1,16 +1,16 @@
 <VirtualHost *:80>
-  ServerName dim.example.com
+  ServerName dim.{{ domain_name }}
   ServerAlias localhost
-  ServerAdmin dim@example.com
-  ErrorLog /var/log/httpd/error_log_dim.example.com
-  CustomLog /var/log/httpd/access_log_dim.example.com combined
+  ServerAdmin dim@{{ domain_name }}
+  ErrorLog /var/log/httpd/error_log_dim.{{ domain_name }}
+  CustomLog /var/log/httpd/access_log_dim.{{ domain_name }} combined
   LogLevel error
-  DocumentRoot /srv/http/dim.example.com
+  DocumentRoot /srv/http/dim.{{ domain_name }}
   WSGIDaemonProcess dim python-home=/opt/dim
   WSGIScriptAlias /dim /opt/dim/dim.wsgi
   WSGIDaemonProcess cas
   WSGIScriptAlias /cas /usr/share/dim-web/cas.wsgi
-  <Directory /srv/http/dim.example.com>
+  <Directory /srv/http/dim.{{ domain_name }}>
     RewriteEngine on
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d

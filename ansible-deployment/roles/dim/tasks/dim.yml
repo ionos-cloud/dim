@@ -90,10 +90,10 @@
     owner: root
     group: root
 
-- name: Setup wsgi.conf for dim.example.com
+- name: Setup wsgi.conf for dim.{{ domain_name }}
   template:
     src: wsgi.conf.j2
-    dest: "{{ httpd_conf_path }}/dim.example.com.conf"
+    dest: "{{ httpd_conf_path }}/dim.{{ domain_name }}.conf"
     owner: root
     group: root
 

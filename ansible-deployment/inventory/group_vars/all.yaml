@@ -3,7 +3,11 @@ install_ansible_modules: "true"
 disable_transparent_huge_pages: "true"
 setup_interface: "false"
 
+# Domain
+domain_name: "example.com"
+
 #DIM-Network
+network_path: "/etc/sysconfig/network-scripts"
 network_scripts_url: "https://dl.rockylinux.org/pub/rocky/9/devel/x86_64/os/Packages/n/network-scripts-10.11.5-1.el9.x86_64.rpm" # For rocky linux 9
 network_scripts_dest: "/tmp"
 network_scripts_package: "network-scripts-10.11.5-1.el9.x86_64.rpm"

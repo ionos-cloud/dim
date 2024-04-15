@@ -55,18 +55,18 @@
     state: directory
 
 - name: Copy recursor-int config file
-  copy:
-    src: recursor-int.conf
+  template:
+    src: recursor-int.conf.j2
     dest: "{{ pdns_recursor_conf_path }}/recursor-int.conf"
 
 - name: Copy forward.zones file
-  copy:
-    src: forward.zones
+  template:
+    src: forward.zones.j2
     dest: "{{ pdns_recursor_conf_path }}/int/forward.zones"
 
 - name: Copy nta.lua
-  copy:
-    src: nta.lua
+  template:
+    src: nta.lua.j2
     dest: "{{ pdns_recursor_conf_path }}/int/nta.lua"
 
 - name: Start and enabled pdns recursor service
