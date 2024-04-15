@@ -6,6 +6,8 @@ An ansible playbook for deploy dim
 Requirements
 ------------
 
+This ansible only works on `Rocky Linux 8.5`, for more linux distro please test it.
+
 `Sudoer user`: The ansible user should be a member of the wheel group. and can use sudo without password.
 
 **Befor you run the ansible dim, you need to install the following packages:**
