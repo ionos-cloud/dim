@@ -1,12 +1,12 @@
 Role Name
 =========
 
-A ansible playbook for deploy dim
+An ansible playbook for deploy dim
 
 Requirements
 ------------
 
-`Sudoer user`: Ansible user should be a member of the wheel group. and can use sudo without password.
+`Sudoer user`: The ansible user should be a member of the wheel group. and can use sudo without password.
 
 **Befor you run the ansible dim, you need to install the following packages:**
 
