@@ -6,6 +6,8 @@ An ansible playbook for deploy dim
 Requirements
 ------------
 
+`python3` on the remote servers (dnf install python36 -y)
+
 This ansible only works on `Rocky Linux 8.5`, for more linux distro please test it.
 
 `Sudoer user`: The ansible user should be a member of the wheel group. and can use sudo without password.
