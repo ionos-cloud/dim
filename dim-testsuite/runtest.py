@@ -38,9 +38,32 @@ topdir = os.path.dirname(os.path.abspath(__file__))
 T_DIR = os.path.join(topdir, 't')
 OUT_DIR = os.getenv('TEST_OUTPUT_DIR', os.path.join(topdir, 'out'))
 SRVLOG = os.getenv('SRVLOG', os.path.join(topdir, 'log/server.log'))
+
+PDNS_DB_SERVER = os.getenv('PDNS1_SERVER', '127.0.0.1')
+PDNS_DB_PORT = os.getenv('PDNS1_PORT', '3307')
+PDNS_DB_NAME = os.getenv('PDNS1_DB', 'pdns1')
+PDNS_DB_USER = os.getenv('PDNS1_USER', 'pdns1')
+PDNS_DB_PW = os.getenv('PDNS1_PW', 'pdns')
+PDNS_DB_URI = f'mysql://{PDNS_DB_USER}:{PDNS_DB_PW}@{PDNS_DB_SERVER}:{PDNS_DB_PORT}/{PDNS_DB_NAME}'
 PDNS_ADDRESS = '127.1.1.1'
-PDNS_DB_URI = 'mysql://pdns:pdns@127.0.0.1:3307/pdns1'
-DIM_MYSQL_OPTIONS = '-h127.0.0.1 -P3307 -udim -pdim dim'
+
+PDNS2_DB_SERVER = os.getenv('PDNS2_SERVER', '127.0.0.1')
+PDNS2_DB_PORT = os.getenv('PDNS2_PORT', '3307')
+PDNS2_DB_NAME = os.getenv('PDNS2_DB', 'pdns2')
+PDNS2_DB_USER = os.getenv('PDNS2_USER', 'pdns2')
+PDNS2_DB_PW = os.getenv('PDNS2_PW', 'pdns')
+PDNS2_DB_URI = f'mysql://{PDNS_DB_USER}:{PDNS_DB_PW}@{PDNS_DB_SERVER}:{PDNS_DB_PORT}/{PDNS_DB_NAME}'
+
+DIM_DB_SERVER = os.getenv('DIM_DB_SERVER', '127.0.0.1')
+DIM_DB_PORT = os.getenv('DIM_DB_PORT', '3307')
+DIM_DB_NAME = os.getenv('DIM_DB_NAME', 'dim')
+DIM_DB_USER = os.getenv('DIM_DB_USER', 'dim')
+DIM_DB_PW = os.getenv('DIM_DB_PW', 'dim')
+
+
+NDCLI_SERVER = os.getenv('NDCLI_SERVER', 'http://localhost:5000')
+
+DIM_MYSQL_OPTIONS = f'-h{DIM_DB_SERVER} -P{DIM_DB_PORT} -u{DIM_DB_USER} -p{DIM_DB_PW} {DIM_DB_NAME}'
 DIM_MYSQL_COMMAND = 'mysql ' + DIM_MYSQL_OPTIONS
 VFLASK = os.getenv('VFLASK', 'flask')
 
@@ -94,15 +117,16 @@ def is_pdns_query(line: bytes):
 
 
 def _ndcli(cmd: List[str], cmd_input=None):
-    proc = Popen(['ndcli' , '-s', 'http://localhost:5000/'] + cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+    proc = Popen(['ndcli' , '-s', NDCLI_SERVER] + cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
     out, err = proc.communicate(input=cmd_input if cmd_input != None else None)
     return out
 
 
 def clean_database():
     commands = [
-        'echo "delete from domains; delete from records;" | mysql -h127.0.0.1 -P3307 -updns -ppdns pdns1',
-        'echo "delete from domains; delete from records;" | mysql -h127.0.0.1 -P3307 -updns -ppdns pdns2']
+        f'echo "delete from domains; delete from records;" | mysql -h{PDNS_DB_SERVER} -P{PDNS_DB_PORT} -u{PDNS_DB_USER} -p{PDNS_DB_PW} {PDNS_DB_NAME}',
+        f'echo "delete from domains; delete from records;" | mysql -h{PDNS2_DB_SERVER} -P{PDNS2_DB_PORT} -u{PDNS2_DB_USER} -p{PDNS2_DB_PW} {PDNS2_DB_NAME}',
+    ]
     clean_sql = os.path.join(OUT_DIR, 'clean.sql')
     if not hasattr(clean_database, 'dumped'):
         commands.extend([
@@ -385,7 +409,7 @@ def run_test(testfile, outfile, stop_on_error=False, auto_pdns_check=False):
 
 if __name__ == '__main__':
     # start the server process
-    parsed = urlparse(os.getenv('NDCLI_SERVER', 'http://localhost:5000'))
+    parsed = urlparse(NDCLI_SERVER)
     host = parsed.hostname
     port = parsed.port
 
