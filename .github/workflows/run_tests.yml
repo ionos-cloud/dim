@@ -60,7 +60,7 @@ jobs:
           LAYER3DOMAIN_WHITELIST = ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16']
           ### Debugging
           SQLALCHEMY_DATABASE_URI_TEST = 'mysql://dim:dim@mariadb:3306/dim'
-          PDNS_DATABASE_URI_TEST = 'mysql://pdns:pdns@mariadb:3306/pdns_slave'
+          PDNS_DATABASE_URI_TEST = 'mysql://pdns1:pdns@mariadb:3306/pdns1'
           SYNC_PDNS_OUTPUT = False
           DEBUG = False
           SQLALCHEMY_LOG = False
@@ -69,10 +69,10 @@ jobs:
         run: make db-clear
         working-directory: dim-testsuite
         env:
-          PDNS1_SERVER: mariadb
-          PDNS1_PORT: 3306
-          PDNS2_SERVER: mariadb
-          PDNS2_PORT: 3306
+          PDNS1_DB_SERVER: mariadb
+          PDNS1_DB_PORT: 3306
+          PDNS2_DB_SERVER: mariadb
+          PDNS2_DB_PORT: 3306
       - name: Run pytests
         run: make pytest
         working-directory: dim-testsuite

@@ -39,20 +39,20 @@ T_DIR = os.path.join(topdir, 't')
 OUT_DIR = os.getenv('TEST_OUTPUT_DIR', os.path.join(topdir, 'out'))
 SRVLOG = os.getenv('SRVLOG', os.path.join(topdir, 'log/server.log'))
 
-PDNS_DB_SERVER = os.getenv('PDNS1_SERVER', '127.0.0.1')
-PDNS_DB_PORT = os.getenv('PDNS1_PORT', '3307')
-PDNS_DB_NAME = os.getenv('PDNS1_DB', 'pdns1')
-PDNS_DB_USER = os.getenv('PDNS1_USER', 'pdns1')
-PDNS_DB_PW = os.getenv('PDNS1_PW', 'pdns')
-PDNS_DB_URI = f'mysql://{PDNS_DB_USER}:{PDNS_DB_PW}@{PDNS_DB_SERVER}:{PDNS_DB_PORT}/{PDNS_DB_NAME}'
-PDNS_ADDRESS = '127.1.1.1'
+PDNS1_DB_SERVER = os.getenv('PDNS1_DB_SERVER', '127.0.0.1')
+PDNS1_DB_PORT = os.getenv('PDNS1_DB_PORT', '3307')
+PDNS1_DB_NAME = os.getenv('PDNS1_DB_NAME', 'pdns1')
+PDNS1_DB_USER = os.getenv('PDNS1_DB_USER', 'pdns1')
+PDNS1_DB_PW = os.getenv('PDNS1_DB_PW', 'pdns')
+PDNS1_DB_URI = f'mysql://{PDNS1_DB_USER}:{PDNS1_DB_PW}@{PDNS1_DB_SERVER}:{PDNS1_DB_PORT}/{PDNS1_DB_NAME}'
+PDNS1_ADDRESS = '127.1.1.1'
 
-PDNS2_DB_SERVER = os.getenv('PDNS2_SERVER', '127.0.0.1')
-PDNS2_DB_PORT = os.getenv('PDNS2_PORT', '3307')
-PDNS2_DB_NAME = os.getenv('PDNS2_DB', 'pdns2')
-PDNS2_DB_USER = os.getenv('PDNS2_USER', 'pdns2')
-PDNS2_DB_PW = os.getenv('PDNS2_PW', 'pdns')
-PDNS2_DB_URI = f'mysql://{PDNS_DB_USER}:{PDNS_DB_PW}@{PDNS_DB_SERVER}:{PDNS_DB_PORT}/{PDNS_DB_NAME}'
+PDNS2_DB_SERVER = os.getenv('PDNS2_DB_SERVER', '127.0.0.1')
+PDNS2_DB_PORT = os.getenv('PDNS2_DB_PORT', '3307')
+PDNS2_DB_NAME = os.getenv('PDNS2_DB_NAME', 'pdns2')
+PDNS2_DB_USER = os.getenv('PDNS2_DB_USER', 'pdns2')
+PDNS2_DB_PW = os.getenv('PDNS2_DB_PW', 'pdns')
+PDNS2_DB_URI = f'mysql://{PDNS2_DB_USER}:{PDNS2_DB_PW}@{PDNS2_DB_SERVER}:{PDNS2_DB_PORT}/{PDNS2_DB_NAME}'
 
 DIM_DB_SERVER = os.getenv('DIM_DB_SERVER', '127.0.0.1')
 DIM_DB_PORT = os.getenv('DIM_DB_PORT', '3307')
@@ -124,7 +124,7 @@ def _ndcli(cmd: List[str], cmd_input=None):
 
 def clean_database():
     commands = [
-        f'echo "delete from domains; delete from records;" | mysql -h{PDNS_DB_SERVER} -P{PDNS_DB_PORT} -u{PDNS_DB_USER} -p{PDNS_DB_PW} {PDNS_DB_NAME}',
+        f'echo "delete from domains; delete from records;" | mysql -h{PDNS1_DB_SERVER} -P{PDNS1_DB_PORT} -u{PDNS1_DB_USER} -p{PDNS1_DB_PW} {PDNS1_DB_NAME}',
         f'echo "delete from domains; delete from records;" | mysql -h{PDNS2_DB_SERVER} -P{PDNS2_DB_PORT} -u{PDNS2_DB_USER} -p{PDNS2_DB_PW} {PDNS2_DB_NAME}',
     ]
     clean_sql = os.path.join(OUT_DIR, 'clean.sql')
@@ -331,7 +331,7 @@ def check_pdns_output(line, out):
         return True
     zone_view_map = setup_pdns_output(server)
     pdns_output_proc.wait_updates()
-    if not compare_dim_pdns_zones(server, PDNS_ADDRESS, zone_view_map):
+    if not compare_dim_pdns_zones(server, PDNS1_ADDRESS, zone_view_map):
         out.write("Zone incorrectly exported\n")
         return False
     return True
@@ -357,7 +357,7 @@ def run_test(testfile, outfile, stop_on_error=False, auto_pdns_check=False):
         if auto_pdns_check:
             global server
             server = DimClient(config['server'], cookie_file=os.path.expanduser('~/.ndcli.cookie'))
-            server.output_create('pdns_output', 'pdns-db', db_uri=PDNS_DB_URI)
+            server.output_create('pdns_output', 'pdns-db', db_uri=PDNS1_DB_URI)
             server.zone_group_create('pdns_group')
             server.output_add_group('pdns_output', 'pdns_group')
 
