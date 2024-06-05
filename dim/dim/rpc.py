@@ -852,7 +852,6 @@ class RPC(object):
                     [explore(c) for c in children] +
                     [{'ip': f, 'status': 'Available'} for f in block.free_space])
             return item
-        import pdb; pdb.set_trace()
         layer3domain = _get_layer3domain_arg(layer3domain)
         if container is not None:
             block = _find_ipblock(container, layer3domain, status=['Container'])
