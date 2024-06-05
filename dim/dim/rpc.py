@@ -852,7 +852,7 @@ class RPC(object):
                     [explore(c) for c in children] +
                     [{'ip': f, 'status': 'Available'} for f in block.free_space])
             return item
-
+        import pdb; pdb.set_trace()
         layer3domain = _get_layer3domain_arg(layer3domain)
         if container is not None:
             block = _find_ipblock(container, layer3domain, status=['Container'])
@@ -4177,16 +4177,17 @@ def _find_ipblock(ipblock, layer3domain, status=None):
     block = Ipblock.query_ip(ip, layer3domain).first()
     if block:
         return block
-    # Try ancestors
-    parents = Ipblock._ancestors_noparent_query(ip, layer3domain)
-    if status:
-        parents = parents.join(IpblockStatus).filter(IpblockStatus.name.in_(status))
-    parents = parents.all()
     status_str = ' or '.join(status)
-    if parents:
-        Messages.warn('%s rounded to %s because no ipblock exists at %s with status %s'
-                      % (ip, parents[0].ip, ip, status_str))
-        return parents[0]
+    # Try ancestors
+    if ip.prefix != 0:
+        parents = Ipblock._ancestors_noparent_query(ip, layer3domain)
+        if status:
+            parents = parents.join(IpblockStatus).filter(IpblockStatus.name.in_(status))
+        parents = parents.all()
+        if parents:
+            Messages.warn('%s rounded to %s because no ipblock exists at %s with status %s'
+                        % (ip, parents[0].ip, ip, status_str))
+            return parents[0]
     # Try descendants
     descendants = Ipblock.query.filter(inside(Ipblock.address, ip),
                                        Ipblock.version == ip.version,
