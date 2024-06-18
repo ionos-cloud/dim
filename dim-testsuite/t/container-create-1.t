@@ -4,7 +4,6 @@ $ ndcli create container 0.0.0.0/0
  ERROR - A layer3domain is needed
 
 $ ndcli create container 0.0.0.0/0 layer3domain default
-ntainer 0.0.0.0/0 layer3domain default
 INFO - Creating container 0.0.0.0/0 in layer3domain defaul
 
 $ ndcli show container 0.0.0.0/0 layer3domain default
