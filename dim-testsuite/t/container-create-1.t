@@ -1,3 +1,5 @@
+$ ndcli create layer3domain test type vrf rd 256:256
+
 $ ndcli create container 0.0.0.0/0
  ERROR - A layer3domain is needed
 
