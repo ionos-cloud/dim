@@ -15,7 +15,7 @@ $ ndcli modify user-group global-dns-admins add user user2
 $ ndcli list user-group global-dns-admins users
 username
 user1
-user2-test
+user2
 
 $ ndcli delete user-group global-dns-admins
 
