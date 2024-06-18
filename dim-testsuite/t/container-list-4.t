@@ -3,6 +3,8 @@ $ ndcli list containers
 $ ndcli list containers 0.0.0.0/0
 ERROR - No containers matching '0.0.0.0/0' exist in layer3domain default
 $ ndcli list containers layer3domain default 0.0.0.0/0
+$ ndcli create layer3domain test type vrf rd 256:256
+
 $ ndcli list containers layer3domain 6724-global 0.0.0.0/0
 
 $ ndcli list containers ::/0
