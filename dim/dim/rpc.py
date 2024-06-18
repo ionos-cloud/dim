@@ -419,13 +419,13 @@ class RPC(object):
             raise InvalidParameterError('Use ippool_add_subnet to create subnets')
 
         def find_parent():
+        
             parents = Ipblock._ancestors_noparent_query(parse_ip(block_str), None) \
                 .filter_by(status=get_status('Container')).all()
             if parents and all([p.layer3domain == parents[0].layer3domain for p in parents]):
                 return parents[0].layer3domain
-
         layer3domain = _get_layer3domain_arg(layer3domain, options,
-                                             guess_function=find_parent if status == 'Container' else None)
+                                            guess_function=find_parent if status == 'Container' and parse_ip(block_str).prefix !=0  else None)
         ip = check_ip(parse_ip(block_str), layer3domain, options)
         ipblock = Ipblock.query_ip(ip, layer3domain).first()
         pool = self._can_change_ip(ipblock or ip, layer3domain=layer3domain)

@@ -432,8 +432,10 @@ class Ipblock(db.Model, WithAttr, TrackChanges):
     def _tree_update(self):
         db.session.flush()      # we need self.id
         logging.debug('Updating tree for %s', self)
-        ancestors = Ipblock._ancestors_noparent(self.ip, self.layer3domain)
-        new_parent_id = ancestors[0].id if ancestors else None
+        new_parent_id = None
+        if self.ip.prefix !=0:
+            ancestors = Ipblock._ancestors_noparent(self.ip, self.layer3domain)
+            new_parent_id = ancestors[0].id if ancestors else None
         if self.parent_id != new_parent_id:
             self.parent_id = new_parent_id
         if not self.is_host:
