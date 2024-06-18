@@ -23,7 +23,7 @@ jobs:
       image: oraclelinux:8
     services:
       mariadb:
-        image: mariadb:lts
+        image: mariadb:10.11
         env:
           MARIADB_USER: dim
           MARIADB_PASSWORD: dim
