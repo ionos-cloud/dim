@@ -1,4 +1,3 @@
-
 $ ndcli list containers
 $ ndcli list containers 0.0.0.0/0
 ERROR - No containers matching '0.0.0.0/0' exist in layer3domain default
