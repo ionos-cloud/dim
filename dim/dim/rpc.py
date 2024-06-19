@@ -419,7 +419,6 @@ class RPC(object):
             raise InvalidParameterError('Use ippool_add_subnet to create subnets')
 
         def find_parent():
-        
             parents = Ipblock._ancestors_noparent_query(parse_ip(block_str), None) \
                 .filter_by(status=get_status('Container')).all()
             if parents and all([p.layer3domain == parents[0].layer3domain for p in parents]):
