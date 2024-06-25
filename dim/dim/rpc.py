@@ -423,9 +423,9 @@ class RPC(object):
                 .filter_by(status=get_status('Container')).all()
             if parents and all([p.layer3domain == parents[0].layer3domain for p in parents]):
                 return parents[0].layer3domain
-
+              
         layer3domain = _get_layer3domain_arg(layer3domain, options,
-                                             guess_function=find_parent if status == 'Container' else None)
+                                            guess_function=find_parent if status == 'Container' and parse_ip(block_str).prefix !=0  else None)
         ip = check_ip(parse_ip(block_str), layer3domain, options)
         ipblock = Ipblock.query_ip(ip, layer3domain).first()
         pool = self._can_change_ip(ipblock or ip, layer3domain=layer3domain)
@@ -852,7 +852,6 @@ class RPC(object):
                     [explore(c) for c in children] +
                     [{'ip': f, 'status': 'Available'} for f in block.free_space])
             return item
-
         layer3domain = _get_layer3domain_arg(layer3domain)
         if container is not None:
             block = _find_ipblock(container, layer3domain, status=['Container'])
@@ -4177,16 +4176,17 @@ def _find_ipblock(ipblock, layer3domain, status=None):
     block = Ipblock.query_ip(ip, layer3domain).first()
     if block:
         return block
-    # Try ancestors
-    parents = Ipblock._ancestors_noparent_query(ip, layer3domain)
-    if status:
-        parents = parents.join(IpblockStatus).filter(IpblockStatus.name.in_(status))
-    parents = parents.all()
     status_str = ' or '.join(status)
-    if parents:
-        Messages.warn('%s rounded to %s because no ipblock exists at %s with status %s'
-                      % (ip, parents[0].ip, ip, status_str))
-        return parents[0]
+    # Try ancestors
+    if ip.prefix != 0:
+        parents = Ipblock._ancestors_noparent_query(ip, layer3domain)
+        if status:
+            parents = parents.join(IpblockStatus).filter(IpblockStatus.name.in_(status))
+        parents = parents.all()
+        if parents:
+            Messages.warn('%s rounded to %s because no ipblock exists at %s with status %s'
+                        % (ip, parents[0].ip, ip, status_str))
+            return parents[0]
     # Try descendants
     descendants = Ipblock.query.filter(inside(Ipblock.address, ip),
                                        Ipblock.version == ip.version,
