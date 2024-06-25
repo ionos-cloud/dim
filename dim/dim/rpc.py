@@ -423,6 +423,7 @@ class RPC(object):
                 .filter_by(status=get_status('Container')).all()
             if parents and all([p.layer3domain == parents[0].layer3domain for p in parents]):
                 return parents[0].layer3domain
+              
         layer3domain = _get_layer3domain_arg(layer3domain, options,
                                             guess_function=find_parent if status == 'Container' and parse_ip(block_str).prefix !=0  else None)
         ip = check_ip(parse_ip(block_str), layer3domain, options)
