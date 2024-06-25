@@ -3757,12 +3757,9 @@ def subnet_reserved_ips(subnet, dont_reserve_network_broadcast):
         # Reserve .0 and .255 addresses because some buggy routers have problems
         # with them
         zero = start - (start % 256)
-        while zero < end:
-            if start <= zero:
-                reserved.append(IP(zero, prefix=32, version=4))
-            if zero + 255 <= end:
-                reserved.append(IP(zero + 255, prefix=32, version=4))
-            zero += 256
+        reserved.append(IP(zero, prefix=32, version=4))
+        reserved.append(IP(end, prefix=32, version=4))
+
         # Remove duplicates
         if not dont_reserve_network_broadcast:
             for address in [subnet.network, subnet.broadcast]:
