@@ -53,8 +53,8 @@ db-clear:
 	FLASK_APP=${FLASK_APP} ${VDIR}/bin/flask db clear
 
 db: db-clear
-	mysql -h${PDNS1_SERVER} -P${PDNS1_PORT} -u${PDNS1_USER} -p${PDNS1_PW} ${PDNS1_DB} < ./testenv/pdns.sql
-	mysql -h${PDNS2_SERVER} -P${PDNS2_PORT} -u${PDNS2_USER} -p${PDNS2_PW} ${PDNS2_DB} < ./testenv/pdns.sql
+	mysql -h${PDNS1_DB_SERVER} -P${PDNS1_DB_PORT} -u${PDNS1_DB_USER} -p${PDNS1_DB_PW} ${PDNS1_DB_NAME} < ./testenv/pdns.sql
+	mysql -h${PDNS2_DB_SERVER} -P${PDNS2_DB_PORT} -u${PDNS2_DB_USER} -p${PDNS2_DB_PW} ${PDNS2_DB_NAME} < ./testenv/pdns.sql
 
 test:
 	-mkdir ${ODIR}

@@ -20,14 +20,3 @@ Read [Tutorial](TUTORIAL.md) to see how DIM can be used to document Prefixes and
 # Docker
 not yet available. Pull requests welcome.
 
-# Future
-There is an effort going on to rewrite the middleware in go. It is planed to be a drop-in replacement.
-Main Goals:
-  - replace MySQL with PostgreSQL
-  - do not use an ORM
-  - remove properties tables, use jsonb field instead
-  - put more logic in the database to avoid transfering large datasets to the application code
-  - introduce generic log for all actions
-  - get rid of the global lock for transaction synchronization
-
-A link to the project will be added once the developer declares it to be ready for the public.
