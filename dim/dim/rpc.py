@@ -423,7 +423,7 @@ class RPC(object):
                 .filter_by(status=get_status('Container')).all()
             if parents and all([p.layer3domain == parents[0].layer3domain for p in parents]):
                 return parents[0].layer3domain
-
+              
         layer3domain = _get_layer3domain_arg(layer3domain, options,
                                             guess_function=find_parent if status == 'Container' and parse_ip(block_str).prefix !=0  else None)
         ip = check_ip(parse_ip(block_str), layer3domain, options)
@@ -852,7 +852,6 @@ class RPC(object):
                     [explore(c) for c in children] +
                     [{'ip': f, 'status': 'Available'} for f in block.free_space])
             return item
-
         layer3domain = _get_layer3domain_arg(layer3domain)
         if container is not None:
             block = _find_ipblock(container, layer3domain, status=['Container'])
@@ -3758,12 +3757,9 @@ def subnet_reserved_ips(subnet, dont_reserve_network_broadcast):
         # Reserve .0 and .255 addresses because some buggy routers have problems
         # with them
         zero = start - (start % 256)
-        while zero < end:
-            if start <= zero:
-                reserved.append(IP(zero, prefix=32, version=4))
-            if zero + 255 <= end:
-                reserved.append(IP(zero + 255, prefix=32, version=4))
-            zero += 256
+        reserved.append(IP(zero, prefix=32, version=4))
+        reserved.append(IP(end, prefix=32, version=4))
+
         # Remove duplicates
         if not dont_reserve_network_broadcast:
             for address in [subnet.network, subnet.broadcast]:
