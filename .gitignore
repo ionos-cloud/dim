@@ -4,3 +4,4 @@ dim-testsuite/out
 dim-testsuite/log
 dim-testsuite/virtual_env
 __pycache__
+dim-testsuite/dim.cfg
