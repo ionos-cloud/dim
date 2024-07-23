@@ -80,10 +80,10 @@ class PoolTest(RPCTest):
         # .0 and .255 addresses should always be Reserved
         self.r.ippool_create('v4')
         self.r.ippool_add_subnet('v4', '12.0.0.0/23', dont_reserve_network_broadcast=True)
-        assert query_ip('12.0.0.0').first().status.name == 'Reserved'
-        assert query_ip('12.0.0.255').first().status.name == 'Reserved'
-        assert query_ip('12.0.1.0').first().status.name == 'Reserved'
-        assert query_ip('12.0.0.255').first().status.name == 'Reserved'
+        assert query_ip('12.0.0.0').first() is None
+        assert query_ip('12.0.0.255').first() is None
+        assert query_ip('12.0.1.0').first() is None
+        assert query_ip('12.0.0.255').first() is None
         assert self.r.ippool_delete('v4', force=True, delete_subnets=True)
 
         self.r.ippool_create('v4')

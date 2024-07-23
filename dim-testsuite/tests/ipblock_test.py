@@ -296,8 +296,8 @@ class IpblockTest(RPCTest):
         assert ips(self.r.ip_list(pool='pool1', type='all', limit=3, offset=1)) == iprange(1, 3)
         assert ips(self.r.ip_list(pool='pool1', type='all', limit=3, offset=4)) == iprange(4, 6)
         assert ips(self.r.ip_list(pool='pool1', type='all', limit=3, offset=3)) == iprange(3, 5)
-        free = ['13.0.0.1', '13.0.0.3', '13.0.0.4', '13.0.0.6', '13.0.0.7']
-        assert ips(self.r.ip_list(pool='pool1', type='free', limit=5)) == free
+        free = ['13.0.0.0','13.0.0.1', '13.0.0.3', '13.0.0.4', '13.0.0.6', '13.0.0.7']
+        assert ips(self.r.ip_list(pool='pool1', type='free', limit=6)) == free
         for i in range(5):
             assert ips(self.r.ip_list(pool='pool1', type='free', limit=1, offset=i)) == [free[i]]
         assert ips(self.r.ip_list(pool='pool1', type='used', limit=3)) == ['13.0.0.2', '13.0.0.5']
