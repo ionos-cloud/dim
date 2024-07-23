@@ -482,7 +482,7 @@ class RPC(object):
                 delete_ipblock_rrs([block.id], user=self.user)
             block.delete()
             if block.status.name == 'Subnet':
-                for rip in subnet_reserved_ips(block.ip, False):
+                for rip in subnet_reserved_ips(block.ip, False,False):
                     free_if_reserved(rip, layer3domain)
                 if not force:
                     self._delete_reverse_zones(block, force=False)
@@ -1140,6 +1140,7 @@ class RPC(object):
                           allow_move=False,
                           allow_overlap=False,
                           dont_reserve_network_broadcast=False,
+                          no_reserve_class_c_boundaries=False,
                           include_messages=False):
         self.user.can_network_admin()
         pool = get_pool(pool)
@@ -1176,7 +1177,7 @@ class RPC(object):
         # Setting the attribute before getting another instance from the ORM prevents the 'set' event
         # from being triggered. This behavior changed unexpectedly in SQLAlchemy 1.0.
         self._set_gateway(block, gateway)
-        for rip in subnet_reserved_ips(ip, dont_reserve_network_broadcast):
+        for rip in subnet_reserved_ips(ip, dont_reserve_network_broadcast, no_reserve_class_c_boundaries):
             try:
                 reserve(rip, pool.layer3domain)
             except DimError as e:
@@ -3746,30 +3747,30 @@ def make_vlan(vid):
     return vlan
 
 
-def subnet_reserved_ips(subnet, dont_reserve_network_broadcast):
+def subnet_reserved_ips(subnet, dont_reserve_network_broadcast, no_reserve_class_c_boundaries):
     reserved = []
     if subnet.version == 4:
         if not dont_reserve_network_broadcast:
             reserved.append(subnet.network)
             reserved.append(subnet.broadcast)
-        start = subnet.network.address
-        end = subnet.broadcast.address
+            start = subnet.network.address
+            end = subnet.broadcast.address
 
-        # Reserve .0 and .255 addresses because some buggy routers have problems
-        # with them
-        zero = start - (start % 256)
-        if dont_reserve_network_broadcast:
-            reserved.append(IP(zero, prefix=32, version=4))
-            reserved.append(IP(end, prefix=32, version=4))
-        else:
-            while zero < end:
-                if start <= zero:
-                    reserved.append(IP(zero, prefix=32, version=4))
-                if zero + 255 <= end:
-                    reserved.append(IP(zero + 255, prefix=32, version=4))
-                zero += 256
+            # Reserve .0 and .255 addresses because some buggy routers have problems
+            # with them
+            zero = start - (start % 256)
+        
+            if no_reserve_class_c_boundaries:
+                reserved.append(IP(zero, prefix=32, version=4))
+                reserved.append(IP(end, prefix=32, version=4))
+            else:
+                while zero < end:
+                    if start <= zero:
+                        reserved.append(IP(zero, prefix=32, version=4))
+                    if zero + 255 <= end:
+                        reserved.append(IP(zero + 255, prefix=32, version=4))
+                    zero += 256
         # Remove duplicates
-        if not dont_reserve_network_broadcast:
             for address in [subnet.network, subnet.broadcast]:
                 if reserved.count(address) == 2:
                     reserved.remove(address)

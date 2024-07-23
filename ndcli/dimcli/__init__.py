@@ -1319,6 +1319,8 @@ class CLI(object):
                   overlap_option,
                   Option(None, 'no-default-reserve',
                          help="don't reserve network and broadcast addresses"),
+                Option(None, 'no-reserve-class-c-boundaries',
+                         help="don't reserve class C boundaries"),
                   help='(create and) add a subnet to POOLNAME')
     def modify_pool_add_subnet(self, args):
         '''
@@ -1336,12 +1338,14 @@ class CLI(object):
         created. The zone profile used for creating the reverse zones is taken from the
         reverse_dns_profile attribute of an ancestor ipblock.
         '''
+        
         options = OptionDict(include_messages=True)
         options.set_attributes(args.attributes)
         options.set_if(gateway=args.gw,
                        allow_move=args['allow-move'],
                        allow_overlap=args['allow-overlap'],
-                       dont_reserve_network_broadcast=args['no-default-reserve'])
+                       dont_reserve_network_broadcast=args['no-default-reserve'],
+                       no_reserve_class_c_boundaries=args['no-reserve-class-c-boundaries'])
         result = self.client.ippool_add_subnet(args.poolname, args.subnet, **options)
         if result['created']:
             logger.info("Created subnet %s in layer3domain %s" % (args.subnet, result['layer3domain']))
