@@ -83,6 +83,7 @@ class AllocatorTest(RPCTest):
              'subnet': '12.0.0.0/28',
              'mask': '255.255.255.240',
              })
+        assert self.r.ippool_get_ip('pool')['ip'] == '12.0.0.0'
         assert self.r.ippool_get_ip('pool')['ip'] == '12.0.0.4'
         assert self.r.ippool_get_ip('pool')['ip'] == '12.0.0.7'
         assert self.r.ippool_get_ip('pool')['ip'] == '12.0.0.11'
@@ -137,6 +138,7 @@ class AllocatorTest(RPCTest):
         self.r.ipblock_create('12.0.0.0/8', status='Container')
         self.r.ippool_create('pool')
         self.r.ippool_add_subnet('pool', '12.0.0.0/31', dont_reserve_network_broadcast=True)
+        assert self.r.ippool_get_ip('pool')['ip'] == '12.0.0.0'
         assert self.r.ippool_get_ip('pool')['ip'] == '12.0.0.1'
         assert self.r.ippool_get_ip('pool') is None
 
