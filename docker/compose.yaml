@@ -3,7 +3,7 @@ services:
     container_name: pdns-int
     image: powerdns/pdns-auth-48:4.8.3
     volumes:
-      - ./conf/pdsn-int.conf:/etc/powerdns/pdns.conf:ro
+      - ./conf/pdns-int.conf:/etc/powerdns/pdns.conf:ro
     networks:
       dim:
         ipv4_address: 10.10.0.10
@@ -15,7 +15,7 @@ services:
     container_name: pdns-pub
     image: powerdns/pdns-auth-48:4.8.3
     volumes:
-      - ./conf/pdsn-pub.conf:/etc/powerdns/pdns.conf:ro
+      - ./conf/pdns-pub.conf:/etc/powerdns/pdns.conf:ro
     networks:
       dim:
         ipv4_address: 10.10.0.20
@@ -27,7 +27,7 @@ services:
     container_name: pdns-rec
     image: powerdns/pdns-recursor-48:4.8.5
     volumes:
-      - ./conf/pdsn-rec.conf:/etc/powerdns/pdns.conf:ro
+      - ./conf/pdns-rec.conf:/etc/powerdns/pdns.conf:ro
     networks:
       dim:
         ipv4_address: 10.10.0.30
