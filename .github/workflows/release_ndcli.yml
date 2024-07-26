@@ -26,7 +26,7 @@ jobs:
         shell: bash
         env:
           _REF: ${{ github.ref }}
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - run: |
@@ -47,7 +47,7 @@ jobs:
       - run: tar --transform="s,^ndcli/,ndcli-${_version}/," -czf "ndcli-src-${_version}.tar.gz" ndcli
         env:
           _version: ${{ steps.version.outputs.version }}
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: ndcli-src-${{ steps.version.outputs.version }}.tar.gz
           path: ndcli-src-${{ steps.version.outputs.version }}.tar.gz
@@ -67,14 +67,14 @@ jobs:
     steps:
       - run: /bin/dnf install --assumeyes epel-release
       - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns python3-dateutil tar gzip git
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
       - run: mkdir -p ${HOME}/rpmbuild/SOURCES
       - run: |
           curl --location "https://github.com/${{ github.repository }}/releases/download/dimclient-${_DIMCLIENT}/python3-dimclient-${_DIMCLIENT}-1.el8.x86_64.rpm" > ./python3-dimclient-${_DIMCLIENT}-1.el8.x86_64.rpm
           rpm -i ./python3-dimclient-${_DIMCLIENT}-1.el8.x86_64.rpm
         shell: sh
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: ndcli-src-${{ needs.build.outputs.version }}.tar.gz
           path: ~/rpmbuild/SOURCES/
@@ -128,7 +128,7 @@ jobs:
           %{_mandir}/man1/*
           EOF
       - run: rpmbuild -ba ${HOME}/rpmbuild/SPECS/ndcli.spec
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: python3-ndcli-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
           path: ~/rpmbuild/RPMS/x86_64/python3-ndcli-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
@@ -144,14 +144,14 @@ jobs:
     steps:
       - run: /bin/dnf install --assumeyes epel-release
       - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns python3-dateutil tar gzip git
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
       - run: mkdir -p ${HOME}/rpmbuild/SOURCES
       - run: |
           curl --location "https://github.com/${{ github.repository }}/releases/download/dimclient-${_DIMCLIENT}/python3-dimclient-${_DIMCLIENT}-1.el9.x86_64.rpm" > ./python3-dimclient-${_DIMCLIENT}-1.el9.x86_64.rpm
           rpm -i ./python3-dimclient-${_DIMCLIENT}-1.el9.x86_64.rpm
         shell: sh
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: ndcli-src-${{ needs.build.outputs.version }}.tar.gz
           path: ~/rpmbuild/SOURCES/
@@ -205,7 +205,7 @@ jobs:
           %{_mandir}/man1/*
           EOF
       - run: rpmbuild -ba ${HOME}/rpmbuild/SPECS/ndcli.spec
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: python3-ndcli-${{ needs.build.outputs.version }}-1.el9.x86_64.rpm
           path: ~/rpmbuild/RPMS/x86_64/python3-ndcli-${{ needs.build.outputs.version }}-1.el9.x86_64.rpm
@@ -222,7 +222,7 @@ jobs:
         _VERSION: ${{ needs.build.outputs.version }}
         _DIMCLIENT: ${{ needs.build.outputs.dimclient }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
       - run: mkdir -p ${HOME}/rpmbuild/SOURCES
       - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns python3-dateutil curl python3-setuptools
@@ -230,7 +230,7 @@ jobs:
           curl --location "https://github.com/${{ github.repository }}/releases/download/dimclient-${_DIMCLIENT}/python3-dimclient-${_DIMCLIENT}-1.fc${{ matrix.os }}.x86_64.rpm" > ./python3-dimclient-${_DIMCLIENT}-1.fc${{ matrix.os }}.x86_64.rpm
           rpm -i ./python3-dimclient-${_DIMCLIENT}-1.fc${{ matrix.os }}.x86_64.rpm
         shell: sh
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: ndcli-src-${{ needs.build.outputs.version }}.tar.gz
           path: ~/rpmbuild/SOURCES/
@@ -283,7 +283,7 @@ jobs:
           %{_mandir}/man1/*
           EOF
       - run: rpmbuild -ba ${HOME}/rpmbuild/SPECS/ndcli.spec
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: python3-ndcli-${{ needs.build.outputs.version }}-1.fc${{ matrix.os }}.x86_64.rpm
           path: ~/rpmbuild/RPMS/x86_64/python3-ndcli-${{ needs.build.outputs.version }}-1.fc${{ matrix.os }}.x86_64.rpm
@@ -297,7 +297,7 @@ jobs:
         _VERSION: ${{ needs.build.outputs.version }}
         _DIMCLIENT: ${{ needs.build.outputs.dimclient }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - run: apt-get update
       - run: apt-get install --yes build-essential python3 python3-dnspython bash-completion dh-python python3-setuptools python3-all debhelper devscripts python3-sphinx
       - run: |
@@ -315,7 +315,7 @@ jobs:
           DEBMAIL: unknown <unknown@unknown>
       - run: dpkg-buildpackage -us -uc -b
         working-directory: ndcli
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: ndcli_${{ needs.build.outputs.version }}_all.deb
           path: ndcli_${{ needs.build.outputs.version }}_all.deb
@@ -329,7 +329,7 @@ jobs:
       - el9
       - fedora
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: actions/create-release@v1
         id: create_release
         env:
@@ -339,19 +339,19 @@ jobs:
           release_name: ${{ github.ref }}
           draft: true
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: ndcli-src-${{ needs.build.outputs.version }}.tar.gz
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: python3-ndcli-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: python3-ndcli-${{ needs.build.outputs.version }}-1.el9.x86_64.rpm
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: python3-ndcli-${{ needs.build.outputs.version }}-1.fc40.x86_64.rpm
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: ndcli_${{ needs.build.outputs.version }}_all.deb
 

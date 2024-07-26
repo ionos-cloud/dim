@@ -19,11 +19,11 @@ jobs:
         shell: bash
         env:
           _REF: ${{ github.ref }}
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - run: tar --transform="s,^dimclient/,dimclient-${_version}/," -czf "dimclient-src-${_version}.tar.gz" dimclient
         env:
           _version: ${{ steps.version.outputs.version }}
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: dimclient-src-${{ steps.version.outputs.version }}.tar.gz
           path: dimclient-src-${{ steps.version.outputs.version }}.tar.gz
@@ -37,10 +37,10 @@ jobs:
         _VERSION: ${{ needs.build.outputs.version }}
     steps:
       - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns tar gzip git
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
       - run: mkdir -p ${HOME}/rpmbuild/SOURCES
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: dimclient-src-${{ needs.build.outputs.version }}.tar.gz
           path: ~/rpmbuild/SOURCES/
@@ -79,7 +79,7 @@ jobs:
           %{python3_sitelib}/*
           EOF
       - run: rpmbuild -ba ${HOME}/rpmbuild/SPECS/dimclient.spec
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: python3-dimclient-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
           path: ~/rpmbuild/RPMS/x86_64/python3-dimclient-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
@@ -93,10 +93,10 @@ jobs:
         _VERSION: ${{ needs.build.outputs.version }}
     steps:
       - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns tar gzip git
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
       - run: mkdir -p ${HOME}/rpmbuild/SOURCES
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: dimclient-src-${{ needs.build.outputs.version }}.tar.gz
           path: ~/rpmbuild/SOURCES/
@@ -135,7 +135,7 @@ jobs:
           %{python3_sitelib}/*
           EOF
       - run: rpmbuild -ba ${HOME}/rpmbuild/SPECS/dimclient.spec
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: python3-dimclient-${{ needs.build.outputs.version }}-1.el9.x86_64.rpm
           path: ~/rpmbuild/RPMS/x86_64/python3-dimclient-${{ needs.build.outputs.version }}-1.el9.x86_64.rpm
@@ -151,11 +151,11 @@ jobs:
       env:
         _VERSION: ${{ needs.build.outputs.version }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
       - run: mkdir -p ${HOME}/rpmbuild/SOURCES
       - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns python3-setuptools
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: dimclient-src-${{ needs.build.outputs.version }}.tar.gz
           path: ~/rpmbuild/SOURCES/
@@ -194,7 +194,7 @@ jobs:
           %{python3_sitelib}/*
           EOF
       - run: rpmbuild -ba ${HOME}/rpmbuild/SPECS/dimclient.spec
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: python3-dimclient-${{ needs.build.outputs.version }}-1.fc${{ matrix.os }}.x86_64.rpm
           path: ~/rpmbuild/RPMS/x86_64/python3-dimclient-${{ needs.build.outputs.version }}-1.fc${{ matrix.os }}.x86_64.rpm
@@ -207,7 +207,7 @@ jobs:
       env:
         _VERSION: ${{ needs.build.outputs.version }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - run: apt-get update
       - run: apt-get install --yes build-essential python3 python3-dnspython bash-completion dh-python python3-setuptools python3-all debhelper devscripts
       - run: cp -vr packaging/debian/dimclient/* dimclient/
@@ -217,7 +217,7 @@ jobs:
           DEBMAIL: unknown <unknown@unknown>
       - run: dpkg-buildpackage -us -uc -b
         working-directory: dimclient
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: python3-dimclient_${{ needs.build.outputs.version }}_all.deb
           path: python3-dimclient_${{ needs.build.outputs.version }}_all.deb
@@ -231,7 +231,7 @@ jobs:
       - el9
       - fedora
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: actions/create-release@v1
         id: create_release
         env:
@@ -241,19 +241,19 @@ jobs:
           release_name: ${{ github.ref }}
           draft: true
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: dimclient-src-${{ needs.build.outputs.version }}.tar.gz
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: python3-dimclient-${{ needs.build.outputs.version }}-1.el8.x86_64.rpm
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: python3-dimclient-${{ needs.build.outputs.version }}-1.el9.x86_64.rpm
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: python3-dimclient-${{ needs.build.outputs.version }}-1.fc40.x86_64.rpm
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: python3-dimclient_${{ needs.build.outputs.version }}_all.deb
 
