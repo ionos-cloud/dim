@@ -14,7 +14,7 @@ jobs:
       version: ${{ steps.version.outputs.version }}
 
     steps:
-      - run: echo "::set-output name=version::$(echo "$_REF" | cut -d'-' -f2-)"
+      - run: echo "name=version::$(echo "$_REF" | cut -d'-' -f2-)" >> $GITHUB_OUTPUT
         id: version
         shell: bash
         env:
