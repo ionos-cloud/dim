@@ -225,7 +225,7 @@ jobs:
       - uses: actions/checkout@v2
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
       - run: mkdir -p ${HOME}/rpmbuild/SOURCES
-      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns python3-dateutil curl
+      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns python3-dateutil curl python3-setuptools
       - run: |
           curl --location "https://github.com/${{ github.repository }}/releases/download/dimclient-${_DIMCLIENT}/python3-dimclient-${_DIMCLIENT}-1.fc${{ matrix.os }}.x86_64.rpm" > ./python3-dimclient-${_DIMCLIENT}-1.fc${{ matrix.os }}.x86_64.rpm
           rpm -i ./python3-dimclient-${_DIMCLIENT}-1.fc${{ matrix.os }}.x86_64.rpm
