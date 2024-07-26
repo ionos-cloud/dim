@@ -154,7 +154,7 @@ jobs:
       - uses: actions/checkout@v2
       - run: mkdir -p ${HOME}/rpmbuild/SPECS
       - run: mkdir -p ${HOME}/rpmbuild/SOURCES
-      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns
+      - run: /bin/dnf install --assumeyes python3-devel python3 rpm-build python3-dns python3-setuptools
       - uses: actions/download-artifact@v2
         with:
           name: dimclient-src-${{ needs.build.outputs.version }}.tar.gz
