@@ -86,14 +86,14 @@ def get_ip_from_ptr_name(ptr_name, strict=True):
     if ptr_name.endswith('.in-addr.arpa.'):
         labels = list(reversed(ptr_name[:-len('.in-addr.arpa.')].split('.')))
         # remove rfc 2317 subnet markers
-        labels = [p for p in labels if re.match('^\d+$', p)]
+        labels = [p for p in labels if re.match(r'^\d+$', p)]
         if not strict and len(labels) < 4:
             labels += ['0'] * (4 - len(labels))
         if len(labels) == 4:
             return '.'.join(labels)
     elif ptr_name.endswith('.ip6.arpa.'):
         labels = list(reversed(ptr_name[:-len('.ip6.arpa.')].split('.')))
-        labels = [p for p in labels if re.match('^[0-9a-fA-F]+$', p)]
+        labels = [p for p in labels if re.match(r'^[0-9a-fA-F]+$', p)]
         if not strict and len(labels) < 32:
             labels += ['0'] * (32 - len(labels))
         if len(labels) == 32:
@@ -507,7 +507,7 @@ def check_view_removal_from_output(view, output):
 
 def get_subzones(zone):
     descendants = Zone.query.filter(Zone.name.like('%.' + zone.name)).all()
-    return [s for s in descendants if re.match('^[^\.]+\.%s$' % zone.name, s.name)]
+    return [s for s in descendants if re.match(r'^[^\.]+\.%s$' % zone.name, s.name)]
 
 
 def get_parent_zone(zone_name):

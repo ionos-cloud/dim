@@ -28,7 +28,7 @@ def onetab(s): return re.sub('\t+', '\t', s)
 
 
 def compact(zone):
-    return sorted(set(onetab(l) for l in zone.splitlines() if not re.match('^\s*(;.*)?\s*?$', l)))
+    return sorted(set(onetab(l) for l in zone.splitlines() if not re.match(r'^\s*(;.*)?\s*?$', l)))
 
 
 def zones_equal(a, b):

@@ -132,7 +132,7 @@ class Pool(db.Model, WithAttr):
 
     @validates('name')
     def validate_name(self, key, name):
-        if not re.match('^[A-Za-z0-9][-_A-Za-z0-9]*$', name):
+        if not re.match(r'^[A-Za-z0-9][-_A-Za-z0-9]*$', name):
             raise ValueError("Invalid pool name: '%s'" % name)
         return name
 

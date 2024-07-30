@@ -526,7 +526,7 @@ rr_type_arg = Group(Argument('type', choices=rr_types+[t.upper() for t in rr_typ
 
 
 def _fill_rr_options(options, rr_type, params, args):
-    if rr_type == 'PTR' and re.match('^(((\d+\.){3}\d+)|(.*:.*))$', args.name):
+    if rr_type == 'PTR' and re.match(r'^(((\d+\.){3}\d+)|(.*:.*))$', args.name):
         options['ip'] = args.name
     else:
         options['name'] = args.name
@@ -705,7 +705,7 @@ def _get_soa_attributes(args):
 def _parse_attributes(cmd_attrs):
     attributes = {}
     for keyval in cmd_attrs:
-        m = re.match('^(.*?):(.*)$', keyval)
+        m = re.match(r'^(.*?):(.*)$', keyval)
         if not m:
             raise Exception("'%s' must have the form NAME:VALUE" % keyval)
         else:
@@ -736,7 +736,7 @@ def _parse_query(query):
         return dict(pool='*')
     elif query.isdigit() and int(query) >= 2 and int(query) <= 4096:
         return dict(vlan=int(query))
-    elif re.match('^.*/\d{1,3}$', query):
+    elif re.match(r'^.*/\d{1,3}$', query):
         return dict(cidr=query)
     else:
         return dict(pool=query)

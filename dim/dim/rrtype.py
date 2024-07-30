@@ -14,7 +14,7 @@ def label_is_valid(label):
             len(label) > 63 or
             label.startswith('-') or
             label.endswith('-') or
-            not re.match('^[_a-z0-9-/]+$', label)):
+            not re.match(r'^[_a-z0-9-/]+$', label)):
         return False
     return True
 
@@ -98,7 +98,7 @@ def validate_certificate(self, key, value, **kwargs):
 
 
 def validate_hexstring(self, key, value, **kwargs):
-    if ' ' in value or not re.match('^[0-9a-fA-F]*$', value) or len(value) % 2 != 0:
+    if ' ' in value or not re.match(r'^[0-9a-fA-F]*$', value) or len(value) % 2 != 0:
         raise InvalidParameterError("Invalid %s: %s" % (key, value))
     return value
 

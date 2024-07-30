@@ -39,7 +39,7 @@ def migrate():
 def gather_graph():
     graph = {}
     for script in pkg_resources.resource_listdir('dim', 'sql'):
-        m = re.match('(migrate|rollback)_(.*)_to_(.*).sql', script)
+        m = re.match(r'(migrate|rollback)_(.*)_to_(.*).sql', script)
         if m:
             x, y = m.group(2), m.group(3)
             graph.setdefault(x, []).append((y, script))
