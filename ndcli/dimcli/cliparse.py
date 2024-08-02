@@ -430,7 +430,7 @@ class Command(object):
                 else:
                     raise
         tokens = tokens[1:]  # skip the program name
-        if tokens and (line[-1] != ' ' or line[-2:] == '\ '):
+        if tokens and (line[-1] != ' ' or line[-2:] == r'\ '):
             complete_token = tokens.pop()
         else:
             complete_token = ''

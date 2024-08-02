@@ -97,7 +97,7 @@ class Zone(db.Model, WithAttr, TrackChanges):
             raise InvalidParameterError('Invalid NSEC3 algorithm (must be 0 for disabled or 1 for sha1)')
         if not (0 <= nsec3_iterations <= 65535):
             raise InvalidParameterError('Invalid NSEC3 iteration count (must be between 0 and 65535)')
-        if not (nsec3_salt == '-' or (re.match('^[0-9a-fA-F]+$', nsec3_salt) and len(nsec3_salt) <= 510)):
+        if not (nsec3_salt == '-' or (re.match(r'^[0-9a-fA-F]+$', nsec3_salt) and len(nsec3_salt) <= 510)):
             raise InvalidParameterError('Invalid NSEC3 salt (must be a hexadecimal string or "-")')
 
     def set_nsec3params(self, nsec3_algorithm, nsec3_iterations, nsec3_salt):
