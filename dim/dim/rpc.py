@@ -2182,7 +2182,9 @@ class RPC(object):
             _update_registrar_keys(zone)
 
     @updating
-    def rr_create(self, zone=None, views=None, ttl=None, comment=None, profile=False, allow_overlap=False, **kwargs):
+    def rr_create(self, zone=None, views=None, ttl=None, comment=None, profile=False, allow_overlap=False, **kwargs):        
+        if 'property_value' in kwargs and isinstance(kwargs['property_value'], str) and kwargs['type'] == 'CAA':
+            kwargs['property_value'] = kwargs['property_value'].lower()
         self._rr_create(zone=zone, views=views, ttl=ttl, comment=comment, profile=profile, allow_overlap=allow_overlap,
                         **kwargs)
         return {'messages': Messages.get()}
