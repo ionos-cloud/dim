@@ -49,6 +49,10 @@ install-dev: install-deps-local-editable
 	${VPIP} install -r ../dim/requirements-dev.txt
 	${VPIP} install -r ../ndcli/requirements-dev.txt
 
+install-test: install
+	${VPIP} install -r ../dim/requirements-dev.txt
+	${VPIP} install -r ../ndcli/requirements-dev.txt
+
 db-clear:
 	FLASK_APP=${FLASK_APP} ${VDIR}/bin/flask db clear
 
