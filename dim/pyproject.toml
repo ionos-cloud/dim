@@ -43,10 +43,11 @@ Issues = "https://github.com/ionos-cloud/dim/issues"
 dim = "dim.cli:cli"
 
 [tool.setuptools.packages.find]
-exclude = ["etc", "doc"]
+exclude = ["doc", "etc"]
+
 
 [tool.setuptools]
 script-files = ["report", "manage_db", "manage_dim"]
 
 [tool.setuptools.package-data]
-dim = ["sql/*.sql"]
+dim = ["sql/*.sql", "../etc/*"]
