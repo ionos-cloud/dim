@@ -2,12 +2,13 @@ import json
 from http.cookiejar import LWPCookieJar
 from urllib.parse import urlencode
 from urllib.error import HTTPError
-from urllib.request import urlopen, Request, build_opener, HTTPCookieProcessor
+from urllib.request import urlopen, Request, build_opener, HTTPCookieProcessor, HTTPSHandler
 import logging
 import getpass
 import time
 import os
 import os.path
+import ssl
 from pprint import pformat
 from . import version
 
@@ -36,7 +37,10 @@ class DimClient(object):
     def __init__(self, server_url, cookie_file=None, cookie_umask=None, request_timeout=120):
         self.server_url = server_url
         self.cookie_jar = LWPCookieJar()
-        self.session = build_opener(HTTPCookieProcessor(self.cookie_jar))
+        self.ssl_context = ssl.create_default_context()
+        if hasattr(ssl, 'VERIFY_X509_STRICT'):
+            self.ssl_context.verify_flags &= ~ssl.VERIFY_X509_STRICT
+        self.session = build_opener(HTTPSHandler(context=self.ssl_context), HTTPCookieProcessor(self.cookie_jar))
         if cookie_file:
             self._use_cookie_file(cookie_file, cookie_umask)
         self.request_timeout = request_timeout
