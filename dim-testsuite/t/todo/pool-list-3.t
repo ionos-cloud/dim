@@ -1,4 +1,4 @@
-# https://github.com/1and1/dim/issues/86
+# https://github.com/ionos-cloud/dim/issues/86
 #
 # calcuate correct number of free ips/delegations
 # when assignmentsize is in effect

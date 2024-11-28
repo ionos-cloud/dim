@@ -2,7 +2,7 @@
 
 The following steps assume that you have a minimal EL8 installed.
 
-### Disable SELINUX
+## Disable SELINUX
 
 ```
 # setenforce 0
@@ -10,9 +10,11 @@ The following steps assume that you have a minimal EL8 installed.
 # systemctl stop firewalld
 # systemctl disable firewalld
 ```
+
 This is not a tutorial on Linux Security Technologies, so just disable it.
 
-# Networking
+## Networking
+
 Setup additional IPs:
 
 ```
@@ -29,7 +31,7 @@ ONBOOT=yes
 NAME=loopback1
 NM_CONTROLLED=no
 EOF
- 
+
 # cat <<EOF >/etc/sysconfig/network-scripts/ifcfg-lo-pdns-pub
 DEVICE=lo
 IPADDR=127.2.0.1
@@ -40,7 +42,7 @@ ONBOOT=yes
 NAME=loopback2
 NM_CONTROLLED=no
 EOF
- 
+
 # cat <<EOF >/etc/sysconfig/network-scripts/ifcfg-lo-pdns-rec-int
 DEVICE=lo
 IPADDR=127.3.0.1
@@ -51,7 +53,7 @@ ONBOOT=yes
 NAME=loopback3
 NM_CONTROLLED=no
 EOF
- 
+
 # cat <<EOF >/etc/sysconfig/network-scripts/ifcfg-lo-bind-int
 DEVICE=lo
 IPADDR=127.4.0.1
@@ -64,8 +66,7 @@ NM_CONTROLLED=no
 EOF
 ```
 
-
-# Install EPEL
+## Install EPEL
 
 `# dnf install epel-release`
 
@@ -73,7 +74,7 @@ Install necessary tools
 
 `# dnf install wget bind-utils`
 
-# MariaDB
+## MariaDB
 
 ### Setup repository
 
@@ -109,20 +110,23 @@ grant select on pdns_int.* to pdns_int_user@localhost identified by 'SuperSecret
 ```
 
 ### create tables for pdns
+
 ```
-# wget -O - https://raw.githubusercontent.com/1and1/dim/master/dim/pdns.sql | mysql -u root pdns_int
-# wget -O - https://raw.githubusercontent.com/1and1/dim/master/dim/pdns.sql | mysql -u root pdns_pub
+# wget -O - https://raw.githubusercontent.com/ionos-cloud/dim/master/dim/pdns.sql | mysql -u root pdns_int
+# wget -O - https://raw.githubusercontent.com/ionos-cloud/dim/master/dim/pdns.sql | mysql -u root pdns_pub
 ```
 
-# PowerDNS
+## PowerDNS
 
 Install repo file and install software
+
 ```
 # curl -o /etc/yum.repos.d/powerdns-auth-44.repo https://repo.powerdns.com/repo-files/el-auth-44.repo
 # dnf install pdns-tools pdns-backend-mysql
 ```
 
 Fix config
+
 ```
 # rm -f /etc/pdns/pdns.conf
 ```
@@ -130,9 +134,10 @@ Fix config
 ### Setup two PowerDNS instances
 
 internal pdns
+
 ```
 # mkdir -p /etc/pdns/{int,pub}
- 
+
 # cat <<EOF >/etc/pdns/pdns-int.conf
 setgid=pdns
 setuid=pdns
@@ -175,6 +180,7 @@ EOF
 ```
 
 public pdns
+
 ```
 # cat <<EOF >/etc/pdns/pdns-pub.conf
 setgid=pdns
@@ -229,7 +235,7 @@ use systemctl status to verify that startup worked.
 # systemctl enable pdns@pub
 ```
 
-# PowerDNS Recursor
+## PowerDNS Recursor
 
 Install pdns-recursor software
 
@@ -238,15 +244,18 @@ Install pdns-recursor software
 
 # dnf install pdns-recursor
 ```
+
 remove default config
+
 ```
 # rm -f /etc/pdns-recursor/recursor.conf
 ```
 
 Setup instance
+
 ```
 # mkdir -p /etc/pdns-recursor/int
- 
+
 $ cat <<EOF  >/etc/pdns-recursor/recursor-int.conf
 allow-from=0.0.0.0/0, ::/0
 any-to-tcp=yes
@@ -303,7 +312,7 @@ EOF
 +example.com=127.1.0.1
 +internal.local=127.1.0.1
 EOF
- 
+
 # cat <<EOF >/etc/pdns-recursor/int/nta.lua
 addNTA('internal.local')
 addNTA('example.com')
@@ -311,28 +320,29 @@ EOF
 ```
 
 Enable and start the service, please verify service health using `journalctl`
+
 ```
 # systemctl enable pdns-recursor@int
 # systemctl start pdns-recursor@int
 ```
 
-# DIM
+## DIM
 
 Install rpms of dim, dimclient, ndcli and jdk::
 
 ```
 # mkdir -p /etc/dim /srv/http/dim.example.com
-# dnf install https://github.com/1and1/dim/releases/download/dim-4.0.9/dim-4.0.9-1.el8.x86_64.rpm
-# dnf install https://github.com/1and1/dim/releases/download/dimclient-0.4.5/python3-dimclient-0.4.5-1.el8.x86_64.rpm
-# dnf install https://github.com/1and1/dim/releases/download/ndcli-4.0.3/python3-ndcli-4.0.3-1.el8.x86_64.rpm
-# dnf install https://github.com/1and1/dim/releases/download/dim-web-0.1/python3-dim-web-0.1-1.el8.x86_64.rpm
+# dnf install https://github.com/ionos-cloud/dim/releases/download/dim-4.0.9/dim-4.0.9-1.el8.x86_64.rpm
+# dnf install https://github.com/ionos-cloud/dim/releases/download/dimclient-0.4.5/python3-dimclient-0.4.5-1.el8.x86_64.rpm
+# dnf install https://github.com/ionos-cloud/dim/releases/download/ndcli-4.0.3/python3-ndcli-4.0.3-1.el8.x86_64.rpm
+# dnf install https://github.com/ionos-cloud/dim/releases/download/dim-web-0.1/python3-dim-web-0.1-1.el8.x86_64.rpm
 ```
 
 pdns-output needs to be build manually at the moment (any volunteers?)
 
 ```
 # dnf install git java-1.8.0-openjdk-devel
-# git clone https://github.com/1and1/dim
+# git clone https://github.com/ionos-cloud/dim
 # cd dim/pdns-output
 # cd jdnssec-dnsjava && ../../gradlew build -x test && ../../gradlew publishToMavenLocal; cd ..
 # cd jdnssec-tools && ../../gradlew build -x test && ../../gradlew publishToMavenLocal; cd ..
@@ -350,7 +360,7 @@ systemd unit file
 [Unit]
 Description=DIM to PowerDNS DB
 After=network.target mysql.target
- 
+
 [Service]
 Type=simple
 ExecStart=/bin/java -jar /opt/dim/pdns-output.jar
@@ -364,7 +374,7 @@ ProtectSystem=full
 ProtectHome=true
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
 LimitNOFILE=40000
- 
+
 [Install]
 WantedBy=multi-user.target
 EOF
@@ -380,7 +390,7 @@ DB_HOST     = 'localhost'
 SQLALCHEMY_DATABASE_URI = 'mysql://%s:%s@%s/dim' % (DB_USERNAME, DB_PASSWORD, DB_HOST)
 DB_LOCK_TIMEOUT = 120
 SECRET_KEY = 'SuperSecretTtestkey'
- 
+
 ### Authentication
 # 'ldap' or None
 AUTHENTICATION_METHOD = None
@@ -420,12 +430,14 @@ EOF
 ```
 
 Install apache httpd and mod_wsgi
+
 ```
 # dnf install python3-mod_wsgi mod_ssl
 # echo "" > /etc/httpd/conf.d/welcome.conf
 ```
 
 setup /opt/dim/dim.wsgi
+
 ```
 # cat <<EOF >/opt/dim/dim.wsgi
 from dim import create_app
@@ -434,6 +446,7 @@ EOF
 ```
 
 setup wsgi.conf
+
 ```
 # cat <<EOF >/etc/httpd/conf.d/dim.example.com.conf
 <VirtualHost *:80>
@@ -451,7 +464,7 @@ setup wsgi.conf
   <Directory /srv/http/dim.example.com>
     RewriteEngine on
     RewriteCond %{REQUEST_FILENAME} -f [OR]
-    RewriteCond %{REQUEST_FILENAME} -d 
+    RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
     RewriteRule ^ index.html [L]
     Require all granted
@@ -480,6 +493,7 @@ start apache `systemctl enable httpd; systemctl start httpd`
 Run `/opt/dim/bin/manage_db init` to create tables
 
 create a ``.ndclirc`` in your home:
+
 ```
 cat <<EOF >~/.ndclirc
 server=http://localhost/dim
@@ -495,9 +509,10 @@ make sure that ``bash-completion`` is installed (to enable ``ndcli`` completion)
 
 run ``ndcli show server-info`` to test connection to DIM. Just hit enter if a password is asked. Should output information about python and db used.
 
-# DIM output
+## DIM output
 
 config file
+
 ```
 # cat <<EOF >/etc/dim/pdns-output.properties
 # dim database connection parameters
@@ -528,6 +543,7 @@ EOF
 ```
 
 Enable and start service pdns-output
+
 ```
 # systemctl enable pdns-output
 # systemctl start pdns-output

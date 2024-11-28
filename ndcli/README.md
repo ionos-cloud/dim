@@ -1,68 +1,16 @@
-ndcli
-=====
+# ndcli
 
-This is ndcli, the CLI client for DIM.
+`ndcli` is a Python CLI client to talk to DIM.
 
-Linux (.deb, .rpm)
-------------------
+## usage
 
-Packages are available on [github](https://github.com/1and1/dim).
+To use `ndcli`, install it in your Python environment.
 
+There are two options to do that:
 
-Installation in venv
---------------------
-Thanks to almueller for providing this.
+1. **Distribution packages**: Download and install a distribution-packaged package. There are packages for Linux distributions available at [openSUSE Build Service - home:zeromind:dim/ndcli](https://build.opensuse.org/package/show/home:zeromind:dim/ndcli) (provides bash completion and man page).
+2. **Python PIP**: [PyPI dimclient-cli](https://pypi.org/project/dimclient/) (does not provide bash completion or man page)
 
-Create virtualenv
-```
-virtualenv -p python3 $HOME/ndcli
-```
-
-Download
-```
-curl https://github.com/1and1/dim/releases/download/ndcli-5.0.2/ndcli-src-5.0.2.tar.gz -o ndcli-src-5.0.2.tar.gz
-curl https://github.com/1and1/dim/releases/download/dimclient-1.0.1/dimclient-src-1.0.1.tar.gz -o dimclient-src-1.0.1.tar.gz
-```
-
-Extract
-```
-tar xcf dimclient-src-1.0.1.tar.gz
-tar xcf ndcli-src-5.0.2.tar.gz
-```
-
-Install
-```
-ndcli/bin/pip3 install dnspython
-ndcli/bin/pip3 install dimclient-1.0.1/
-ndcli/bin/pip3 install ndcli-5.0.2
-```
-
-Add bash completion
-```
-echo "complete -C ndcli ndcli" >> .bash_profile
-```
-
-Cleanup
-```
-rm -rf dimclient* && rm -rf ndcli-5.0.2/ && rm -rf dimclient-src-1.0.1.tar.gz && rm -rf ndcli-src-5.0.2.tar.gz
-```
-
-Add to path
-```
-echo "export PATH=\""\$PATH:$HOME/ndcli/bin"\"" >> .bash_profile
-```
-
-Configure (ENSURE to set username to your InsideNET/IonosCore Username)
-```
-cat > ~/.ndclirc << EOF
-server=https://dim.svc.1u1.it/dim
-username=$USER
-layer3domain=default
-EOF
-```
-
-1st login
-```
-ndcli login
-```
-
+    ```sh
+    pip install dimclient-cli
+    ```

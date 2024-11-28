@@ -1,10 +1,11 @@
-Contributing to DIM
-------------------------
+# Contributing to DIM
+
 Thank you for you interest to contribute to the DIM project. This document
 will explain some of the things you need to keep in mind when contributing to
 ease the workflow of this.
 
 ## Filing an Issue or Bug
+
 When filing an issue or bug report, make the title of the issue a very short
 summary (e.g. "Allow setting IPblock status"). In the
 content of the issue, be as detailed as possible. Supply at least the following
@@ -23,6 +24,7 @@ Code contributions are sent as a pull request on GitHub. By submitting a
 Pull Request you agree to your code becoming MIT licensed.
 
 ## Pull Request Guidelines
+
 A pull request, at the least, should have:
 
 * A clear and concise title (not e.g. 'Issue #1234')
@@ -37,4 +39,4 @@ And must:
 * have one or more testcases in dim-testsuite/t
 
 Information on testsuite can be found in the repository at
-[/dim-testsuite/README.md](https://github.com/1and1/dim/blob/master/dim-testsuite/README.md)
+[/dim-testsuite/README.md](https://github.com/ionos-cloud/dim/blob/master/dim-testsuite/README.md)
