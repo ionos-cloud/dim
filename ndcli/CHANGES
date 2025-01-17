@@ -1,3 +1,10 @@
+5.0.3
+-----
+* add default-ttl config option
+* fix regexes
+* add no-reserve-class-c-boundaries for adding pool to subnet
+* switch to pyproject.toml
+
 5.0.2
 -----
 * add new permission to set attributes on pools (#242)
