@@ -137,6 +137,24 @@ def sync_users(ldap: LDAP, deletion_threshold: int = -1, ignore_deletion_thresho
 
 @time_function
 @transaction
+def add_user(username: str):
+    try:
+        _ = User.query.filter(User.username == username).one()
+        log_stdout('User %s already present' % username)
+    except:
+        try:
+            ldap = LDAP()
+            ldap_user = ldap.users(f'(o={username})')[0]
+            db.session.add(ldap_user)
+            log_stdout('Added user %s' % username)
+            ldap_user.register()
+            log_stdout('Added user %s to user-group all_users' % username)
+        except:
+            log_stdout('User %s not in LDAP' % username)
+
+
+@time_function
+@transaction
 def ldap_sync(ignore_deletion_threshold: bool = False, cleanup_department_groups: bool = False):
     '''Update Users, Group, and Departments from LDAP'''
     ldap = LDAP()

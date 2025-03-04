@@ -49,6 +49,14 @@ def update_validity():
         dim.models.db.session.commit()
 
 
+@manage_dim.cli.command('ldap_add_user')
+@click.option('-u', '--username')
+@click.option('-n', '--dry-run', '--noop', 'dryrun',  is_flag=True)
+def ldap_sync(dryrun: bool, username: str):
+    '''Add User from LDAP'''
+    dim.ldap_sync.add_user(dryrun=dryrun, username=username)
+
+
 @manage_dim.cli.command('ldap_sync')
 @click.option('-n', '--dry-run', '--noop', 'dryrun',  is_flag=True)
 @click.option('-f', '--ignore-deletion-threshold', 'ignore_deletion_threshold', is_flag=True)
