@@ -22,8 +22,8 @@ rdata_params = {
     'CNAME': lambda rdata: dict(cname=str(rdata.target)),
     'MX': lambda rdata: dict(preference=int(rdata.preference), exchange=str(rdata.exchange)),
     'NS': lambda rdata: dict(nsdname=str(rdata.target)),
-    'TXT': lambda rdata: dict(strings=rdata.strings),
-    'SPF': lambda rdata: dict(strings=rdata.strings),
+    'TXT': lambda rdata: dict(strings=rdata.to_text()),
+    'SPF': lambda rdata: dict(strings=rdata.to_text()),
     'RP': lambda rdata: dict(mbox=str(rdata.mbox), txtdname=str(rdata.txt)),
     'HINFO': lambda rdata: dict(cpu=rdata.cpu, os=rdata.os),
     'SRV': lambda rdata:
