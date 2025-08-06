@@ -2296,7 +2296,19 @@ class RPC(object):
             .join(RR.view).join(ZoneView.zone).filter(Zone.profile == profile)\
             .outerjoin(RR.ipblock).outerjoin(Ipblock.layer3domain)
         soa_query = ZoneView.query.join(ZoneView.zone).options(contains_eager(ZoneView.zone)).filter(Zone.profile == profile)
-        if zone:
+        if pattern and not zone and pattern.startswith('*') and pattern.endswith('.') and pattern.count('*') == 1 and pattern.count('?') == 0:
+            _zone = get_rr_zone(pattern, zone=None, profile=profile)
+            _zones = [_zone]
+            if _zone and pattern == f'*.{_zone.name}':
+                _zones += list(db.session.query(Zone).filter(Zone.name.like(f'%.{_zone.name}')).filter(Zone.profile==profile).all())
+            _zones = [z for z in _zones if z]
+            if len(_zones) >= 1:
+                _views = [get_view(_z, profile) for _z in _zones]
+                if len(_views) >= 1:
+                    rr_query = rr_query.filter(RR.zoneview_id.in_([_view.id for _view in _views]))
+                    soa_query = soa_query.filter(RR.zoneview_id.in_([_view.id for _view in _views]))
+            reverse_zone_sorting = False
+        elif zone:
             zone = get_zone(zone, profile)
             view = get_view(zone, view)
             rr_query = rr_query.filter(RR.view == view)
