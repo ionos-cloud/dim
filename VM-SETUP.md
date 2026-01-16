@@ -112,8 +112,8 @@ grant select on pdns_int.* to pdns_int_user@localhost identified by 'SuperSecret
 ### create tables for pdns
 
 ```
-# wget -O - https://raw.githubusercontent.com/ionos-cloud/dim/master/dim/pdns.sql | mysql -u root pdns_int
-# wget -O - https://raw.githubusercontent.com/ionos-cloud/dim/master/dim/pdns.sql | mysql -u root pdns_pub
+# wget -O - https://raw.githubusercontent.com/ionos-core/dim/master/dim/pdns.sql | mysql -u root pdns_int
+# wget -O - https://raw.githubusercontent.com/ionos-core/dim/master/dim/pdns.sql | mysql -u root pdns_pub
 ```
 
 ## PowerDNS
@@ -332,17 +332,17 @@ Install rpms of dim, dimclient, ndcli and jdk::
 
 ```
 # mkdir -p /etc/dim /srv/http/dim.example.com
-# dnf install https://github.com/ionos-cloud/dim/releases/download/dim-4.0.9/dim-4.0.9-1.el8.x86_64.rpm
-# dnf install https://github.com/ionos-cloud/dim/releases/download/dimclient-0.4.5/python3-dimclient-0.4.5-1.el8.x86_64.rpm
-# dnf install https://github.com/ionos-cloud/dim/releases/download/ndcli-4.0.3/python3-ndcli-4.0.3-1.el8.x86_64.rpm
-# dnf install https://github.com/ionos-cloud/dim/releases/download/dim-web-0.1/python3-dim-web-0.1-1.el8.x86_64.rpm
+# dnf install https://github.com/ionos-core/dim/releases/download/dim-4.0.9/dim-4.0.9-1.el8.x86_64.rpm
+# dnf install https://github.com/ionos-core/dim/releases/download/dimclient-0.4.5/python3-dimclient-0.4.5-1.el8.x86_64.rpm
+# dnf install https://github.com/ionos-core/dim/releases/download/ndcli-4.0.3/python3-ndcli-4.0.3-1.el8.x86_64.rpm
+# dnf install https://github.com/ionos-core/dim/releases/download/dim-web-0.1/python3-dim-web-0.1-1.el8.x86_64.rpm
 ```
 
 pdns-output needs to be build manually at the moment (any volunteers?)
 
 ```
 # dnf install git java-1.8.0-openjdk-devel
-# git clone https://github.com/ionos-cloud/dim
+# git clone https://github.com/ionos-core/dim
 # cd dim/pdns-output
 # cd jdnssec-dnsjava && ../../gradlew build -x test && ../../gradlew publishToMavenLocal; cd ..
 # cd jdnssec-tools && ../../gradlew build -x test && ../../gradlew publishToMavenLocal; cd ..
